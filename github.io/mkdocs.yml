@@ -1,0 +1,24 @@
+site_name: AIOPSLAB
+
+theme: 
+  favicon: imgs/logo.png # URL of icon
+  name: material
+  logo: imgs/logo.png # URL of logo in top navigation
+  palette:
+    primary: blue
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://fosstodon.org/@squidfunkf #URL of code in github
+
+extra_css:
+  - assets/css/style.css
+  - assets/css/all.min.css
+
+extra_javascript:
+  - assets/js/leaderboard.js
+
+copyright: Copyright &copy; 2024 AIOPSLAB #setting up versioning
+

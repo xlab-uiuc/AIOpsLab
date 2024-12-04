@@ -1,0 +1,8 @@
+# Directory where data files are stored
+data_dir: data
+
+# Flag to enable/disable qualitative evaluation (makes LLM calls)
+qualitative_eval: false
+
+# Flag to enable/disable printing the session
+print_session: false
