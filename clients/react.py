@@ -1,4 +1,4 @@
-"""ReAct client for AIOpsLab.
+"""Naive ReAct client for AIOpsLab.
 
 Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., & Cao, Y. (2022). 
 React: Synergizing reasoning and acting in language models. arXiv preprint arXiv:2210.03629.
