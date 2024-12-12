@@ -43,7 +43,7 @@ resource "azurerm_network_security_group" "aiopslab_nsg_1" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
-    source_address_prefix      = "CorpNetPublic"
+    source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
 }
@@ -61,7 +61,7 @@ resource "azurerm_network_security_group" "aiopslab_nsg_2" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
-    source_address_prefix      = "CorpNetPublic"
+    source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
 }
