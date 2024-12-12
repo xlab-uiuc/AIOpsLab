@@ -1,0 +1,6 @@
+# Ignore everything
+*
+
+# except for these files
+!.gitignore
+!example_azure_config.yml
