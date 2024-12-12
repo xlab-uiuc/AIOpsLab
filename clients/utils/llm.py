@@ -10,19 +10,22 @@ from pathlib import Path
 from typing import Optional, List, Dict
 from dataclasses import dataclass
 
-from openai import OpenAI
-from azure.ai.ml import MLClient
-from azure.identity import DefaultAzureCredential
+from openai import OpenAI, AzureOpenAI
+from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 
 
 CACHE_DIR = Path("./cache_dir")
 CACHE_PATH = CACHE_DIR / "cache.json"
+MODEL = "gpt-4-turbo-2024-04-09"
 
 @dataclass
 class AzureConfig:
     subscription_id: str
     resource_group_name: str
     workspace_name: str
+    azure_endpoint: str
+    api_version: str
+
 
 def load_azure_config(yaml_file_path: str) -> AzureConfig:
     with open(yaml_file_path, "r") as file:
@@ -31,7 +34,9 @@ def load_azure_config(yaml_file_path: str) -> AzureConfig:
         return AzureConfig(
             subscription_id=azure_config_data.get("subscription_id", ""),
             resource_group_name=azure_config_data.get("resource_group_name", ""),
-            workspace_name=azure_config_data.get("workspace_name", "")
+            workspace_name=azure_config_data.get("workspace_name", ""),
+            azure_endpoint=azure_config_data.get("azure_endpoint", ""),
+            api_version=azure_config_data.get("api_version", ""),
         )
 
 class Cache:
@@ -74,6 +79,7 @@ class GPT4Turbo:
         self.client = self._setup_client(auth_type, api_key, azure_config)
 
     def _setup_client(self, auth_type: str, api_key: Optional[str], azure_config: Optional[AzureConfig]):
+        
         if auth_type == "key":
             api_key = api_key or os.getenv("OPENAI_API_KEY")
             if not api_key:
@@ -81,15 +87,15 @@ class GPT4Turbo:
             return OpenAI(api_key=api_key)
         
         elif auth_type == "managed":
-            azure_config = azure_config or load_azure_config("configs/example_azure_config.yml")
+            azure_config = azure_config or load_azure_config("azure_config.yaml")
             if not azure_config:
                 raise ValueError("Azure configuration must be provided for managed identity")
-            credential = DefaultAzureCredential()
-            return MLClient(credential=credential, subscription_id=azure_config.subscription_id, resource_group_name=azure_config.resource_group_name, workspace_name=azure_config.workspace_name)
+            token_provider = get_bearer_token_provider( DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default")
+            return AzureOpenAI( api_version=azure_config.api_version, azure_endpoint=f"https://{azure_config.azure_endpoint}.openai.azure.com/", azure_ad_token_provider=token_provider )
         else:
             raise ValueError("auth_type must be either 'key' or 'managed'")
 
-    def inference(self, payload: list[dict[str, str]], managed_identity: bool = False) -> list[str]:
+    def inference(self, payload: list[dict[str, str]]) -> list[str]:
         if self.cache is not None:
             cache_result = self.cache.get_from_cache(payload)
             if cache_result is not None:
@@ -98,7 +104,7 @@ class GPT4Turbo:
         try:
             response = self.client.chat.completions.create(
                 messages=payload,  # type: ignore
-                model="gpt-4-turbo-2024-04-09",
+                model=MODEL,
                 max_tokens=1024,
                 temperature=0.5,
                 top_p=0.95,
