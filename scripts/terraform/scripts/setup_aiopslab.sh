@@ -59,7 +59,7 @@ else
 fi
 
 # AIOpsLab setup
-GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new" git clone --recurse-submodules git@github.com:marvin233/AIOpsLab.git
+GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new" git clone git@github.com:microsoft/AIOpsLab.git
 cd AIOpsLab
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt-get update
