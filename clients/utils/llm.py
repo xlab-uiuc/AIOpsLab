@@ -74,11 +74,11 @@ class Cache:
 class GPT4Turbo:
     """Abstraction for OpenAI's GPT-4 Turbo model."""
 
-    def __init__(self, auth_type: str = "key", api_key: Optional[str] = None, azure_config: Optional[AzureConfig] = None, use_cache: bool = True):
+    def __init__(self, auth_type: str = "key", api_key: Optional[str] = None, azure_config_file: Optional[str] = None, use_cache: bool = True):
         self.cache = Cache()
-        self.client = self._setup_client(auth_type, api_key, azure_config)
+        self.client = self._setup_client(auth_type, api_key, azure_config_file)
 
-    def _setup_client(self, auth_type: str, api_key: Optional[str], azure_config: Optional[AzureConfig]):
+    def _setup_client(self, auth_type: str, api_key: Optional[str], azure_config_file: Optional[str]):
         
         if auth_type == "key":
             api_key = api_key or os.getenv("OPENAI_API_KEY")
@@ -87,9 +87,9 @@ class GPT4Turbo:
             return OpenAI(api_key=api_key)
         
         elif auth_type == "managed":
-            azure_config = azure_config or load_azure_config("azure_config.yaml")
-            if not azure_config:
-                raise ValueError("Azure configuration must be provided for managed identity")
+            if not azure_config_file:
+                raise ValueError("Azure configuration file must be provided for managed identity")
+            azure_config = load_azure_config("azure_config.yaml")
             token_provider = get_bearer_token_provider( DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default")
             return AzureOpenAI( api_version=azure_config.api_version, azure_endpoint=f"https://{azure_config.azure_endpoint}.openai.azure.com/", azure_ad_token_provider=token_provider )
         else:
