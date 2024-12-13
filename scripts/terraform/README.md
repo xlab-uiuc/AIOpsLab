@@ -38,6 +38,8 @@ This guide outlines the steps for establishing a secure connection to your Azure
    ```
 3. **Verify the plan**
 
+   *Note*: The SSH port of the VMs is open to the public. Please update the NSG resource in the main.tf file to restrict incoming traffic. Use the source_address_prefix attribute to specify allowed sources (e.g., source_address_prefix = "CorpNetPublic").
+
    Create and save the plan by passing the required variables
 
    a) _resource_group_name_ (rg): the resource group where the resources would be created.
