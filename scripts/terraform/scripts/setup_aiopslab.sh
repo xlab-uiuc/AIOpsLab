@@ -32,32 +32,6 @@ add_ssh_key_to_github() {
 # Generate the SSH key if it's not already there
 generate_ssh_key
 
-# Prompt the user for their GitHub token
-echo "Please provide your GitHub personal access token with permissions to write SSH keys."
-echo "If you don't have a token or don't want to provide it, press Enter, and you will be prompted to manually add the public key to GitHub."
-
-read -p "GitHub Access Token (leave blank if not providing): " github_token
-
-# Check if the token was provided
-if [ -z "$github_token" ]; then
-    # Token not provided, ask user to add the key manually
-    ssh_pub_key=$(cat ~/.ssh/id_rsa.pub)
-    echo "No token provided. Please copy the following SSH public key to your GitHub account manually:"
-    echo
-    echo "$ssh_pub_key"
-    echo
-    echo "To add the SSH key to your GitHub account manually, go to:"
-    echo "https://github.com/settings/keys"
-    echo "Click on 'New SSH Key' and paste the key."
-    read -p "Press Enter after you have added the key to continue."
-    echo "Sleeping for 30 seconds"
-    sleep 30
-else
-    # Token provided, try to add the SSH key using the GitHub API
-    add_ssh_key_to_github "$github_token"
-    sleep 5
-fi
-
 # AIOpsLab setup
 GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new" git clone git@github.com:microsoft/AIOpsLab.git
 cd AIOpsLab
