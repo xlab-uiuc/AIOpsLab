@@ -89,7 +89,7 @@ class GPT4Turbo:
         elif auth_type == "managed":
             if not azure_config_file:
                 raise ValueError("Azure configuration file must be provided for managed identity")
-            azure_config = load_azure_config("azure_config.yaml")
+            azure_config = load_azure_config(azure_config_file)
             token_provider = get_bearer_token_provider( DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default")
             return AzureOpenAI( api_version=azure_config.api_version, azure_endpoint=f"https://{azure_config.azure_endpoint}.openai.azure.com/", azure_ad_token_provider=token_provider )
         else:
