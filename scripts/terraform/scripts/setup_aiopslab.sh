@@ -15,9 +15,9 @@ generate_ssh_key() {
 generate_ssh_key
 
 # AIOpsLab setup
-GIT_SSH_COMMAND=git clone https://github.com/microsoft/AIOpsLab.git
+git clone https://github.com/microsoft/AIOpsLab.git
 cd AIOpsLab
-sudo add-apt-repository ppa:deadsnakes/ppa
+sudo add-apt-repository -y ppa:deadsnakes/ppa
 sudo apt-get update
 sudo apt-get install -y python3.11
 sudo apt-get install -y python3.11-venv
