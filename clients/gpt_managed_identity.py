@@ -7,6 +7,7 @@ Code: https://openai.com/index/gpt-4-research/
 Paper: https://arxiv.org/abs/2303.08774
 """
 
+import sys
 import asyncio
 
 from aiopslab.orchestrator import Orchestrator
@@ -15,9 +16,9 @@ from clients.utils.templates import DOCS_SHELL_ONLY
 
 
 class Agent:
-    def __init__(self):
+    def __init__(self, azure_config_file: str):
         self.history = []
-        self.llm = GPT4Turbo(auth_type = "managed")
+        self.llm = GPT4Turbo(auth_type = "managed", azure_config_file = azure_config_file)
 
     def init_context(self, problem_desc: str, instructions: str, apis: str):
         """Initialize the context for the agent."""
@@ -58,7 +59,10 @@ class Agent:
 
 
 if __name__ == "__main__":
-    agent = Agent()
+    if len(sys.argv) < 2:
+        raise Exception("Please provide a filename as argument. Usage: python gpt_managed_identity.py <azure_config_file>")
+    
+    agent = Agent(azure_config_file=sys.argv[1])
 
     orchestrator = Orchestrator()
     orchestrator.register_agent(agent, name="gpt-w-shell")
