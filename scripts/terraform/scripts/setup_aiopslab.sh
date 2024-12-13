@@ -11,29 +11,11 @@ generate_ssh_key() {
     fi
 }
 
-# Function to add SSH key to GitHub using API and access token
-add_ssh_key_to_github() {
-    ssh_pub_key=$(cat ~/.ssh/id_rsa.pub)
-    key_title="VM SSH Key $(date +%Y-%m-%d)"
-
-    response=$(curl -s -H "Authorization: token $1" \
-        -H "Accept: application/vnd.github.v3+json" \
-        https://api.github.com/user/keys \
-        -d "{\"title\":\"$key_title\",\"key\":\"$ssh_pub_key\"}")
-
-    if echo "$response" | grep -q "key"; then
-        echo "SSH key successfully added to GitHub."
-    else
-        echo "Failed to add SSH key to GitHub. Please check your token and permissions."
-        echo "Response: $response"
-    fi
-}
-
 # Generate the SSH key if it's not already there
 generate_ssh_key
 
 # AIOpsLab setup
-GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new" git clone git@github.com:microsoft/AIOpsLab.git
+GIT_SSH_COMMAND=git clone https://github.com/microsoft/AIOpsLab.git
 cd AIOpsLab
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt-get update
