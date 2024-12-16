@@ -356,6 +356,12 @@ See a full example of a problem [here](/aiopslab/orchestrator/problems/k8s_targe
   year = {2024},
   booktitle = {Proceedings of 15th ACM Symposium on Cloud Computing},
 }
+@misc{chen2024aiopslab,
+  title = {AIOpsLab: A Holistic Framework to Evaluate AI Agents for Enabling Autonomous Clouds},
+  author = {Chen, Yinfang and Shetty, Manish and Somashekar, Gagan and Ma, Minghua and Simmhan, Yogesh and Mace, Jonathan and Bansal, Chetan and Wang, Rujia and Rajmohan, Saravan},
+  year = {2024},
+  url = {https://www.microsoft.com/en-us/research/publication/aiopslab-a-holistic-framework-for-evaluating-ai-agents-for-enabling-autonomous-cloud/}
+}
 ```
 
 ## Code of Conduct
