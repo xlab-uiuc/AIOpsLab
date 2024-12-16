@@ -29,14 +29,13 @@ class AzureConfig:
 
 def load_azure_config(yaml_file_path: str) -> AzureConfig:
     with open(yaml_file_path, "r") as file:
-        data = yaml.safe_load(file)
-        azure_config_data = data.get("azure_config", {})
+        azure_config_data = yaml.safe_load(file)
         return AzureConfig(
-            subscription_id=azure_config_data.get("subscription_id", ""),
-            resource_group_name=azure_config_data.get("resource_group_name", ""),
-            workspace_name=azure_config_data.get("workspace_name", ""),
-            azure_endpoint=azure_config_data.get("azure_endpoint", ""),
-            api_version=azure_config_data.get("api_version", ""),
+            subscription_id=azure_config_data.get("subscription_id"),
+            resource_group_name=azure_config_data.get("resource_group_name"),
+            workspace_name=azure_config_data.get("workspace_name"),
+            azure_endpoint=azure_config_data.get("azure_endpoint"),
+            api_version=azure_config_data.get("api_version"),
         )
 
 class Cache:
@@ -91,7 +90,7 @@ class GPT4Turbo:
                 raise ValueError("Azure configuration file must be provided for managed identity")
             azure_config = load_azure_config(azure_config_file)
             token_provider = get_bearer_token_provider( DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default")
-            return AzureOpenAI( api_version=azure_config.api_version, azure_endpoint=f"https://{azure_config.azure_endpoint}.openai.azure.com/", azure_ad_token_provider=token_provider )
+            return AzureOpenAI( api_version=azure_config.api_version, azure_endpoint=azure_config.azure_endpoint, azure_ad_token_provider=token_provider )
         else:
             raise ValueError("auth_type must be either 'key' or 'managed'")
 
