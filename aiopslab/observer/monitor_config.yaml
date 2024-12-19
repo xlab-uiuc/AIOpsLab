@@ -1,11 +1,11 @@
 # api: https://10.10.1.202:9200
 api: http://localhost:9200
 username: elastic
-password: 1bk5VMvqtLvRnMcc3yl0
+password: <update with elastic password>
 prometheusApi: http://localhost:32000
 namespace: test-hotel-reservation
 trace_index: .ds-traces-apm-default-*
 logstash_index: logstash-*
 kubernetes_path: '~/.kube/config'
 es_use_cert: 'False'
-es_cert_path: '/home/yinfangchen/AIOpsLab/aiopslab/observor/ca.pem'
+es_cert_path: <update the path to the cert>
