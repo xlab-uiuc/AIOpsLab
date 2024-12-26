@@ -1,5 +1,4 @@
-# api: https://10.10.1.202:9200
-api: http://localhost:9200
+api: <api_path>
 username: elastic
 password: <update with elastic password>
 prometheusApi: http://localhost:32000
