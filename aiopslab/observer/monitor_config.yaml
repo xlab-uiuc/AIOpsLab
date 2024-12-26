@@ -1,11 +1,10 @@
 api: <api_path>
 username: elastic
-password: <elastic_password>
-prometheusApi: <prometheus_api_path>
+password: <update with elastic password>
+prometheusApi: http://localhost:32000
 namespace: test-hotel-reservation
 trace_index: .ds-traces-apm-default-*
 logstash_index: logstash-*
 kubernetes_path: '~/.kube/config'
 es_use_cert: 'False'
-es_cert_path: <path_to_es_cert>
-
+es_cert_path: <update the path to the cert>
