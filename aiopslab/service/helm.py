@@ -25,6 +25,16 @@ class Helm:
         namespace = args.get("namespace")
         version = args.get("version")
 
+        # Install dependencies for chart before installation
+        dependency_command = f"helm dependency update {chart_path}"
+        dependency_process = subprocess.Popen(
+            dependency_command,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        dependency_output, dependency_error = dependency_process.communicate()
+
         if version:
             command = f"helm install {release_name} {chart_path} -n {namespace} --version {version}"
         else:
@@ -162,13 +172,16 @@ class Helm:
         """
         print(f"== Helm Repo Add: {name} ==")
         command = f"helm repo add {name} {url}"
-        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen(
+            command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
         output, error = process.communicate()
 
         if error:
             print(f"Error adding helm repo {name}: {error.decode('utf-8')}")
         else:
             print(f"Helm repo {name} added successfully: {output.decode('utf-8')}")
+
 
 # Example usage
 if __name__ == "__main__":

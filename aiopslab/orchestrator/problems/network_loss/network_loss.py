@@ -40,11 +40,11 @@ class NetworkLossBaseTask:
         )
 
     def inject_fault(self):
-        print("== Fault Injection ==")      
+        print("== Fault Injection ==")
         self.injector._inject(
             fault_type="network_loss",
             microservices=[self.faulty_service],
-            duration="200s"
+            duration="200s",
         )
         print(f"Service: {self.faulty_service} | Namespace: {self.namespace}\n")
 
@@ -53,6 +53,7 @@ class NetworkLossBaseTask:
         self.injector._recover(
             fault_type="network_loss",
         )
+
 
 ################## Detection Problem ##################
 class NetworkLossDetection(NetworkLossBaseTask, DetectionTask):
@@ -79,9 +80,7 @@ class NetworkLossDetection(NetworkLossBaseTask, DetectionTask):
 
 
 ################## Localization Problem ##################
-class NetworkLossLocalization(
-    NetworkLossBaseTask, LocalizationTask
-):
+class NetworkLossLocalization(NetworkLossBaseTask, LocalizationTask):
     def __init__(self):
         NetworkLossBaseTask.__init__(self)
         LocalizationTask.__init__(self, self.app)
@@ -119,4 +118,3 @@ class NetworkLossLocalization(
         self.results["is_subset"] = is_sub
 
         return self.results
-

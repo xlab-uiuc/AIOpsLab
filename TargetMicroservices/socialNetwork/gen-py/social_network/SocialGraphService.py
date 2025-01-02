@@ -6,7 +6,13 @@
 #  options string: py
 #
 
-from thrift.Thrift import TType, TMessageType, TFrozenDict, TException, TApplicationException
+from thrift.Thrift import (
+    TType,
+    TMessageType,
+    TFrozenDict,
+    TException,
+    TApplicationException,
+)
 from thrift.protocol.TProtocol import TProtocolException
 from thrift.TRecursive import fix_spec
 
@@ -15,6 +21,7 @@ import logging
 from .ttypes import *
 from thrift.Thrift import TProcessor
 from thrift.transport import TTransport
+
 all_structs = []
 
 
@@ -113,7 +120,7 @@ class Client(Iface):
         return self.recv_GetFollowers()
 
     def send_GetFollowers(self, req_id, user_id, carrier):
-        self._oprot.writeMessageBegin('GetFollowers', TMessageType.CALL, self._seqid)
+        self._oprot.writeMessageBegin("GetFollowers", TMessageType.CALL, self._seqid)
         args = GetFollowers_args()
         args.req_id = req_id
         args.user_id = user_id
@@ -137,7 +144,9 @@ class Client(Iface):
             return result.success
         if result.se is not None:
             raise result.se
-        raise TApplicationException(TApplicationException.MISSING_RESULT, "GetFollowers failed: unknown result")
+        raise TApplicationException(
+            TApplicationException.MISSING_RESULT, "GetFollowers failed: unknown result"
+        )
 
     def GetFollowees(self, req_id, user_id, carrier):
         """
@@ -151,7 +160,7 @@ class Client(Iface):
         return self.recv_GetFollowees()
 
     def send_GetFollowees(self, req_id, user_id, carrier):
-        self._oprot.writeMessageBegin('GetFollowees', TMessageType.CALL, self._seqid)
+        self._oprot.writeMessageBegin("GetFollowees", TMessageType.CALL, self._seqid)
         args = GetFollowees_args()
         args.req_id = req_id
         args.user_id = user_id
@@ -175,7 +184,9 @@ class Client(Iface):
             return result.success
         if result.se is not None:
             raise result.se
-        raise TApplicationException(TApplicationException.MISSING_RESULT, "GetFollowees failed: unknown result")
+        raise TApplicationException(
+            TApplicationException.MISSING_RESULT, "GetFollowees failed: unknown result"
+        )
 
     def Follow(self, req_id, user_id, followee_id, carrier):
         """
@@ -190,7 +201,7 @@ class Client(Iface):
         self.recv_Follow()
 
     def send_Follow(self, req_id, user_id, followee_id, carrier):
-        self._oprot.writeMessageBegin('Follow', TMessageType.CALL, self._seqid)
+        self._oprot.writeMessageBegin("Follow", TMessageType.CALL, self._seqid)
         args = Follow_args()
         args.req_id = req_id
         args.user_id = user_id
@@ -228,7 +239,7 @@ class Client(Iface):
         self.recv_Unfollow()
 
     def send_Unfollow(self, req_id, user_id, followee_id, carrier):
-        self._oprot.writeMessageBegin('Unfollow', TMessageType.CALL, self._seqid)
+        self._oprot.writeMessageBegin("Unfollow", TMessageType.CALL, self._seqid)
         args = Unfollow_args()
         args.req_id = req_id
         args.user_id = user_id
@@ -265,8 +276,12 @@ class Client(Iface):
         self.send_FollowWithUsername(req_id, user_usernmae, followee_username, carrier)
         self.recv_FollowWithUsername()
 
-    def send_FollowWithUsername(self, req_id, user_usernmae, followee_username, carrier):
-        self._oprot.writeMessageBegin('FollowWithUsername', TMessageType.CALL, self._seqid)
+    def send_FollowWithUsername(
+        self, req_id, user_usernmae, followee_username, carrier
+    ):
+        self._oprot.writeMessageBegin(
+            "FollowWithUsername", TMessageType.CALL, self._seqid
+        )
         args = FollowWithUsername_args()
         args.req_id = req_id
         args.user_usernmae = user_usernmae
@@ -300,11 +315,17 @@ class Client(Iface):
          - carrier
 
         """
-        self.send_UnfollowWithUsername(req_id, user_usernmae, followee_username, carrier)
+        self.send_UnfollowWithUsername(
+            req_id, user_usernmae, followee_username, carrier
+        )
         self.recv_UnfollowWithUsername()
 
-    def send_UnfollowWithUsername(self, req_id, user_usernmae, followee_username, carrier):
-        self._oprot.writeMessageBegin('UnfollowWithUsername', TMessageType.CALL, self._seqid)
+    def send_UnfollowWithUsername(
+        self, req_id, user_usernmae, followee_username, carrier
+    ):
+        self._oprot.writeMessageBegin(
+            "UnfollowWithUsername", TMessageType.CALL, self._seqid
+        )
         args = UnfollowWithUsername_args()
         args.req_id = req_id
         args.user_usernmae = user_usernmae
@@ -341,7 +362,7 @@ class Client(Iface):
         self.recv_InsertUser()
 
     def send_InsertUser(self, req_id, user_id, carrier):
-        self._oprot.writeMessageBegin('InsertUser', TMessageType.CALL, self._seqid)
+        self._oprot.writeMessageBegin("InsertUser", TMessageType.CALL, self._seqid)
         args = InsertUser_args()
         args.req_id = req_id
         args.user_id = user_id
@@ -375,7 +396,9 @@ class Processor(Iface, TProcessor):
         self._processMap["Follow"] = Processor.process_Follow
         self._processMap["Unfollow"] = Processor.process_Unfollow
         self._processMap["FollowWithUsername"] = Processor.process_FollowWithUsername
-        self._processMap["UnfollowWithUsername"] = Processor.process_UnfollowWithUsername
+        self._processMap[
+            "UnfollowWithUsername"
+        ] = Processor.process_UnfollowWithUsername
         self._processMap["InsertUser"] = Processor.process_InsertUser
         self._on_message_begin = None
 
@@ -389,7 +412,9 @@ class Processor(Iface, TProcessor):
         if name not in self._processMap:
             iprot.skip(TType.STRUCT)
             iprot.readMessageEnd()
-            x = TApplicationException(TApplicationException.UNKNOWN_METHOD, 'Unknown function %s' % (name))
+            x = TApplicationException(
+                TApplicationException.UNKNOWN_METHOD, "Unknown function %s" % (name)
+            )
             oprot.writeMessageBegin(name, TMessageType.EXCEPTION, seqid)
             x.write(oprot)
             oprot.writeMessageEnd()
@@ -405,7 +430,9 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = GetFollowers_result()
         try:
-            result.success = self._handler.GetFollowers(args.req_id, args.user_id, args.carrier)
+            result.success = self._handler.GetFollowers(
+                args.req_id, args.user_id, args.carrier
+            )
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -413,13 +440,15 @@ class Processor(Iface, TProcessor):
             msg_type = TMessageType.REPLY
             result.se = se
         except TApplicationException as ex:
-            logging.exception('TApplication exception in handler')
+            logging.exception("TApplication exception in handler")
             msg_type = TMessageType.EXCEPTION
             result = ex
         except Exception:
-            logging.exception('Unexpected exception in handler')
+            logging.exception("Unexpected exception in handler")
             msg_type = TMessageType.EXCEPTION
-            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+            result = TApplicationException(
+                TApplicationException.INTERNAL_ERROR, "Internal error"
+            )
         oprot.writeMessageBegin("GetFollowers", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
@@ -431,7 +460,9 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = GetFollowees_result()
         try:
-            result.success = self._handler.GetFollowees(args.req_id, args.user_id, args.carrier)
+            result.success = self._handler.GetFollowees(
+                args.req_id, args.user_id, args.carrier
+            )
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -439,13 +470,15 @@ class Processor(Iface, TProcessor):
             msg_type = TMessageType.REPLY
             result.se = se
         except TApplicationException as ex:
-            logging.exception('TApplication exception in handler')
+            logging.exception("TApplication exception in handler")
             msg_type = TMessageType.EXCEPTION
             result = ex
         except Exception:
-            logging.exception('Unexpected exception in handler')
+            logging.exception("Unexpected exception in handler")
             msg_type = TMessageType.EXCEPTION
-            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+            result = TApplicationException(
+                TApplicationException.INTERNAL_ERROR, "Internal error"
+            )
         oprot.writeMessageBegin("GetFollowees", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
@@ -457,7 +490,9 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = Follow_result()
         try:
-            self._handler.Follow(args.req_id, args.user_id, args.followee_id, args.carrier)
+            self._handler.Follow(
+                args.req_id, args.user_id, args.followee_id, args.carrier
+            )
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -465,13 +500,15 @@ class Processor(Iface, TProcessor):
             msg_type = TMessageType.REPLY
             result.se = se
         except TApplicationException as ex:
-            logging.exception('TApplication exception in handler')
+            logging.exception("TApplication exception in handler")
             msg_type = TMessageType.EXCEPTION
             result = ex
         except Exception:
-            logging.exception('Unexpected exception in handler')
+            logging.exception("Unexpected exception in handler")
             msg_type = TMessageType.EXCEPTION
-            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+            result = TApplicationException(
+                TApplicationException.INTERNAL_ERROR, "Internal error"
+            )
         oprot.writeMessageBegin("Follow", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
@@ -483,7 +520,9 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = Unfollow_result()
         try:
-            self._handler.Unfollow(args.req_id, args.user_id, args.followee_id, args.carrier)
+            self._handler.Unfollow(
+                args.req_id, args.user_id, args.followee_id, args.carrier
+            )
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -491,13 +530,15 @@ class Processor(Iface, TProcessor):
             msg_type = TMessageType.REPLY
             result.se = se
         except TApplicationException as ex:
-            logging.exception('TApplication exception in handler')
+            logging.exception("TApplication exception in handler")
             msg_type = TMessageType.EXCEPTION
             result = ex
         except Exception:
-            logging.exception('Unexpected exception in handler')
+            logging.exception("Unexpected exception in handler")
             msg_type = TMessageType.EXCEPTION
-            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+            result = TApplicationException(
+                TApplicationException.INTERNAL_ERROR, "Internal error"
+            )
         oprot.writeMessageBegin("Unfollow", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
@@ -509,7 +550,9 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = FollowWithUsername_result()
         try:
-            self._handler.FollowWithUsername(args.req_id, args.user_usernmae, args.followee_username, args.carrier)
+            self._handler.FollowWithUsername(
+                args.req_id, args.user_usernmae, args.followee_username, args.carrier
+            )
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -517,13 +560,15 @@ class Processor(Iface, TProcessor):
             msg_type = TMessageType.REPLY
             result.se = se
         except TApplicationException as ex:
-            logging.exception('TApplication exception in handler')
+            logging.exception("TApplication exception in handler")
             msg_type = TMessageType.EXCEPTION
             result = ex
         except Exception:
-            logging.exception('Unexpected exception in handler')
+            logging.exception("Unexpected exception in handler")
             msg_type = TMessageType.EXCEPTION
-            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+            result = TApplicationException(
+                TApplicationException.INTERNAL_ERROR, "Internal error"
+            )
         oprot.writeMessageBegin("FollowWithUsername", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
@@ -535,7 +580,9 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = UnfollowWithUsername_result()
         try:
-            self._handler.UnfollowWithUsername(args.req_id, args.user_usernmae, args.followee_username, args.carrier)
+            self._handler.UnfollowWithUsername(
+                args.req_id, args.user_usernmae, args.followee_username, args.carrier
+            )
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -543,13 +590,15 @@ class Processor(Iface, TProcessor):
             msg_type = TMessageType.REPLY
             result.se = se
         except TApplicationException as ex:
-            logging.exception('TApplication exception in handler')
+            logging.exception("TApplication exception in handler")
             msg_type = TMessageType.EXCEPTION
             result = ex
         except Exception:
-            logging.exception('Unexpected exception in handler')
+            logging.exception("Unexpected exception in handler")
             msg_type = TMessageType.EXCEPTION
-            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+            result = TApplicationException(
+                TApplicationException.INTERNAL_ERROR, "Internal error"
+            )
         oprot.writeMessageBegin("UnfollowWithUsername", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
@@ -569,17 +618,20 @@ class Processor(Iface, TProcessor):
             msg_type = TMessageType.REPLY
             result.se = se
         except TApplicationException as ex:
-            logging.exception('TApplication exception in handler')
+            logging.exception("TApplication exception in handler")
             msg_type = TMessageType.EXCEPTION
             result = ex
         except Exception:
-            logging.exception('Unexpected exception in handler')
+            logging.exception("Unexpected exception in handler")
             msg_type = TMessageType.EXCEPTION
-            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+            result = TApplicationException(
+                TApplicationException.INTERNAL_ERROR, "Internal error"
+            )
         oprot.writeMessageBegin("InsertUser", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
+
 
 # HELPER FUNCTIONS AND STRUCTURES
 
@@ -593,14 +645,22 @@ class GetFollowers_args(object):
 
     """
 
-
-    def __init__(self, req_id=None, user_id=None, carrier=None,):
+    def __init__(
+        self,
+        req_id=None,
+        user_id=None,
+        carrier=None,
+    ):
         self.req_id = req_id
         self.user_id = user_id
         self.carrier = carrier
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -623,8 +683,16 @@ class GetFollowers_args(object):
                     self.carrier = {}
                     (_ktype229, _vtype230, _size228) = iprot.readMapBegin()
                     for _i232 in range(_size228):
-                        _key233 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        _val234 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        _key233 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
+                        _val234 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
                         self.carrier[_key233] = _val234
                     iprot.readMapEnd()
                 else:
@@ -636,23 +704,29 @@ class GetFollowers_args(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('GetFollowers_args')
+        oprot.writeStructBegin("GetFollowers_args")
         if self.req_id is not None:
-            oprot.writeFieldBegin('req_id', TType.I64, 1)
+            oprot.writeFieldBegin("req_id", TType.I64, 1)
             oprot.writeI64(self.req_id)
             oprot.writeFieldEnd()
         if self.user_id is not None:
-            oprot.writeFieldBegin('user_id', TType.I64, 2)
+            oprot.writeFieldBegin("user_id", TType.I64, 2)
             oprot.writeI64(self.user_id)
             oprot.writeFieldEnd()
         if self.carrier is not None:
-            oprot.writeFieldBegin('carrier', TType.MAP, 3)
+            oprot.writeFieldBegin("carrier", TType.MAP, 3)
             oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.carrier))
             for kiter235, viter236 in self.carrier.items():
-                oprot.writeString(kiter235.encode('utf-8') if sys.version_info[0] == 2 else kiter235)
-                oprot.writeString(viter236.encode('utf-8') if sys.version_info[0] == 2 else viter236)
+                oprot.writeString(
+                    kiter235.encode("utf-8") if sys.version_info[0] == 2 else kiter235
+                )
+                oprot.writeString(
+                    viter236.encode("utf-8") if sys.version_info[0] == 2 else viter236
+                )
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -662,21 +736,40 @@ class GetFollowers_args(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(GetFollowers_args)
 GetFollowers_args.thrift_spec = (
     None,  # 0
-    (1, TType.I64, 'req_id', None, None, ),  # 1
-    (2, TType.I64, 'user_id', None, None, ),  # 2
-    (3, TType.MAP, 'carrier', (TType.STRING, 'UTF8', TType.STRING, 'UTF8', False), None, ),  # 3
+    (
+        1,
+        TType.I64,
+        "req_id",
+        None,
+        None,
+    ),  # 1
+    (
+        2,
+        TType.I64,
+        "user_id",
+        None,
+        None,
+    ),  # 2
+    (
+        3,
+        TType.MAP,
+        "carrier",
+        (TType.STRING, "UTF8", TType.STRING, "UTF8", False),
+        None,
+    ),  # 3
 )
 
 
@@ -688,13 +781,20 @@ class GetFollowers_result(object):
 
     """
 
-
-    def __init__(self, success=None, se=None,):
+    def __init__(
+        self,
+        success=None,
+        se=None,
+    ):
         self.success = success
         self.se = se
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -724,18 +824,20 @@ class GetFollowers_result(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('GetFollowers_result')
+        oprot.writeStructBegin("GetFollowers_result")
         if self.success is not None:
-            oprot.writeFieldBegin('success', TType.LIST, 0)
+            oprot.writeFieldBegin("success", TType.LIST, 0)
             oprot.writeListBegin(TType.I64, len(self.success))
             for iter243 in self.success:
                 oprot.writeI64(iter243)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.se is not None:
-            oprot.writeFieldBegin('se', TType.STRUCT, 1)
+            oprot.writeFieldBegin("se", TType.STRUCT, 1)
             self.se.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -745,19 +847,32 @@ class GetFollowers_result(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(GetFollowers_result)
 GetFollowers_result.thrift_spec = (
-    (0, TType.LIST, 'success', (TType.I64, None, False), None, ),  # 0
-    (1, TType.STRUCT, 'se', [ServiceException, None], None, ),  # 1
+    (
+        0,
+        TType.LIST,
+        "success",
+        (TType.I64, None, False),
+        None,
+    ),  # 0
+    (
+        1,
+        TType.STRUCT,
+        "se",
+        [ServiceException, None],
+        None,
+    ),  # 1
 )
 
 
@@ -770,14 +885,22 @@ class GetFollowees_args(object):
 
     """
 
-
-    def __init__(self, req_id=None, user_id=None, carrier=None,):
+    def __init__(
+        self,
+        req_id=None,
+        user_id=None,
+        carrier=None,
+    ):
         self.req_id = req_id
         self.user_id = user_id
         self.carrier = carrier
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -800,8 +923,16 @@ class GetFollowees_args(object):
                     self.carrier = {}
                     (_ktype245, _vtype246, _size244) = iprot.readMapBegin()
                     for _i248 in range(_size244):
-                        _key249 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        _val250 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        _key249 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
+                        _val250 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
                         self.carrier[_key249] = _val250
                     iprot.readMapEnd()
                 else:
@@ -813,23 +944,29 @@ class GetFollowees_args(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('GetFollowees_args')
+        oprot.writeStructBegin("GetFollowees_args")
         if self.req_id is not None:
-            oprot.writeFieldBegin('req_id', TType.I64, 1)
+            oprot.writeFieldBegin("req_id", TType.I64, 1)
             oprot.writeI64(self.req_id)
             oprot.writeFieldEnd()
         if self.user_id is not None:
-            oprot.writeFieldBegin('user_id', TType.I64, 2)
+            oprot.writeFieldBegin("user_id", TType.I64, 2)
             oprot.writeI64(self.user_id)
             oprot.writeFieldEnd()
         if self.carrier is not None:
-            oprot.writeFieldBegin('carrier', TType.MAP, 3)
+            oprot.writeFieldBegin("carrier", TType.MAP, 3)
             oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.carrier))
             for kiter251, viter252 in self.carrier.items():
-                oprot.writeString(kiter251.encode('utf-8') if sys.version_info[0] == 2 else kiter251)
-                oprot.writeString(viter252.encode('utf-8') if sys.version_info[0] == 2 else viter252)
+                oprot.writeString(
+                    kiter251.encode("utf-8") if sys.version_info[0] == 2 else kiter251
+                )
+                oprot.writeString(
+                    viter252.encode("utf-8") if sys.version_info[0] == 2 else viter252
+                )
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -839,21 +976,40 @@ class GetFollowees_args(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(GetFollowees_args)
 GetFollowees_args.thrift_spec = (
     None,  # 0
-    (1, TType.I64, 'req_id', None, None, ),  # 1
-    (2, TType.I64, 'user_id', None, None, ),  # 2
-    (3, TType.MAP, 'carrier', (TType.STRING, 'UTF8', TType.STRING, 'UTF8', False), None, ),  # 3
+    (
+        1,
+        TType.I64,
+        "req_id",
+        None,
+        None,
+    ),  # 1
+    (
+        2,
+        TType.I64,
+        "user_id",
+        None,
+        None,
+    ),  # 2
+    (
+        3,
+        TType.MAP,
+        "carrier",
+        (TType.STRING, "UTF8", TType.STRING, "UTF8", False),
+        None,
+    ),  # 3
 )
 
 
@@ -865,13 +1021,20 @@ class GetFollowees_result(object):
 
     """
 
-
-    def __init__(self, success=None, se=None,):
+    def __init__(
+        self,
+        success=None,
+        se=None,
+    ):
         self.success = success
         self.se = se
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -901,18 +1064,20 @@ class GetFollowees_result(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('GetFollowees_result')
+        oprot.writeStructBegin("GetFollowees_result")
         if self.success is not None:
-            oprot.writeFieldBegin('success', TType.LIST, 0)
+            oprot.writeFieldBegin("success", TType.LIST, 0)
             oprot.writeListBegin(TType.I64, len(self.success))
             for iter259 in self.success:
                 oprot.writeI64(iter259)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.se is not None:
-            oprot.writeFieldBegin('se', TType.STRUCT, 1)
+            oprot.writeFieldBegin("se", TType.STRUCT, 1)
             self.se.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -922,19 +1087,32 @@ class GetFollowees_result(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(GetFollowees_result)
 GetFollowees_result.thrift_spec = (
-    (0, TType.LIST, 'success', (TType.I64, None, False), None, ),  # 0
-    (1, TType.STRUCT, 'se', [ServiceException, None], None, ),  # 1
+    (
+        0,
+        TType.LIST,
+        "success",
+        (TType.I64, None, False),
+        None,
+    ),  # 0
+    (
+        1,
+        TType.STRUCT,
+        "se",
+        [ServiceException, None],
+        None,
+    ),  # 1
 )
 
 
@@ -948,15 +1126,24 @@ class Follow_args(object):
 
     """
 
-
-    def __init__(self, req_id=None, user_id=None, followee_id=None, carrier=None,):
+    def __init__(
+        self,
+        req_id=None,
+        user_id=None,
+        followee_id=None,
+        carrier=None,
+    ):
         self.req_id = req_id
         self.user_id = user_id
         self.followee_id = followee_id
         self.carrier = carrier
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -984,8 +1171,16 @@ class Follow_args(object):
                     self.carrier = {}
                     (_ktype261, _vtype262, _size260) = iprot.readMapBegin()
                     for _i264 in range(_size260):
-                        _key265 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        _val266 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        _key265 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
+                        _val266 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
                         self.carrier[_key265] = _val266
                     iprot.readMapEnd()
                 else:
@@ -997,27 +1192,33 @@ class Follow_args(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('Follow_args')
+        oprot.writeStructBegin("Follow_args")
         if self.req_id is not None:
-            oprot.writeFieldBegin('req_id', TType.I64, 1)
+            oprot.writeFieldBegin("req_id", TType.I64, 1)
             oprot.writeI64(self.req_id)
             oprot.writeFieldEnd()
         if self.user_id is not None:
-            oprot.writeFieldBegin('user_id', TType.I64, 2)
+            oprot.writeFieldBegin("user_id", TType.I64, 2)
             oprot.writeI64(self.user_id)
             oprot.writeFieldEnd()
         if self.followee_id is not None:
-            oprot.writeFieldBegin('followee_id', TType.I64, 3)
+            oprot.writeFieldBegin("followee_id", TType.I64, 3)
             oprot.writeI64(self.followee_id)
             oprot.writeFieldEnd()
         if self.carrier is not None:
-            oprot.writeFieldBegin('carrier', TType.MAP, 4)
+            oprot.writeFieldBegin("carrier", TType.MAP, 4)
             oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.carrier))
             for kiter267, viter268 in self.carrier.items():
-                oprot.writeString(kiter267.encode('utf-8') if sys.version_info[0] == 2 else kiter267)
-                oprot.writeString(viter268.encode('utf-8') if sys.version_info[0] == 2 else viter268)
+                oprot.writeString(
+                    kiter267.encode("utf-8") if sys.version_info[0] == 2 else kiter267
+                )
+                oprot.writeString(
+                    viter268.encode("utf-8") if sys.version_info[0] == 2 else viter268
+                )
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -1027,22 +1228,47 @@ class Follow_args(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(Follow_args)
 Follow_args.thrift_spec = (
     None,  # 0
-    (1, TType.I64, 'req_id', None, None, ),  # 1
-    (2, TType.I64, 'user_id', None, None, ),  # 2
-    (3, TType.I64, 'followee_id', None, None, ),  # 3
-    (4, TType.MAP, 'carrier', (TType.STRING, 'UTF8', TType.STRING, 'UTF8', False), None, ),  # 4
+    (
+        1,
+        TType.I64,
+        "req_id",
+        None,
+        None,
+    ),  # 1
+    (
+        2,
+        TType.I64,
+        "user_id",
+        None,
+        None,
+    ),  # 2
+    (
+        3,
+        TType.I64,
+        "followee_id",
+        None,
+        None,
+    ),  # 3
+    (
+        4,
+        TType.MAP,
+        "carrier",
+        (TType.STRING, "UTF8", TType.STRING, "UTF8", False),
+        None,
+    ),  # 4
 )
 
 
@@ -1053,12 +1279,18 @@ class Follow_result(object):
 
     """
 
-
-    def __init__(self, se=None,):
+    def __init__(
+        self,
+        se=None,
+    ):
         self.se = se
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -1078,11 +1310,13 @@ class Follow_result(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('Follow_result')
+        oprot.writeStructBegin("Follow_result")
         if self.se is not None:
-            oprot.writeFieldBegin('se', TType.STRUCT, 1)
+            oprot.writeFieldBegin("se", TType.STRUCT, 1)
             self.se.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -1092,19 +1326,26 @@ class Follow_result(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(Follow_result)
 Follow_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'se', [ServiceException, None], None, ),  # 1
+    (
+        1,
+        TType.STRUCT,
+        "se",
+        [ServiceException, None],
+        None,
+    ),  # 1
 )
 
 
@@ -1118,15 +1359,24 @@ class Unfollow_args(object):
 
     """
 
-
-    def __init__(self, req_id=None, user_id=None, followee_id=None, carrier=None,):
+    def __init__(
+        self,
+        req_id=None,
+        user_id=None,
+        followee_id=None,
+        carrier=None,
+    ):
         self.req_id = req_id
         self.user_id = user_id
         self.followee_id = followee_id
         self.carrier = carrier
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -1154,8 +1404,16 @@ class Unfollow_args(object):
                     self.carrier = {}
                     (_ktype270, _vtype271, _size269) = iprot.readMapBegin()
                     for _i273 in range(_size269):
-                        _key274 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        _val275 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        _key274 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
+                        _val275 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
                         self.carrier[_key274] = _val275
                     iprot.readMapEnd()
                 else:
@@ -1167,27 +1425,33 @@ class Unfollow_args(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('Unfollow_args')
+        oprot.writeStructBegin("Unfollow_args")
         if self.req_id is not None:
-            oprot.writeFieldBegin('req_id', TType.I64, 1)
+            oprot.writeFieldBegin("req_id", TType.I64, 1)
             oprot.writeI64(self.req_id)
             oprot.writeFieldEnd()
         if self.user_id is not None:
-            oprot.writeFieldBegin('user_id', TType.I64, 2)
+            oprot.writeFieldBegin("user_id", TType.I64, 2)
             oprot.writeI64(self.user_id)
             oprot.writeFieldEnd()
         if self.followee_id is not None:
-            oprot.writeFieldBegin('followee_id', TType.I64, 3)
+            oprot.writeFieldBegin("followee_id", TType.I64, 3)
             oprot.writeI64(self.followee_id)
             oprot.writeFieldEnd()
         if self.carrier is not None:
-            oprot.writeFieldBegin('carrier', TType.MAP, 4)
+            oprot.writeFieldBegin("carrier", TType.MAP, 4)
             oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.carrier))
             for kiter276, viter277 in self.carrier.items():
-                oprot.writeString(kiter276.encode('utf-8') if sys.version_info[0] == 2 else kiter276)
-                oprot.writeString(viter277.encode('utf-8') if sys.version_info[0] == 2 else viter277)
+                oprot.writeString(
+                    kiter276.encode("utf-8") if sys.version_info[0] == 2 else kiter276
+                )
+                oprot.writeString(
+                    viter277.encode("utf-8") if sys.version_info[0] == 2 else viter277
+                )
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -1197,22 +1461,47 @@ class Unfollow_args(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(Unfollow_args)
 Unfollow_args.thrift_spec = (
     None,  # 0
-    (1, TType.I64, 'req_id', None, None, ),  # 1
-    (2, TType.I64, 'user_id', None, None, ),  # 2
-    (3, TType.I64, 'followee_id', None, None, ),  # 3
-    (4, TType.MAP, 'carrier', (TType.STRING, 'UTF8', TType.STRING, 'UTF8', False), None, ),  # 4
+    (
+        1,
+        TType.I64,
+        "req_id",
+        None,
+        None,
+    ),  # 1
+    (
+        2,
+        TType.I64,
+        "user_id",
+        None,
+        None,
+    ),  # 2
+    (
+        3,
+        TType.I64,
+        "followee_id",
+        None,
+        None,
+    ),  # 3
+    (
+        4,
+        TType.MAP,
+        "carrier",
+        (TType.STRING, "UTF8", TType.STRING, "UTF8", False),
+        None,
+    ),  # 4
 )
 
 
@@ -1223,12 +1512,18 @@ class Unfollow_result(object):
 
     """
 
-
-    def __init__(self, se=None,):
+    def __init__(
+        self,
+        se=None,
+    ):
         self.se = se
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -1248,11 +1543,13 @@ class Unfollow_result(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('Unfollow_result')
+        oprot.writeStructBegin("Unfollow_result")
         if self.se is not None:
-            oprot.writeFieldBegin('se', TType.STRUCT, 1)
+            oprot.writeFieldBegin("se", TType.STRUCT, 1)
             self.se.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -1262,19 +1559,26 @@ class Unfollow_result(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(Unfollow_result)
 Unfollow_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'se', [ServiceException, None], None, ),  # 1
+    (
+        1,
+        TType.STRUCT,
+        "se",
+        [ServiceException, None],
+        None,
+    ),  # 1
 )
 
 
@@ -1288,15 +1592,24 @@ class FollowWithUsername_args(object):
 
     """
 
-
-    def __init__(self, req_id=None, user_usernmae=None, followee_username=None, carrier=None,):
+    def __init__(
+        self,
+        req_id=None,
+        user_usernmae=None,
+        followee_username=None,
+        carrier=None,
+    ):
         self.req_id = req_id
         self.user_usernmae = user_usernmae
         self.followee_username = followee_username
         self.carrier = carrier
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -1311,12 +1624,20 @@ class FollowWithUsername_args(object):
                     iprot.skip(ftype)
             elif fid == 2:
                 if ftype == TType.STRING:
-                    self.user_usernmae = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                    self.user_usernmae = (
+                        iprot.readString().decode("utf-8", errors="replace")
+                        if sys.version_info[0] == 2
+                        else iprot.readString()
+                    )
                 else:
                     iprot.skip(ftype)
             elif fid == 3:
                 if ftype == TType.STRING:
-                    self.followee_username = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                    self.followee_username = (
+                        iprot.readString().decode("utf-8", errors="replace")
+                        if sys.version_info[0] == 2
+                        else iprot.readString()
+                    )
                 else:
                     iprot.skip(ftype)
             elif fid == 4:
@@ -1324,8 +1645,16 @@ class FollowWithUsername_args(object):
                     self.carrier = {}
                     (_ktype279, _vtype280, _size278) = iprot.readMapBegin()
                     for _i282 in range(_size278):
-                        _key283 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        _val284 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        _key283 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
+                        _val284 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
                         self.carrier[_key283] = _val284
                     iprot.readMapEnd()
                 else:
@@ -1337,27 +1666,41 @@ class FollowWithUsername_args(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('FollowWithUsername_args')
+        oprot.writeStructBegin("FollowWithUsername_args")
         if self.req_id is not None:
-            oprot.writeFieldBegin('req_id', TType.I64, 1)
+            oprot.writeFieldBegin("req_id", TType.I64, 1)
             oprot.writeI64(self.req_id)
             oprot.writeFieldEnd()
         if self.user_usernmae is not None:
-            oprot.writeFieldBegin('user_usernmae', TType.STRING, 2)
-            oprot.writeString(self.user_usernmae.encode('utf-8') if sys.version_info[0] == 2 else self.user_usernmae)
+            oprot.writeFieldBegin("user_usernmae", TType.STRING, 2)
+            oprot.writeString(
+                self.user_usernmae.encode("utf-8")
+                if sys.version_info[0] == 2
+                else self.user_usernmae
+            )
             oprot.writeFieldEnd()
         if self.followee_username is not None:
-            oprot.writeFieldBegin('followee_username', TType.STRING, 3)
-            oprot.writeString(self.followee_username.encode('utf-8') if sys.version_info[0] == 2 else self.followee_username)
+            oprot.writeFieldBegin("followee_username", TType.STRING, 3)
+            oprot.writeString(
+                self.followee_username.encode("utf-8")
+                if sys.version_info[0] == 2
+                else self.followee_username
+            )
             oprot.writeFieldEnd()
         if self.carrier is not None:
-            oprot.writeFieldBegin('carrier', TType.MAP, 4)
+            oprot.writeFieldBegin("carrier", TType.MAP, 4)
             oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.carrier))
             for kiter285, viter286 in self.carrier.items():
-                oprot.writeString(kiter285.encode('utf-8') if sys.version_info[0] == 2 else kiter285)
-                oprot.writeString(viter286.encode('utf-8') if sys.version_info[0] == 2 else viter286)
+                oprot.writeString(
+                    kiter285.encode("utf-8") if sys.version_info[0] == 2 else kiter285
+                )
+                oprot.writeString(
+                    viter286.encode("utf-8") if sys.version_info[0] == 2 else viter286
+                )
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -1367,22 +1710,47 @@ class FollowWithUsername_args(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(FollowWithUsername_args)
 FollowWithUsername_args.thrift_spec = (
     None,  # 0
-    (1, TType.I64, 'req_id', None, None, ),  # 1
-    (2, TType.STRING, 'user_usernmae', 'UTF8', None, ),  # 2
-    (3, TType.STRING, 'followee_username', 'UTF8', None, ),  # 3
-    (4, TType.MAP, 'carrier', (TType.STRING, 'UTF8', TType.STRING, 'UTF8', False), None, ),  # 4
+    (
+        1,
+        TType.I64,
+        "req_id",
+        None,
+        None,
+    ),  # 1
+    (
+        2,
+        TType.STRING,
+        "user_usernmae",
+        "UTF8",
+        None,
+    ),  # 2
+    (
+        3,
+        TType.STRING,
+        "followee_username",
+        "UTF8",
+        None,
+    ),  # 3
+    (
+        4,
+        TType.MAP,
+        "carrier",
+        (TType.STRING, "UTF8", TType.STRING, "UTF8", False),
+        None,
+    ),  # 4
 )
 
 
@@ -1393,12 +1761,18 @@ class FollowWithUsername_result(object):
 
     """
 
-
-    def __init__(self, se=None,):
+    def __init__(
+        self,
+        se=None,
+    ):
         self.se = se
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -1418,11 +1792,13 @@ class FollowWithUsername_result(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('FollowWithUsername_result')
+        oprot.writeStructBegin("FollowWithUsername_result")
         if self.se is not None:
-            oprot.writeFieldBegin('se', TType.STRUCT, 1)
+            oprot.writeFieldBegin("se", TType.STRUCT, 1)
             self.se.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -1432,19 +1808,26 @@ class FollowWithUsername_result(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(FollowWithUsername_result)
 FollowWithUsername_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'se', [ServiceException, None], None, ),  # 1
+    (
+        1,
+        TType.STRUCT,
+        "se",
+        [ServiceException, None],
+        None,
+    ),  # 1
 )
 
 
@@ -1458,15 +1841,24 @@ class UnfollowWithUsername_args(object):
 
     """
 
-
-    def __init__(self, req_id=None, user_usernmae=None, followee_username=None, carrier=None,):
+    def __init__(
+        self,
+        req_id=None,
+        user_usernmae=None,
+        followee_username=None,
+        carrier=None,
+    ):
         self.req_id = req_id
         self.user_usernmae = user_usernmae
         self.followee_username = followee_username
         self.carrier = carrier
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -1481,12 +1873,20 @@ class UnfollowWithUsername_args(object):
                     iprot.skip(ftype)
             elif fid == 2:
                 if ftype == TType.STRING:
-                    self.user_usernmae = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                    self.user_usernmae = (
+                        iprot.readString().decode("utf-8", errors="replace")
+                        if sys.version_info[0] == 2
+                        else iprot.readString()
+                    )
                 else:
                     iprot.skip(ftype)
             elif fid == 3:
                 if ftype == TType.STRING:
-                    self.followee_username = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                    self.followee_username = (
+                        iprot.readString().decode("utf-8", errors="replace")
+                        if sys.version_info[0] == 2
+                        else iprot.readString()
+                    )
                 else:
                     iprot.skip(ftype)
             elif fid == 4:
@@ -1494,8 +1894,16 @@ class UnfollowWithUsername_args(object):
                     self.carrier = {}
                     (_ktype288, _vtype289, _size287) = iprot.readMapBegin()
                     for _i291 in range(_size287):
-                        _key292 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        _val293 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        _key292 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
+                        _val293 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
                         self.carrier[_key292] = _val293
                     iprot.readMapEnd()
                 else:
@@ -1507,27 +1915,41 @@ class UnfollowWithUsername_args(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('UnfollowWithUsername_args')
+        oprot.writeStructBegin("UnfollowWithUsername_args")
         if self.req_id is not None:
-            oprot.writeFieldBegin('req_id', TType.I64, 1)
+            oprot.writeFieldBegin("req_id", TType.I64, 1)
             oprot.writeI64(self.req_id)
             oprot.writeFieldEnd()
         if self.user_usernmae is not None:
-            oprot.writeFieldBegin('user_usernmae', TType.STRING, 2)
-            oprot.writeString(self.user_usernmae.encode('utf-8') if sys.version_info[0] == 2 else self.user_usernmae)
+            oprot.writeFieldBegin("user_usernmae", TType.STRING, 2)
+            oprot.writeString(
+                self.user_usernmae.encode("utf-8")
+                if sys.version_info[0] == 2
+                else self.user_usernmae
+            )
             oprot.writeFieldEnd()
         if self.followee_username is not None:
-            oprot.writeFieldBegin('followee_username', TType.STRING, 3)
-            oprot.writeString(self.followee_username.encode('utf-8') if sys.version_info[0] == 2 else self.followee_username)
+            oprot.writeFieldBegin("followee_username", TType.STRING, 3)
+            oprot.writeString(
+                self.followee_username.encode("utf-8")
+                if sys.version_info[0] == 2
+                else self.followee_username
+            )
             oprot.writeFieldEnd()
         if self.carrier is not None:
-            oprot.writeFieldBegin('carrier', TType.MAP, 4)
+            oprot.writeFieldBegin("carrier", TType.MAP, 4)
             oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.carrier))
             for kiter294, viter295 in self.carrier.items():
-                oprot.writeString(kiter294.encode('utf-8') if sys.version_info[0] == 2 else kiter294)
-                oprot.writeString(viter295.encode('utf-8') if sys.version_info[0] == 2 else viter295)
+                oprot.writeString(
+                    kiter294.encode("utf-8") if sys.version_info[0] == 2 else kiter294
+                )
+                oprot.writeString(
+                    viter295.encode("utf-8") if sys.version_info[0] == 2 else viter295
+                )
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -1537,22 +1959,47 @@ class UnfollowWithUsername_args(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(UnfollowWithUsername_args)
 UnfollowWithUsername_args.thrift_spec = (
     None,  # 0
-    (1, TType.I64, 'req_id', None, None, ),  # 1
-    (2, TType.STRING, 'user_usernmae', 'UTF8', None, ),  # 2
-    (3, TType.STRING, 'followee_username', 'UTF8', None, ),  # 3
-    (4, TType.MAP, 'carrier', (TType.STRING, 'UTF8', TType.STRING, 'UTF8', False), None, ),  # 4
+    (
+        1,
+        TType.I64,
+        "req_id",
+        None,
+        None,
+    ),  # 1
+    (
+        2,
+        TType.STRING,
+        "user_usernmae",
+        "UTF8",
+        None,
+    ),  # 2
+    (
+        3,
+        TType.STRING,
+        "followee_username",
+        "UTF8",
+        None,
+    ),  # 3
+    (
+        4,
+        TType.MAP,
+        "carrier",
+        (TType.STRING, "UTF8", TType.STRING, "UTF8", False),
+        None,
+    ),  # 4
 )
 
 
@@ -1563,12 +2010,18 @@ class UnfollowWithUsername_result(object):
 
     """
 
-
-    def __init__(self, se=None,):
+    def __init__(
+        self,
+        se=None,
+    ):
         self.se = se
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -1588,11 +2041,13 @@ class UnfollowWithUsername_result(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('UnfollowWithUsername_result')
+        oprot.writeStructBegin("UnfollowWithUsername_result")
         if self.se is not None:
-            oprot.writeFieldBegin('se', TType.STRUCT, 1)
+            oprot.writeFieldBegin("se", TType.STRUCT, 1)
             self.se.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -1602,19 +2057,26 @@ class UnfollowWithUsername_result(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(UnfollowWithUsername_result)
 UnfollowWithUsername_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'se', [ServiceException, None], None, ),  # 1
+    (
+        1,
+        TType.STRUCT,
+        "se",
+        [ServiceException, None],
+        None,
+    ),  # 1
 )
 
 
@@ -1627,14 +2089,22 @@ class InsertUser_args(object):
 
     """
 
-
-    def __init__(self, req_id=None, user_id=None, carrier=None,):
+    def __init__(
+        self,
+        req_id=None,
+        user_id=None,
+        carrier=None,
+    ):
         self.req_id = req_id
         self.user_id = user_id
         self.carrier = carrier
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -1657,8 +2127,16 @@ class InsertUser_args(object):
                     self.carrier = {}
                     (_ktype297, _vtype298, _size296) = iprot.readMapBegin()
                     for _i300 in range(_size296):
-                        _key301 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        _val302 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        _key301 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
+                        _val302 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
                         self.carrier[_key301] = _val302
                     iprot.readMapEnd()
                 else:
@@ -1670,23 +2148,29 @@ class InsertUser_args(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('InsertUser_args')
+        oprot.writeStructBegin("InsertUser_args")
         if self.req_id is not None:
-            oprot.writeFieldBegin('req_id', TType.I64, 1)
+            oprot.writeFieldBegin("req_id", TType.I64, 1)
             oprot.writeI64(self.req_id)
             oprot.writeFieldEnd()
         if self.user_id is not None:
-            oprot.writeFieldBegin('user_id', TType.I64, 2)
+            oprot.writeFieldBegin("user_id", TType.I64, 2)
             oprot.writeI64(self.user_id)
             oprot.writeFieldEnd()
         if self.carrier is not None:
-            oprot.writeFieldBegin('carrier', TType.MAP, 3)
+            oprot.writeFieldBegin("carrier", TType.MAP, 3)
             oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.carrier))
             for kiter303, viter304 in self.carrier.items():
-                oprot.writeString(kiter303.encode('utf-8') if sys.version_info[0] == 2 else kiter303)
-                oprot.writeString(viter304.encode('utf-8') if sys.version_info[0] == 2 else viter304)
+                oprot.writeString(
+                    kiter303.encode("utf-8") if sys.version_info[0] == 2 else kiter303
+                )
+                oprot.writeString(
+                    viter304.encode("utf-8") if sys.version_info[0] == 2 else viter304
+                )
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -1696,21 +2180,40 @@ class InsertUser_args(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(InsertUser_args)
 InsertUser_args.thrift_spec = (
     None,  # 0
-    (1, TType.I64, 'req_id', None, None, ),  # 1
-    (2, TType.I64, 'user_id', None, None, ),  # 2
-    (3, TType.MAP, 'carrier', (TType.STRING, 'UTF8', TType.STRING, 'UTF8', False), None, ),  # 3
+    (
+        1,
+        TType.I64,
+        "req_id",
+        None,
+        None,
+    ),  # 1
+    (
+        2,
+        TType.I64,
+        "user_id",
+        None,
+        None,
+    ),  # 2
+    (
+        3,
+        TType.MAP,
+        "carrier",
+        (TType.STRING, "UTF8", TType.STRING, "UTF8", False),
+        None,
+    ),  # 3
 )
 
 
@@ -1721,12 +2224,18 @@ class InsertUser_result(object):
 
     """
 
-
-    def __init__(self, se=None,):
+    def __init__(
+        self,
+        se=None,
+    ):
         self.se = se
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -1746,11 +2255,13 @@ class InsertUser_result(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('InsertUser_result')
+        oprot.writeStructBegin("InsertUser_result")
         if self.se is not None:
-            oprot.writeFieldBegin('se', TType.STRUCT, 1)
+            oprot.writeFieldBegin("se", TType.STRUCT, 1)
             self.se.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -1760,19 +2271,26 @@ class InsertUser_result(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(InsertUser_result)
 InsertUser_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'se', [ServiceException, None], None, ),  # 1
+    (
+        1,
+        TType.STRUCT,
+        "se",
+        [ServiceException, None],
+        None,
+    ),  # 1
 )
 fix_spec(all_structs)
 del all_structs

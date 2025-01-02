@@ -1,7 +1,4 @@
 #!/bin/sh
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT License.
-
 
 # List of namespaces to create
 namespaces="observe test-social-network test-hotel-reservation"
@@ -25,7 +22,7 @@ for namespace in $namespaces; do
         else
             printf "${RED}   Failed to create '$namespace' namespace.${NC}"
             print_result 1
-            exit 1
+            safe_exit 1
         fi
     fi
 
@@ -38,7 +35,7 @@ for namespace in $namespaces; do
         print_result 1
         echo "   Current namespaces:"
         kubectl get namespaces
-        exit 1
+        safe_exit 1
     fi
     echo
 done

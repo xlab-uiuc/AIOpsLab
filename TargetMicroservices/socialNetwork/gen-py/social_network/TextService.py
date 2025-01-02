@@ -6,7 +6,13 @@
 #  options string: py
 #
 
-from thrift.Thrift import TType, TMessageType, TFrozenDict, TException, TApplicationException
+from thrift.Thrift import (
+    TType,
+    TMessageType,
+    TFrozenDict,
+    TException,
+    TApplicationException,
+)
 from thrift.protocol.TProtocol import TProtocolException
 from thrift.TRecursive import fix_spec
 
@@ -15,6 +21,7 @@ import logging
 from .ttypes import *
 from thrift.Thrift import TProcessor
 from thrift.transport import TTransport
+
 all_structs = []
 
 
@@ -49,7 +56,7 @@ class Client(Iface):
         return self.recv_ComposeText()
 
     def send_ComposeText(self, req_id, text, carrier):
-        self._oprot.writeMessageBegin('ComposeText', TMessageType.CALL, self._seqid)
+        self._oprot.writeMessageBegin("ComposeText", TMessageType.CALL, self._seqid)
         args = ComposeText_args()
         args.req_id = req_id
         args.text = text
@@ -73,7 +80,9 @@ class Client(Iface):
             return result.success
         if result.se is not None:
             raise result.se
-        raise TApplicationException(TApplicationException.MISSING_RESULT, "ComposeText failed: unknown result")
+        raise TApplicationException(
+            TApplicationException.MISSING_RESULT, "ComposeText failed: unknown result"
+        )
 
 
 class Processor(Iface, TProcessor):
@@ -93,7 +102,9 @@ class Processor(Iface, TProcessor):
         if name not in self._processMap:
             iprot.skip(TType.STRUCT)
             iprot.readMessageEnd()
-            x = TApplicationException(TApplicationException.UNKNOWN_METHOD, 'Unknown function %s' % (name))
+            x = TApplicationException(
+                TApplicationException.UNKNOWN_METHOD, "Unknown function %s" % (name)
+            )
             oprot.writeMessageBegin(name, TMessageType.EXCEPTION, seqid)
             x.write(oprot)
             oprot.writeMessageEnd()
@@ -109,7 +120,9 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = ComposeText_result()
         try:
-            result.success = self._handler.ComposeText(args.req_id, args.text, args.carrier)
+            result.success = self._handler.ComposeText(
+                args.req_id, args.text, args.carrier
+            )
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -117,17 +130,20 @@ class Processor(Iface, TProcessor):
             msg_type = TMessageType.REPLY
             result.se = se
         except TApplicationException as ex:
-            logging.exception('TApplication exception in handler')
+            logging.exception("TApplication exception in handler")
             msg_type = TMessageType.EXCEPTION
             result = ex
         except Exception:
-            logging.exception('Unexpected exception in handler')
+            logging.exception("Unexpected exception in handler")
             msg_type = TMessageType.EXCEPTION
-            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+            result = TApplicationException(
+                TApplicationException.INTERNAL_ERROR, "Internal error"
+            )
         oprot.writeMessageBegin("ComposeText", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
+
 
 # HELPER FUNCTIONS AND STRUCTURES
 
@@ -141,14 +157,22 @@ class ComposeText_args(object):
 
     """
 
-
-    def __init__(self, req_id=None, text=None, carrier=None,):
+    def __init__(
+        self,
+        req_id=None,
+        text=None,
+        carrier=None,
+    ):
         self.req_id = req_id
         self.text = text
         self.carrier = carrier
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -163,7 +187,11 @@ class ComposeText_args(object):
                     iprot.skip(ftype)
             elif fid == 2:
                 if ftype == TType.STRING:
-                    self.text = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                    self.text = (
+                        iprot.readString().decode("utf-8", errors="replace")
+                        if sys.version_info[0] == 2
+                        else iprot.readString()
+                    )
                 else:
                     iprot.skip(ftype)
             elif fid == 3:
@@ -171,8 +199,16 @@ class ComposeText_args(object):
                     self.carrier = {}
                     (_ktype45, _vtype46, _size44) = iprot.readMapBegin()
                     for _i48 in range(_size44):
-                        _key49 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        _val50 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        _key49 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
+                        _val50 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
                         self.carrier[_key49] = _val50
                     iprot.readMapEnd()
                 else:
@@ -184,23 +220,31 @@ class ComposeText_args(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('ComposeText_args')
+        oprot.writeStructBegin("ComposeText_args")
         if self.req_id is not None:
-            oprot.writeFieldBegin('req_id', TType.I64, 1)
+            oprot.writeFieldBegin("req_id", TType.I64, 1)
             oprot.writeI64(self.req_id)
             oprot.writeFieldEnd()
         if self.text is not None:
-            oprot.writeFieldBegin('text', TType.STRING, 2)
-            oprot.writeString(self.text.encode('utf-8') if sys.version_info[0] == 2 else self.text)
+            oprot.writeFieldBegin("text", TType.STRING, 2)
+            oprot.writeString(
+                self.text.encode("utf-8") if sys.version_info[0] == 2 else self.text
+            )
             oprot.writeFieldEnd()
         if self.carrier is not None:
-            oprot.writeFieldBegin('carrier', TType.MAP, 3)
+            oprot.writeFieldBegin("carrier", TType.MAP, 3)
             oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.carrier))
             for kiter51, viter52 in self.carrier.items():
-                oprot.writeString(kiter51.encode('utf-8') if sys.version_info[0] == 2 else kiter51)
-                oprot.writeString(viter52.encode('utf-8') if sys.version_info[0] == 2 else viter52)
+                oprot.writeString(
+                    kiter51.encode("utf-8") if sys.version_info[0] == 2 else kiter51
+                )
+                oprot.writeString(
+                    viter52.encode("utf-8") if sys.version_info[0] == 2 else viter52
+                )
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -210,21 +254,40 @@ class ComposeText_args(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(ComposeText_args)
 ComposeText_args.thrift_spec = (
     None,  # 0
-    (1, TType.I64, 'req_id', None, None, ),  # 1
-    (2, TType.STRING, 'text', 'UTF8', None, ),  # 2
-    (3, TType.MAP, 'carrier', (TType.STRING, 'UTF8', TType.STRING, 'UTF8', False), None, ),  # 3
+    (
+        1,
+        TType.I64,
+        "req_id",
+        None,
+        None,
+    ),  # 1
+    (
+        2,
+        TType.STRING,
+        "text",
+        "UTF8",
+        None,
+    ),  # 2
+    (
+        3,
+        TType.MAP,
+        "carrier",
+        (TType.STRING, "UTF8", TType.STRING, "UTF8", False),
+        None,
+    ),  # 3
 )
 
 
@@ -236,13 +299,20 @@ class ComposeText_result(object):
 
     """
 
-
-    def __init__(self, success=None, se=None,):
+    def __init__(
+        self,
+        success=None,
+        se=None,
+    ):
         self.success = success
         self.se = se
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -268,15 +338,17 @@ class ComposeText_result(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('ComposeText_result')
+        oprot.writeStructBegin("ComposeText_result")
         if self.success is not None:
-            oprot.writeFieldBegin('success', TType.STRUCT, 0)
+            oprot.writeFieldBegin("success", TType.STRUCT, 0)
             self.success.write(oprot)
             oprot.writeFieldEnd()
         if self.se is not None:
-            oprot.writeFieldBegin('se', TType.STRUCT, 1)
+            oprot.writeFieldBegin("se", TType.STRUCT, 1)
             self.se.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -286,19 +358,32 @@ class ComposeText_result(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(ComposeText_result)
 ComposeText_result.thrift_spec = (
-    (0, TType.STRUCT, 'success', [TextServiceReturn, None], None, ),  # 0
-    (1, TType.STRUCT, 'se', [ServiceException, None], None, ),  # 1
+    (
+        0,
+        TType.STRUCT,
+        "success",
+        [TextServiceReturn, None],
+        None,
+    ),  # 0
+    (
+        1,
+        TType.STRUCT,
+        "se",
+        [ServiceException, None],
+        None,
+    ),  # 1
 )
 fix_spec(all_structs)
 del all_structs
