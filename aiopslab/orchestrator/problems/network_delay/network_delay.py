@@ -1,7 +1,4 @@
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT License.
-
-"""Network loss problem in the HotelReservation application."""
+"""Network delay problem in the HotelReservation application."""
 
 from typing import Any
 
@@ -17,7 +14,7 @@ from aiopslab.paths import TARGET_MICROSERVICES
 from .helpers import get_frontend_url
 
 
-class NetworkLossBaseTask:
+class NetworkDelayBaseTask:
     def __init__(self):
         self.app = HotelReservation()
         self.kubectl = KubeCtl()
@@ -40,24 +37,19 @@ class NetworkLossBaseTask:
         )
 
     def inject_fault(self):
-        print("== Fault Injection ==")      
-        self.injector._inject(
-            fault_type="network_loss",
-            microservices=[self.faulty_service],
-            duration="200s"
-        )
+        print("== Fault Injection ==")
+        self.injector.inject_network_delay([self.faulty_service])
         print(f"Service: {self.faulty_service} | Namespace: {self.namespace}\n")
 
     def recover_fault(self):
         print("== Fault Recovery ==")
-        self.injector._recover(
-            fault_type="network_loss",
-        )
+        self.injector.recover_network_delay()
+
 
 ################## Detection Problem ##################
-class NetworkLossDetection(NetworkLossBaseTask, DetectionTask):
+class NetworkDelayDetection(NetworkDelayBaseTask, DetectionTask):
     def __init__(self):
-        NetworkLossBaseTask.__init__(self)
+        NetworkDelayBaseTask.__init__(self)
         DetectionTask.__init__(self, self.app)
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
@@ -79,11 +71,9 @@ class NetworkLossDetection(NetworkLossBaseTask, DetectionTask):
 
 
 ################## Localization Problem ##################
-class NetworkLossLocalization(
-    NetworkLossBaseTask, LocalizationTask
-):
+class NetworkDelayLocalization(NetworkDelayBaseTask, LocalizationTask):
     def __init__(self):
-        NetworkLossBaseTask.__init__(self)
+        NetworkDelayBaseTask.__init__(self)
         LocalizationTask.__init__(self, self.app)
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
@@ -119,4 +109,3 @@ class NetworkLossLocalization(
         self.results["is_subset"] = is_sub
 
         return self.results
-

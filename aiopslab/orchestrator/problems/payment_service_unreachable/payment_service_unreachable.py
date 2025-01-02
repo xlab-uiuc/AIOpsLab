@@ -1,63 +1,43 @@
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT License.
-
-"""Network loss problem in the HotelReservation application."""
+"""Otel demo paymentServiceUnreachable feature flag fault."""
 
 from typing import Any
 
 from aiopslab.orchestrator.tasks import *
 from aiopslab.orchestrator.evaluators.quantitative import *
 from aiopslab.service.kubectl import KubeCtl
-from aiopslab.service.apps.hotelres import HotelReservation
-from aiopslab.generators.workload.wrk import Wrk
-from aiopslab.generators.fault.inject_symp import SymptomFaultInjector
+from aiopslab.service.apps.astronomy_shop import AstronomyShop
+from aiopslab.generators.fault.inject_otel import OtelFaultInjector
 from aiopslab.session import SessionItem
-from aiopslab.paths import TARGET_MICROSERVICES
-
-from .helpers import get_frontend_url
 
 
-class NetworkLossBaseTask:
+class PaymentServiceUnreachableBaseTask:
     def __init__(self):
-        self.app = HotelReservation()
+        self.app = AstronomyShop()
         self.kubectl = KubeCtl()
         self.namespace = self.app.namespace
-        self.faulty_service = "user"
-        self.payload_script = (
-            TARGET_MICROSERVICES
-            / "hotelReservation/wrk2/scripts/hotel-reservation/mixed-workload_type_1.lua"
-        )
-        self.injector = SymptomFaultInjector(namespace=self.namespace)
+        self.injector = OtelFaultInjector(namespace=self.namespace)
+        self.faulty_service = "paymentservice"
 
     def start_workload(self):
         print("== Start Workload ==")
-        frontend_url = get_frontend_url(self.app)
-
-        wrk = Wrk(rate=10, dist="exp", connections=2, duration=10, threads=2)
-        wrk.start_workload(
-            payload_script=self.payload_script,
-            url=f"{frontend_url}",
-        )
+        print("Workload skipped since AstronomyShop has a built-in load generator.")
 
     def inject_fault(self):
-        print("== Fault Injection ==")      
-        self.injector._inject(
-            fault_type="network_loss",
-            microservices=[self.faulty_service],
-            duration="200s"
-        )
-        print(f"Service: {self.faulty_service} | Namespace: {self.namespace}\n")
+        print("== Fault Injection ==")
+        self.injector.inject_fault("paymentServiceUnreachable")
+        print(f"Fault: paymentServiceUnreachable | Namespace: {self.namespace}\n")
 
     def recover_fault(self):
         print("== Fault Recovery ==")
-        self.injector._recover(
-            fault_type="network_loss",
-        )
+        self.injector.recover_fault("paymentServiceUnreachable")
+
 
 ################## Detection Problem ##################
-class NetworkLossDetection(NetworkLossBaseTask, DetectionTask):
+class PaymentServiceUnreachableDetection(
+    PaymentServiceUnreachableBaseTask, DetectionTask
+):
     def __init__(self):
-        NetworkLossBaseTask.__init__(self)
+        PaymentServiceUnreachableBaseTask.__init__(self)
         DetectionTask.__init__(self, self.app)
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
@@ -79,12 +59,13 @@ class NetworkLossDetection(NetworkLossBaseTask, DetectionTask):
 
 
 ################## Localization Problem ##################
-class NetworkLossLocalization(
-    NetworkLossBaseTask, LocalizationTask
+class PaymentServiceUnreachableLocalization(
+    PaymentServiceUnreachableBaseTask, LocalizationTask
 ):
     def __init__(self):
-        NetworkLossBaseTask.__init__(self)
+        PaymentServiceUnreachableBaseTask.__init__(self)
         LocalizationTask.__init__(self, self.app)
+        self.task_desc += "Start by investigating the payment service."
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
         print("== Evaluation ==")
@@ -119,4 +100,3 @@ class NetworkLossLocalization(
         self.results["is_subset"] = is_sub
 
         return self.results
-

@@ -1,7 +1,12 @@
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT License.
+"""Kernal fault problem in the HotelReservation application."""
 
-"""Network loss problem in the HotelReservation application."""
+
+"""
+IMPORTANT NOTE:
+Kernel fault is not working and is a known bug in chaos-mesh 0> https://github.com/xlab-uiuc/agent-ops/pull/10#issuecomment-2468992285
+his code is untested as we're waiting for a resolution to the bug to retry.
+
+"""
 
 from typing import Any
 
@@ -17,7 +22,7 @@ from aiopslab.paths import TARGET_MICROSERVICES
 from .helpers import get_frontend_url
 
 
-class NetworkLossBaseTask:
+class KernelFaultBaseTask:
     def __init__(self):
         self.app = HotelReservation()
         self.kubectl = KubeCtl()
@@ -40,24 +45,19 @@ class NetworkLossBaseTask:
         )
 
     def inject_fault(self):
-        print("== Fault Injection ==")      
-        self.injector._inject(
-            fault_type="network_loss",
-            microservices=[self.faulty_service],
-            duration="200s"
-        )
+        print("== Fault Injection ==")
+        self.injector.inject_kernel_fault([self.faulty_service])
         print(f"Service: {self.faulty_service} | Namespace: {self.namespace}\n")
 
     def recover_fault(self):
         print("== Fault Recovery ==")
-        self.injector._recover(
-            fault_type="network_loss",
-        )
+        self.injector.recover_kernel_fault()
+
 
 ################## Detection Problem ##################
-class NetworkLossDetection(NetworkLossBaseTask, DetectionTask):
+class KernelFaultDetection(KernelFaultBaseTask, DetectionTask):
     def __init__(self):
-        NetworkLossBaseTask.__init__(self)
+        KernelFaultBaseTask.__init__(self)
         DetectionTask.__init__(self, self.app)
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
@@ -79,11 +79,9 @@ class NetworkLossDetection(NetworkLossBaseTask, DetectionTask):
 
 
 ################## Localization Problem ##################
-class NetworkLossLocalization(
-    NetworkLossBaseTask, LocalizationTask
-):
+class KernelFaultLocalization(KernelFaultBaseTask, LocalizationTask):
     def __init__(self):
-        NetworkLossBaseTask.__init__(self)
+        KernelFaultBaseTask.__init__(self)
         LocalizationTask.__init__(self, self.app)
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
@@ -119,4 +117,3 @@ class NetworkLossLocalization(
         self.results["is_subset"] = is_sub
 
         return self.results
-

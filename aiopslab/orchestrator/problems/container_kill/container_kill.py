@@ -1,9 +1,7 @@
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT License.
-
-"""Network loss problem in the HotelReservation application."""
+"""Container kill problem in the HotelReservation application."""
 
 from typing import Any
+import yaml
 
 from aiopslab.orchestrator.tasks import *
 from aiopslab.orchestrator.evaluators.quantitative import *
@@ -17,47 +15,54 @@ from aiopslab.paths import TARGET_MICROSERVICES
 from .helpers import get_frontend_url
 
 
-class NetworkLossBaseTask:
+class ChaosFaultBaseTask:
     def __init__(self):
         self.app = HotelReservation()
         self.kubectl = KubeCtl()
         self.namespace = self.app.namespace
-        self.faulty_service = "user"
+        self.faulty_service = "geo"
+        self.faulty_container = "hotel-reserv-geo"
         self.payload_script = (
             TARGET_MICROSERVICES
             / "hotelReservation/wrk2/scripts/hotel-reservation/mixed-workload_type_1.lua"
         )
-        self.injector = SymptomFaultInjector(namespace=self.namespace)
+        self.symptom_injector = SymptomFaultInjector(namespace=self.namespace)
+        self.experiment_name = (
+            "container-kill-mesh"  # Hardcoding the known experiment name
+        )
+        self.chaos_type = "podchaos"  # Hardcoding the type of chaos
 
     def start_workload(self):
         print("== Start Workload ==")
         frontend_url = get_frontend_url(self.app)
 
-        wrk = Wrk(rate=10, dist="exp", connections=2, duration=10, threads=2)
+        wrk = Wrk(rate=100, dist="exp", connections=2, duration=10, threads=2)
         wrk.start_workload(
             payload_script=self.payload_script,
             url=f"{frontend_url}",
         )
 
     def inject_fault(self):
-        print("== Fault Injection ==")      
-        self.injector._inject(
-            fault_type="network_loss",
-            microservices=[self.faulty_service],
-            duration="200s"
+        print("== Fault Injection ==")
+        self.symptom_injector.inject_container_kill(
+            self.faulty_service, self.faulty_container
         )
-        print(f"Service: {self.faulty_service} | Namespace: {self.namespace}\n")
+        print(
+            f"Service: {self.faulty_service} | Container: {self.faulty_container} | Namespace: {self.namespace}\n"
+        )
 
     def recover_fault(self):
         print("== Fault Recovery ==")
-        self.injector._recover(
-            fault_type="network_loss",
+        self.symptom_injector.recover_container_kill()
+        print(
+            f"Recovered Service: {self.faulty_service} | Namespace: {self.namespace}\n"
         )
 
+
 ################## Detection Problem ##################
-class NetworkLossDetection(NetworkLossBaseTask, DetectionTask):
+class ContainerKillDetection(ChaosFaultBaseTask, DetectionTask):
     def __init__(self):
-        NetworkLossBaseTask.__init__(self)
+        ChaosFaultBaseTask.__init__(self)
         DetectionTask.__init__(self, self.app)
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
@@ -79,11 +84,9 @@ class NetworkLossDetection(NetworkLossBaseTask, DetectionTask):
 
 
 ################## Localization Problem ##################
-class NetworkLossLocalization(
-    NetworkLossBaseTask, LocalizationTask
-):
+class ContainerKillLocalization(ChaosFaultBaseTask, LocalizationTask):
     def __init__(self):
-        NetworkLossBaseTask.__init__(self)
+        ChaosFaultBaseTask.__init__(self)
         LocalizationTask.__init__(self, self.app)
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
@@ -119,4 +122,3 @@ class NetworkLossLocalization(
         self.results["is_subset"] = is_sub
 
         return self.results
-

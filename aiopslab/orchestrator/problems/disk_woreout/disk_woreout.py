@@ -1,7 +1,5 @@
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT License.
+"""Kernal fault problem in the HotelReservation application."""
 
-"""Network loss problem in the HotelReservation application."""
 
 from typing import Any
 
@@ -10,54 +8,48 @@ from aiopslab.orchestrator.evaluators.quantitative import *
 from aiopslab.service.kubectl import KubeCtl
 from aiopslab.service.apps.hotelres import HotelReservation
 from aiopslab.generators.workload.wrk import Wrk
-from aiopslab.generators.fault.inject_symp import SymptomFaultInjector
+from aiopslab.generators.fault.inject_os import OSFaultInjector
 from aiopslab.session import SessionItem
 from aiopslab.paths import TARGET_MICROSERVICES
 
 from .helpers import get_frontend_url
 
 
-class NetworkLossBaseTask:
+class DiskWoreoutBaseTask:
     def __init__(self):
         self.app = HotelReservation()
         self.kubectl = KubeCtl()
-        self.namespace = self.app.namespace
-        self.faulty_service = "user"
+        # self.namespace = self.app.namespace
+        self.faulty_disk = "xxx"  # TODO: need to decide which disk?
         self.payload_script = (
             TARGET_MICROSERVICES
             / "hotelReservation/wrk2/scripts/hotel-reservation/mixed-workload_type_1.lua"
         )
-        self.injector = SymptomFaultInjector(namespace=self.namespace)
+        self.injector = OSFaultInjector()
 
     def start_workload(self):
         print("== Start Workload ==")
         frontend_url = get_frontend_url(self.app)
 
-        wrk = Wrk(rate=10, dist="exp", connections=2, duration=10, threads=2)
+        wrk = Wrk(rate=100, dist="exp", connections=2, duration=20, threads=2)
         wrk.start_workload(
             payload_script=self.payload_script,
             url=f"{frontend_url}",
         )
 
     def inject_fault(self):
-        print("== Fault Injection ==")      
-        self.injector._inject(
-            fault_type="network_loss",
-            microservices=[self.faulty_service],
-            duration="200s"
-        )
-        print(f"Service: {self.faulty_service} | Namespace: {self.namespace}\n")
+        print("== Fault Injection ==")
+        self.injector._inject(fault_type="disk_woreout")
 
     def recover_fault(self):
         print("== Fault Recovery ==")
-        self.injector._recover(
-            fault_type="network_loss",
-        )
+        self.injector._recover(fault_type="disk_woreout")
+
 
 ################## Detection Problem ##################
-class NetworkLossDetection(NetworkLossBaseTask, DetectionTask):
+class DiskWoreoutDetection(DiskWoreoutBaseTask, DetectionTask):
     def __init__(self):
-        NetworkLossBaseTask.__init__(self)
+        DiskWoreoutBaseTask.__init__(self)
         DetectionTask.__init__(self, self.app)
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
@@ -79,11 +71,10 @@ class NetworkLossDetection(NetworkLossBaseTask, DetectionTask):
 
 
 ################## Localization Problem ##################
-class NetworkLossLocalization(
-    NetworkLossBaseTask, LocalizationTask
-):
+# TODO: Need to define what localization problem should be
+class DiskWoreoutLocalization(DiskWoreoutBaseTask, LocalizationTask):
     def __init__(self):
-        NetworkLossBaseTask.__init__(self)
+        DiskWoreoutBaseTask.__init__(self)
         LocalizationTask.__init__(self, self.app)
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
@@ -98,15 +89,15 @@ class NetworkLossLocalization(
             return self.results
 
         # Calculate exact match and subset
-        is_exact = is_exact_match(soln, self.faulty_service)
-        is_sub = is_subset([self.faulty_service], soln)
+        is_exact = is_exact_match(soln, self.faulty_disk)
+        is_sub = is_subset([self.faulty_disk], soln)
 
         # Determine accuracy
         if is_exact:
             accuracy = 100.0
             print(f"Exact match: {soln} | Accuracy: {accuracy}%")
         elif is_sub:
-            accuracy = (len([self.faulty_service]) / len(soln)) * 100.0
+            accuracy = (len([self.faulty_disk]) / len(soln)) * 100.0
             print(f"Subset match: {soln} | Accuracy: {accuracy:.2f}%")
         else:
             accuracy = 0.0
@@ -119,4 +110,3 @@ class NetworkLossLocalization(
         self.results["is_subset"] = is_sub
 
         return self.results
-
