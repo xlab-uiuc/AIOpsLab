@@ -24,7 +24,6 @@ from aiopslab.orchestrator.problems.payment_service_failure import *
 from aiopslab.orchestrator.problems.payment_service_unreachable import *
 from aiopslab.orchestrator.problems.product_catalog_failure import *
 from aiopslab.orchestrator.problems.recommendation_service_cache_failure import *
-from aiopslab.orchestrator.problems.es_decommission_failure import *
 from aiopslab.orchestrator.problems.redeploy_without_pv import *
 from aiopslab.orchestrator.problems.wrong_bin_usage import *
 from aiopslab.orchestrator.problems.operator_misoperation import *
@@ -190,8 +189,6 @@ class ProblemRegistry:
             "astronomy_shop_product_catalog_service_failure-localization-1": ProductCatalogServiceFailureLocalization,
             "astronomy_shop_recommendation_service_cache_failure-detection-1": RecommendationServiceCacheFailureDetection,
             "astronomy_shop_recommendation_service_cache_failure-localization-1": RecommendationServiceCacheFailureLocalization,
-            # Elastic search decommision failure
-            "elasticsearch_decommision_failure-detection-1": ESDecommisionFailureDetection,
             # Redeployment of namespace without deleting the PV
             "redeploy_without_PV-detection-1": RedeployWithoutPVDetection,
             # "redeploy_without_PV-localization-1": RedeployWithoutPVLocalization,
