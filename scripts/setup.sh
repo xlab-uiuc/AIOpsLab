@@ -40,9 +40,9 @@ if [ $# -eq 0 ]; then
     echo "${RED}Please provide the node on which prometheus will be deployed as an argument.${NC}"
     
     echo "Usage: $0 <node_name> [custom_prometheus_path]"
-    echo "    1. node_name should not be the cluster's control plane node."
-    echo "    2. \`/datadrive/prometheus\` should exist on node with the write permissions."
-    echo "    3. custom_prometheus_path should exist on the specified node with write permissions."
+    echo "    1. node_name should be the one of the cluster's nodes."
+    # should not be the cluster's control plane node."
+    echo "    2. [custom_prometheus_path] should exist on the specified node with write permissions. Otherwise, it will use \`/datadrive/prometheus\`."
     safe_exit 1
 fi
 
@@ -60,7 +60,7 @@ echo
 . "$SCRIPT_DIR/steps/ns.sh"
 
 # Step 3: Deploy Prometheus
-. "$SCRIPT_DIR/steps/deploy.sh"
+. "$SCRIPT_DIR/steps/deploy_prometheus.sh"
 
 # Step 4: Build wrk2
 . "$SCRIPT_DIR/steps/build_wrk.sh"
