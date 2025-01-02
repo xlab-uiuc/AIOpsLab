@@ -7,20 +7,38 @@
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
-BOLD='\033[1m'
+BOLD='\033[0;36m'  #'\033[1m'
 
 # ASCII Symbols
 CHECK_MARK="[OK]"
 CROSS_MARK="[FAILED]"
 
 # PATHS
-SCRIPT_DIR=$(dirname "$0")
+# SCRIPT_DIR=$(dirname "$0")
 AIOPSLAB_ROOT=$(cd "$SCRIPT_DIR/.." && pwd)
 PROMETHEUS_PV_FILE="$AIOPSLAB_ROOT/aiopslab/observer/prometheus/prometheus-pv.yml"
 PROMETHEUS_CHART_PATH="$AIOPSLAB_ROOT/aiopslab/observer/prometheus/prometheus"
 
 print_step() {
     printf "${BOLD}Setup %d:${NC} %s" "$1" "$2"
+}
+
+# # Check if the script is sourced (POSIX-compatible)
+# is_sourced() {
+#     [ "$0" != "$(basename -- "$0")" ]
+# }
+
+# Check if the script is sourced
+is_sourced() {
+    [ "${BASH_SOURCE[0]}" != "$0" ] 2>/dev/null || [ "$_" != "$0" ]
+}
+
+safe_exit() {
+    if is_sourced; then
+        return "$1" 2>/dev/null || true
+    else
+        exit "$1" # Exit with the same exit code
+    fi
 }
 
 print_result() {
@@ -42,11 +60,11 @@ is_prometheus_running() {
 cleanup() {
     echo "\nCleaning up..."
     pkill -P $$ || true
-    exit 1
+    safe_exit 1
 }
 
 display_final_status() {
-    echo "${BOLD}Final Status:${NC}"
+    printf "${BOLD}Final Status:${NC}\n"
     namespace_info=$(kubectl get namespaces -o=custom-columns=NAME:.metadata.name,STATUS:.status.phase,AGE:.metadata.creationTimestamp --no-headers)
     printf "   %-30s %-10s %-20s\n" "NAME" "STATUS" "AGE"
     echo "$namespace_info" | while read -r name status age; do

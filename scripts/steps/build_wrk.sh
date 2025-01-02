@@ -7,6 +7,7 @@ print_step 5 "Building 'wrk2' tool"
 echo
 
 WRK_DIR="$AIOPSLAB_ROOT/TargetMicroservices/wrk2"
+ORIGINAL_DIR=$(pwd)
 
 if [ -d "$WRK_DIR" ]; then
     echo "   Found wrk2 directory at $WRK_DIR"
@@ -22,11 +23,15 @@ if [ -d "$WRK_DIR" ]; then
     else
         print_result 1
         printf "${RED}   Failed to build 'wrk2'.${NC}"
-        exit 1
+        safe_exit 1
     fi
 else
     print_result 1
     printf "${RED}   Directory '$WRK_DIR' does not exist.${NC}"
-    exit 1
+    safe_exit 1
 fi
+
+# Restore the original directory
+cd "$ORIGINAL_DIR" || safe_exit 1
+echo "   Returned to original directory: $ORIGINAL_DIR"
 echo

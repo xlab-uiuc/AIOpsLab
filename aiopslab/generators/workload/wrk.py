@@ -8,7 +8,6 @@ import re
 
 
 class Wrk:
-
     def __init__(
         self, rate, dist="norm", connections=2, duration=6, threads=2, latency=True
     ):

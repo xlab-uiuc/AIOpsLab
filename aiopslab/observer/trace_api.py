@@ -211,9 +211,9 @@ class TraceAPI:
             )
             for trace in traces:
                 for span in trace["spans"]:
-                    span["serviceName"] = (
-                        service  # Directly associate service name with each span
-                    )
+                    span[
+                        "serviceName"
+                    ] = service  # Directly associate service name with each span
                 all_traces.append(trace)  # Collect the trace with service name included
         self.cleanup()
         print("Cleanup completed.")
