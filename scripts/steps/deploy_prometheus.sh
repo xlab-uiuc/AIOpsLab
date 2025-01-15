@@ -4,12 +4,12 @@ print_step 4 "Deploying 'Prometheus' service"
 
 cleanup_pv_pvc() {
     echo "   Cleaning up existing PV and PVC..."
-    kubectl delete pvc --all -n observe > /dev/null 2>&1 || true
     kubectl delete pv prometheus-pv > /dev/null 2>&1 || true
+    kubectl delete pvc --all -n observe > /dev/null 2>&1 || true
 }
 
 update_node_affinity() {
-    sed -i "s/- kubecontroller/- $NODE_NAME/" "$PROMETHEUS_PV_FILE"
+    sed -i "s/- yinfangchen-1/- $NODE_NAME/" "$PROMETHEUS_PV_FILE"
     echo "   Updated node affinity to: $NODE_NAME"
 }
 
