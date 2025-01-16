@@ -56,7 +56,7 @@
     - name: Fetch admin.conf to localhost for kubeconfig
       fetch:
         src: /etc/kubernetes/admin.conf
-        dest: ~/kubeconfig/admin.conf
+        dest: ~/.kube/config
         flat: yes
       become: true
     - name: Generate kubeadm join command
