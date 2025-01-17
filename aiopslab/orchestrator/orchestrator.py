@@ -4,6 +4,7 @@
 """Orchestrator class that interfaces with the agent and the environment."""
 
 from aiopslab.service.helm import Helm
+from aiopslab.service.kubectl import KubeCtl
 from aiopslab.session import Session
 from aiopslab.orchestrator.problems.registry import ProblemRegistry
 from aiopslab.orchestrator.parser import ResponseParser
@@ -23,6 +24,7 @@ class Orchestrator:
         self.sprint = SessionPrint()
         self.execution_start_time = None
         self.execution_end_time = None
+        self.kubectl = KubeCtl()
 
     def init_problem(self, problem_id: str):
         """Initialize a problem instance for the agent to solve.
@@ -41,6 +43,17 @@ class Orchestrator:
         prob = self.probs.get_problem_instance(problem_id)
         self.session.set_problem(prob, pid=problem_id)
         self.session.set_agent(self.agent_name)
+
+        print('Setting up OpenEBS...')
+        self.kubectl.exec_command(
+            f"kubectl apply -f https://openebs.github.io/charts/openebs-operator.yaml"
+        )
+        self.kubectl.exec_command(
+            "kubectl patch storageclass openebs-hostpath -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'"
+        )
+        # Wait for openebs to be ready
+        self.kubectl.wait_for_state('openebs', 'Running')
+        print('OpenEBS setup completed.')
 
         # Setup and deploy Prometheus
         self.prometheus = Prometheus()
