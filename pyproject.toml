@@ -18,7 +18,7 @@ rich = "^13.7.1"
 tiktoken = "^0.7.0"
 prompt-toolkit = "^3.0.47"
 prometheus-api-client = "^0.5.5"
-pyautogen = "^0.3.0"
+autogen-agentchat = "^0.2.40"
 azure-identity = "^1.19.0"
 azure-ai-ml = "^1.22.1"
 
