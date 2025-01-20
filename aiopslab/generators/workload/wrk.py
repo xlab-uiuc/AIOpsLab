@@ -30,15 +30,8 @@ class Wrk:
         )
 
         api_instance = client.CoreV1Api()
-        try:
-            api_instance.create_namespaced_config_map(namespace=namespace, body=configmap_body)
-            print(f"ConfigMap {name} created successfully.")
-        except client.exceptions.ApiException as e:
-            if e.status == 409:  # Conflict: ConfigMap already exists
-                print(f"ConfigMap {name} already exists. Updating it.")
-                api_instance.replace_namespaced_config_map(name=name, namespace=namespace, body=configmap_body)
-            else:
-                raise
+        api_instance.create_namespaced_config_map(namespace=namespace, body=configmap_body)
+        print(f"ConfigMap {name} created successfully.")
 
     def create_wrk_job(self, job_name, namespace, payload_script, url):
         wrk_job_yaml = BASE_DIR / "generators" / "workload" / "wrk-job-template.yaml"
@@ -77,13 +70,29 @@ class Wrk:
 
         api_instance = client.BatchV1Api()
         try:
+            existing_job = api_instance.read_namespaced_job(name=job_name, namespace=namespace)
+            if existing_job:
+                print(f"Job '{job_name}' already exists. Deleting it...")
+                api_instance.delete_namespaced_job(
+                    name=job_name,
+                    namespace=namespace,
+                    body=client.V1DeleteOptions(
+                        propagation_policy="Foreground"
+                    )
+                )
+                time.sleep(5)
+        except client.exceptions.ApiException as e:
+            if e.status != 404:
+                print(f"Error checking for existing job: {e}")
+                return
+
+        try:
             response = api_instance.create_namespaced_job(namespace=namespace, body=job_template)
             print(f"Job created: {response.metadata.name}")
         except client.exceptions.ApiException as e:
             print(f"Error creating job: {e}")
             return
 
-        # Monitor the Job status
         try:
             while True:
                 job_status = api_instance.read_namespaced_job_status(name=job_name, namespace=namespace)
