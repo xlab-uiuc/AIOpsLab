@@ -83,7 +83,7 @@ class Wrk:
         try:
             while True:
                 job_status = api_instance.read_namespaced_job_status(name=job_name, namespace=namespace)
-                if job_status.status.succeeded:
+                if job_status.status.ready:
                     print("Job completed successfully.")
                     break
                 elif job_status.status.failed:
