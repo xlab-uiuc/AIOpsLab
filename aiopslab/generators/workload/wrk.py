@@ -20,19 +20,6 @@ class Wrk:
 
         config.load_kube_config()
 
-    def create_or_update_configmap(self, name, namespace, payload_script_path):
-        with open(payload_script_path, "r") as script_file:
-            script_content = script_file.read()
-
-        configmap_body = client.V1ConfigMap(
-            metadata=client.V1ObjectMeta(name=name),
-            data={payload_script_path.name: script_content},
-        )
-
-        api_instance = client.CoreV1Api()
-        api_instance.create_namespaced_config_map(namespace=namespace, body=configmap_body)
-        print(f"ConfigMap {name} created successfully.")
-
     def create_wrk_job(self, job_name, namespace, payload_script, url):
         wrk_job_yaml = BASE_DIR / "generators" / "workload" / "wrk-job-template.yaml"
         with open(wrk_job_yaml, "r") as f:
@@ -110,7 +97,6 @@ class Wrk:
         namespace = "default"
 
         configmap_name = "wrk2-payload-script"
-        self.create_or_update_configmap(name=configmap_name, namespace=namespace, payload_script_path=payload_script)
 
         self.create_wrk_job(
             job_name="wrk2-test-job",
