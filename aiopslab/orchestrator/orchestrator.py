@@ -51,7 +51,7 @@ class Orchestrator:
         self.kubectl.exec_command(
             "kubectl patch storageclass openebs-hostpath -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'"
         )
-        # Wait for openebs to be ready
+
         self.kubectl.wait_for_state('openebs', 'Running')
         print('OpenEBS setup completed.')
 
