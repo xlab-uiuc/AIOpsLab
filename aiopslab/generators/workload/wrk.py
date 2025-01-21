@@ -126,7 +126,7 @@ class Wrk:
         self.create_configmap(name=configmap_name, namespace=namespace, payload_script_path=payload_script)
 
         self.create_wrk_job(
-            job_name="wrk2-test-job",
+            job_name="wrk2-job",
             namespace=namespace,
             payload_script=payload_script.name,
             url=url
