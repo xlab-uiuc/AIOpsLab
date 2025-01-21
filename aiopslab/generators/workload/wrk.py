@@ -19,6 +19,32 @@ class Wrk:
         self.latency = latency
 
         config.load_kube_config()
+    
+    def create_configmap(self, name, namespace, payload_script_path):
+        with open(payload_script_path, "r") as script_file:
+            script_content = script_file.read()
+
+        configmap_body = client.V1ConfigMap(
+            metadata=client.V1ObjectMeta(name=name),
+            data={payload_script_path.name: script_content},
+        )
+
+        api_instance = client.CoreV1Api()
+        try:
+            print(f"Checking for existing ConfigMap '{name}'...")
+            api_instance.delete_namespaced_config_map(name=name, namespace=namespace)
+            print(f"ConfigMap '{name}' deleted.")
+        except client.exceptions.ApiException as e:
+            if e.status != 404:
+                print(f"Error deleting ConfigMap '{name}': {e}")
+                return
+
+        try:
+            print(f"Creating ConfigMap '{name}'...")
+            api_instance.create_namespaced_config_map(namespace=namespace, body=configmap_body)
+            print(f"ConfigMap '{name}' created successfully.")
+        except client.exceptions.ApiException as e:
+            print(f"Error creating ConfigMap '{name}': {e}")
 
     def create_wrk_job(self, job_name, namespace, payload_script, url):
         wrk_job_yaml = BASE_DIR / "generators" / "workload" / "wrk-job-template.yaml"
@@ -95,8 +121,9 @@ class Wrk:
 
     def start_workload(self, payload_script, url):
         namespace = "default"
-
         configmap_name = "wrk2-payload-script"
+
+        self.create_configmap(name=configmap_name, namespace=namespace, payload_script_path=payload_script)
 
         self.create_wrk_job(
             job_name="wrk2-test-job",
