@@ -22,8 +22,8 @@ class TraceAPI:
         self.namespace = namespace
         self.stop_event = threading.Event()
 
-        # NOTE: it may not be jaefer-out for other apps
-        node_port = self.get_nodeport("jaeger-out", namespace)
+        # NOTE: it may not be jaeger-out for other apps
+        node_port = self.get_nodeport("jaeger", namespace)
         if node_port:
             self.base_url = f"http://localhost:{node_port}"
         else:
