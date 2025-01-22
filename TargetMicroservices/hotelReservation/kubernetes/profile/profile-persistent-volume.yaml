@@ -12,3 +12,6 @@ spec:
   hostPath:
     path: /data/volumes/profile-pv   # Where all the hard drives are mounted
     type: DirectoryOrCreate
+  # This can be the mitigation for the incident: Re-deployment the whole namespace without removing PV
+  # If the reclaimPolicy is set to Delete, then the PVC deletion will trigger the PV deletion
+  # reclaimPolicy: Delete

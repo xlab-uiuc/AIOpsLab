@@ -6,7 +6,13 @@
 #  options string: py
 #
 
-from thrift.Thrift import TType, TMessageType, TFrozenDict, TException, TApplicationException
+from thrift.Thrift import (
+    TType,
+    TMessageType,
+    TFrozenDict,
+    TException,
+    TApplicationException,
+)
 from thrift.protocol.TProtocol import TProtocolException
 from thrift.TRecursive import fix_spec
 
@@ -15,6 +21,7 @@ import logging
 from .ttypes import *
 from thrift.Thrift import TProcessor
 from thrift.transport import TTransport
+
 all_structs = []
 
 
@@ -49,7 +56,7 @@ class Client(Iface):
         return self.recv_ComposeUniqueId()
 
     def send_ComposeUniqueId(self, req_id, post_type, carrier):
-        self._oprot.writeMessageBegin('ComposeUniqueId', TMessageType.CALL, self._seqid)
+        self._oprot.writeMessageBegin("ComposeUniqueId", TMessageType.CALL, self._seqid)
         args = ComposeUniqueId_args()
         args.req_id = req_id
         args.post_type = post_type
@@ -73,7 +80,10 @@ class Client(Iface):
             return result.success
         if result.se is not None:
             raise result.se
-        raise TApplicationException(TApplicationException.MISSING_RESULT, "ComposeUniqueId failed: unknown result")
+        raise TApplicationException(
+            TApplicationException.MISSING_RESULT,
+            "ComposeUniqueId failed: unknown result",
+        )
 
 
 class Processor(Iface, TProcessor):
@@ -93,7 +103,9 @@ class Processor(Iface, TProcessor):
         if name not in self._processMap:
             iprot.skip(TType.STRUCT)
             iprot.readMessageEnd()
-            x = TApplicationException(TApplicationException.UNKNOWN_METHOD, 'Unknown function %s' % (name))
+            x = TApplicationException(
+                TApplicationException.UNKNOWN_METHOD, "Unknown function %s" % (name)
+            )
             oprot.writeMessageBegin(name, TMessageType.EXCEPTION, seqid)
             x.write(oprot)
             oprot.writeMessageEnd()
@@ -109,7 +121,9 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = ComposeUniqueId_result()
         try:
-            result.success = self._handler.ComposeUniqueId(args.req_id, args.post_type, args.carrier)
+            result.success = self._handler.ComposeUniqueId(
+                args.req_id, args.post_type, args.carrier
+            )
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -117,17 +131,20 @@ class Processor(Iface, TProcessor):
             msg_type = TMessageType.REPLY
             result.se = se
         except TApplicationException as ex:
-            logging.exception('TApplication exception in handler')
+            logging.exception("TApplication exception in handler")
             msg_type = TMessageType.EXCEPTION
             result = ex
         except Exception:
-            logging.exception('Unexpected exception in handler')
+            logging.exception("Unexpected exception in handler")
             msg_type = TMessageType.EXCEPTION
-            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+            result = TApplicationException(
+                TApplicationException.INTERNAL_ERROR, "Internal error"
+            )
         oprot.writeMessageBegin("ComposeUniqueId", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
+
 
 # HELPER FUNCTIONS AND STRUCTURES
 
@@ -141,14 +158,22 @@ class ComposeUniqueId_args(object):
 
     """
 
-
-    def __init__(self, req_id=None, post_type=None, carrier=None,):
+    def __init__(
+        self,
+        req_id=None,
+        post_type=None,
+        carrier=None,
+    ):
         self.req_id = req_id
         self.post_type = post_type
         self.carrier = carrier
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -171,8 +196,16 @@ class ComposeUniqueId_args(object):
                     self.carrier = {}
                     (_ktype36, _vtype37, _size35) = iprot.readMapBegin()
                     for _i39 in range(_size35):
-                        _key40 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
-                        _val41 = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                        _key40 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
+                        _val41 = (
+                            iprot.readString().decode("utf-8", errors="replace")
+                            if sys.version_info[0] == 2
+                            else iprot.readString()
+                        )
                         self.carrier[_key40] = _val41
                     iprot.readMapEnd()
                 else:
@@ -184,23 +217,29 @@ class ComposeUniqueId_args(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('ComposeUniqueId_args')
+        oprot.writeStructBegin("ComposeUniqueId_args")
         if self.req_id is not None:
-            oprot.writeFieldBegin('req_id', TType.I64, 1)
+            oprot.writeFieldBegin("req_id", TType.I64, 1)
             oprot.writeI64(self.req_id)
             oprot.writeFieldEnd()
         if self.post_type is not None:
-            oprot.writeFieldBegin('post_type', TType.I32, 2)
+            oprot.writeFieldBegin("post_type", TType.I32, 2)
             oprot.writeI32(self.post_type)
             oprot.writeFieldEnd()
         if self.carrier is not None:
-            oprot.writeFieldBegin('carrier', TType.MAP, 3)
+            oprot.writeFieldBegin("carrier", TType.MAP, 3)
             oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.carrier))
             for kiter42, viter43 in self.carrier.items():
-                oprot.writeString(kiter42.encode('utf-8') if sys.version_info[0] == 2 else kiter42)
-                oprot.writeString(viter43.encode('utf-8') if sys.version_info[0] == 2 else viter43)
+                oprot.writeString(
+                    kiter42.encode("utf-8") if sys.version_info[0] == 2 else kiter42
+                )
+                oprot.writeString(
+                    viter43.encode("utf-8") if sys.version_info[0] == 2 else viter43
+                )
             oprot.writeMapEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -210,21 +249,40 @@ class ComposeUniqueId_args(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(ComposeUniqueId_args)
 ComposeUniqueId_args.thrift_spec = (
     None,  # 0
-    (1, TType.I64, 'req_id', None, None, ),  # 1
-    (2, TType.I32, 'post_type', None, None, ),  # 2
-    (3, TType.MAP, 'carrier', (TType.STRING, 'UTF8', TType.STRING, 'UTF8', False), None, ),  # 3
+    (
+        1,
+        TType.I64,
+        "req_id",
+        None,
+        None,
+    ),  # 1
+    (
+        2,
+        TType.I32,
+        "post_type",
+        None,
+        None,
+    ),  # 2
+    (
+        3,
+        TType.MAP,
+        "carrier",
+        (TType.STRING, "UTF8", TType.STRING, "UTF8", False),
+        None,
+    ),  # 3
 )
 
 
@@ -236,13 +294,20 @@ class ComposeUniqueId_result(object):
 
     """
 
-
-    def __init__(self, success=None, se=None,):
+    def __init__(
+        self,
+        success=None,
+        se=None,
+    ):
         self.success = success
         self.se = se
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if (
+            iprot._fast_decode is not None
+            and isinstance(iprot.trans, TTransport.CReadableTransport)
+            and self.thrift_spec is not None
+        ):
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -267,15 +332,17 @@ class ComposeUniqueId_result(object):
 
     def write(self, oprot):
         if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            oprot.trans.write(
+                oprot._fast_encode(self, [self.__class__, self.thrift_spec])
+            )
             return
-        oprot.writeStructBegin('ComposeUniqueId_result')
+        oprot.writeStructBegin("ComposeUniqueId_result")
         if self.success is not None:
-            oprot.writeFieldBegin('success', TType.I64, 0)
+            oprot.writeFieldBegin("success", TType.I64, 0)
             oprot.writeI64(self.success)
             oprot.writeFieldEnd()
         if self.se is not None:
-            oprot.writeFieldBegin('se', TType.STRUCT, 1)
+            oprot.writeFieldBegin("se", TType.STRUCT, 1)
             self.se.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -285,19 +352,32 @@ class ComposeUniqueId_result(object):
         return
 
     def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+        L = ["%s=%r" % (key, value) for key, value in self.__dict__.items()]
+        return "%s(%s)" % (self.__class__.__name__, ", ".join(L))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
 
     def __ne__(self, other):
         return not (self == other)
+
+
 all_structs.append(ComposeUniqueId_result)
 ComposeUniqueId_result.thrift_spec = (
-    (0, TType.I64, 'success', None, None, ),  # 0
-    (1, TType.STRUCT, 'se', [ServiceException, None], None, ),  # 1
+    (
+        0,
+        TType.I64,
+        "success",
+        None,
+        None,
+    ),  # 0
+    (
+        1,
+        TType.STRUCT,
+        "se",
+        [ServiceException, None],
+        None,
+    ),  # 1
 )
 fix_spec(all_structs)
 del all_structs

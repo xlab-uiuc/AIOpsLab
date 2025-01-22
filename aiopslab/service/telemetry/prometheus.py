@@ -30,11 +30,18 @@ class Prometheus:
         self.namespace = metadata.get("Namespace")
 
         self.helm_configs = metadata.get("Helm Config", {})
-        if "chart_path" in self.helm_configs:
-            chart_path = self.helm_configs["chart_path"]
-            self.helm_configs["chart_path"] = str(BASE_DIR / chart_path)
-        
-        self.pv_config_file = str(BASE_DIR / metadata.get("PersistentVolumeConfig"))
+
+        self.name = metadata["Name"]
+        self.namespace = metadata["Namespace"]
+        if "Helm Config" in metadata:
+            self.helm_configs = metadata["Helm Config"]
+            if "chart_path" in self.helm_configs:
+                chart_path = self.helm_configs["chart_path"]
+                self.helm_configs["chart_path"] = str(BASE_DIR / chart_path)
+
+        self.pv_config_file = os.path.join(
+            BASE_DIR, metadata.get("PersistentVolumeConfig")
+        )
 
     def get_service_json(self) -> dict:
         """Get metric service metadata in JSON format."""

@@ -9,6 +9,9 @@ from aiopslab.orchestrator.problems.registry import ProblemRegistry
 from aiopslab.orchestrator.parser import ResponseParser
 from aiopslab.utils.status import *
 from aiopslab.service.telemetry.prometheus import Prometheus
+import time
+import inspect
+import asyncio
 
 
 class Orchestrator:
@@ -18,6 +21,8 @@ class Orchestrator:
         self.parser = ResponseParser()
         self.probs = ProblemRegistry()
         self.sprint = SessionPrint()
+        self.execution_start_time = None
+        self.execution_end_time = None
 
     def init_problem(self, problem_id: str):
         """Initialize a problem instance for the agent to solve.
@@ -28,6 +33,9 @@ class Orchestrator:
         Returns:
             tuple: A tuple containing the problem description, task message, and session object.
         """
+        # Start timer
+        self.execution_start_time = time.time()
+
         self.session = Session()
         print(f"Session ID: {self.session.session_id}")
         prob = self.probs.get_problem_instance(problem_id)
@@ -44,7 +52,12 @@ class Orchestrator:
 
         # inject fault
         prob.inject_fault()
-        prob.start_workload()
+
+        # Check if start_workload is async or sync
+        if inspect.iscoroutinefunction(prob.start_workload):
+            asyncio.create_task(prob.start_workload())
+        else:
+            prob.start_workload()
 
         task_desc = prob.get_task_description()
         instructions = prob.get_instructions()
@@ -144,8 +157,18 @@ class Orchestrator:
         # if not self.session.problem.sys_status_after_recovery():
         self.session.problem.app.cleanup()
 
+        self.execution_end_time = time.time()
+        total_execution_time = self.execution_end_time - self.execution_start_time
+        time_keys = ["TTD", "TTL", "TTA", "TTM"]
+        key = next((k for k in time_keys if k in results), None)
+        framework_overhead = (
+            total_execution_time - results[key]
+        )  # Time spent doing everything besides running the agent
+        print(f"Framework overhead: {framework_overhead}")
+
         return {
             "history": self.session.history,
             "final_state": env_response,
             "results": results,
+            "framework_overhead": framework_overhead,
         }

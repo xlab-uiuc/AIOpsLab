@@ -341,3 +341,7 @@ dataset/functional/**/groundtruth/
 dataset/functional/**/log/
 dataset/functional/**/metric/
 dataset/functional/**/trace/
+
+# Ignore Prometheus setup file
+# This will note take effect..
+aiopslab/observer/prometheus/prometheus-pv.yml

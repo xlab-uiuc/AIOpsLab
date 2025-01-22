@@ -2,23 +2,24 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-print_step 0 "Checking /datadrive/prometheus directory"
-if [ ! -d "/datadrive/prometheus" ]; then
-    echo "   /datadrive/prometheus does not exist. Creating the directory structure."
+# print_step 0 "Checking /datadrive/prometheus directory"
+
+# if [ ! -d "/datadrive/prometheus" ]; then
+#     echo "   /datadrive/prometheus does not exist. Creating the directory structure."
     
-    # Check if /datadrive exists; if not, create it
-    if [ ! -d "/datadrive" ]; then
-        sudo mkdir -p /datadrive
-        echo "   Created /datadrive directory."
-    fi
+#     # Check if /datadrive exists; if not, create it
+#     if [ ! -d "/datadrive" ]; then
+#         mkdir -p /datadrive
+#         echo "   Created /datadrive directory."
+#     fi
     
-    # Create /datadrive/prometheus
-    sudo mkdir -p /datadrive/prometheus
-    echo "   Created /datadrive/prometheus directory."
-else
-    echo "   /datadrive/prometheus directory already exists."
-fi
-echo
+#     # Create /datadrive/prometheus
+#     mkdir -p /datadrive/prometheus
+#     echo "   Created /datadrive/prometheus directory."
+# else
+#     echo "   /datadrive/prometheus directory already exists."
+# fi
+# echo
 
 print_step 1 "Checking kubectl installation"
 if command_exists kubectl; then
@@ -41,7 +42,7 @@ else
     
     if ! command_exists kubectl; then
         echo "${RED}   kubectl is not installed or not in PATH. Please install kubectl before running AIOpsLab.${NC}"
-        exit 1
+        safe_exit 1
     fi
 fi
 echo
@@ -85,7 +86,7 @@ if [ -f "$CONFIG_FILE" ]; then
     else
         echo "${RED}   Some values were not updated correctly. Please check $CONFIG_FILE manually.${NC}"
         exit 1
-    fi
+fi
 else
     echo "${RED}   Configuration file $CONFIG_FILE not found. Ensure the AIOPSLAB_ROOT environment variable is set correctly.${NC}"
     exit 1

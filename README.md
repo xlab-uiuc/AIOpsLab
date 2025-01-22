@@ -19,43 +19,38 @@
 ![alt text](./assets/images/aiopslab-arch-open-source.png)
 
 
-AIOpsLab is a holistic framework to enable the design, development, and evaluation of autonomous AIOps agents that, additionally, serves the purpose of building reproducible, standardized, interoperable and scalable benchmarks. AIOpsLab can deploy microservice cloud environments, inject faults, generate workloads, and export telemetry data, while orchestrating these components and providing interfaces for interacting with and evaluating agents. 
+AIOpsLab is a holistic framework to enable the design, development, and evaluation of autonomous AIOps agents that, additionally, serve the purpose of building reproducible, standardized, interoperable and scalable benchmarks. AIOpsLab can deploy microservice cloud environments, inject faults, generate workloads, and export telemetry data, while orchestrating these components and providing interfaces for interacting with and evaluating agents. 
 
 Moreover, AIOpsLab provides a built-in benchmark suite with a set of problems to evaluate AIOps agents in an interactive environment. This suite can be easily extended to meet user-specific needs. See the problem list [here](/aiopslab/orchestrator/problems/registry.py#L15).
 
+<h2 id="📦installation">📦 Installation</h2>
 
-
-<h2 id="📦installation">📦 Installation and Setup Options</h2>
-
-This project offers flexible setup options to accommodate different user environments. Depending on your current setup, you can choose from one of the following paths:
-
-1) Using Existing VMs with a Kubernetes cluster:
-
-   You can clone the repository using the following command. We recommend `poetry` for managing dependencies. You can also use a standard `pip install -e .` to install the package.
+You can clone the repository on the control node of your cluster using the following command. We recommend `poetry` for managing dependencies. You can also use a standard `pip install -e .` to install the package.
     
-    ```bash
-    $ git clone <CLONE_PATH_TO_THE_REPO>
-    $ cd AIOpsLab
-    $ pip install poetry
-    $ poetry install -vvv
-    $ poetry shell
-    ```
+```bash
+$ git clone --recurse-submodules <CLONE_PATH_TO_THE_REPO>
+$ cd AIOpsLab
+$ sudo apt install python3.11 python3.11-venv python3.11-dev python3-pip # poetry requires python >= 3.11
+$ pip install poetry
+$ poetry env use python3.11
+$ export PATH="$HOME/.local/bin:$PATH" # export poetry to PATH if needed
+$ poetry install # -vvv for verbose output
+$ poetry shell
+```
 
-    After entering the poetry virtual environment, setting Up AIOpsLab:
+<!--
+You should also have a Kubernetes (k8s) cluster running as prerequisites. You can refer to [our k8s installation](/scripts/kube_install.sh), which installs k8s directly on the server (note that this is an installation example instead of an executable script; you may need to modify some parts to suit your case, e.g., node name and cert hash in the script). 
+-->
 
-    ```bash
-    $ cd scripts
-    $ ./setup.sh $(hostname) # or <YOUR_NODE_NAME>
-    ```
+You should also have a self-managed Kubernetes (k8s) cluster running as prerequisites. Consider using our Ansible playbook to automatically install, and follow the [instructions](/scripts/ansible). 
 
-2) Provisioning VMs and Kubernetes on cloud
+After that, run:
 
-    Users can follow the instructions [here](/scripts/terraform/README.md), to create a two-node Kubernetes cluster on Azure. It can also be used as a starting point for creating more complex deployments, or deployments on other cloud. Then go to step 1 to set up the AIOpsLab's dependencies. 
-
-3) Self-managed Kubernetes cluster
-
-    You can also have a self-managed Kubernetes (k8s) cluster running as prerequisites. You can refer to [our k8s installation](/scripts/kube_install.sh), which installs k8s directly on the server (note that this is an installation example instead of an executable script; you may need to modify some parts to suit your case, e.g., node name and cert hash in the script). Then go to step 1 to set up the AIOpsLab's dependencies. 
-
+```bash
+$ mkdir prometheus-data
+$ cd scripts
+$ source ./setup.sh $(hostname) ../prometheus-data/ # set up the current node as control plane and the parent dir as Prometheus storage path
+```
 
 <h2 id="🚀quickstart">🚀 Quick Start </h2>
 
@@ -72,7 +67,7 @@ Run GPT-4 baseline agent:
 
 ```bash
 $ export OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>
-$ python3 clients/gpt.py # you can also change the prolem to solve in the script
+$ python3 clients/gpt.py # you can also change the problem to solve in the main() function
 ```
 
 You can check the running status of the cluster using [k9s](https://k9scli.io/) or other cluster monitoring tools conveniently.
@@ -351,17 +346,17 @@ See a full example of a problem [here](/aiopslab/orchestrator/problems/k8s_targe
 <h2 id="📄how-to-cite">📄 How to Cite</h2>
 
 ```bibtex
-@inproceedings{shetty2024building,
-  title = {Building AI Agents for Autonomous Clouds: Challenges and Design Principles},
-  author = {Shetty, Manish and Chen, Yinfang and Somashekar, Gagan and Ma, Minghua and Simmhan, Yogesh and Zhang, Xuchao and Mace, Jonathan and Vandevoorde, Dax and Las-Casas, Pedro and Gupta, Shachee Mishra and Nath, Suman and Bansal, Chetan and Rajmohan, Saravan},
-  year = {2024},
-  booktitle = {Proceedings of 15th ACM Symposium on Cloud Computing},
-}
 @misc{chen2024aiopslab,
   title = {AIOpsLab: A Holistic Framework to Evaluate AI Agents for Enabling Autonomous Clouds},
   author = {Chen, Yinfang and Shetty, Manish and Somashekar, Gagan and Ma, Minghua and Simmhan, Yogesh and Mace, Jonathan and Bansal, Chetan and Wang, Rujia and Rajmohan, Saravan},
   year = {2024},
   url = {https://www.microsoft.com/en-us/research/publication/aiopslab-a-holistic-framework-for-evaluating-ai-agents-for-enabling-autonomous-cloud/}
+}
+@inproceedings{shetty2024building,
+  title = {Building AI Agents for Autonomous Clouds: Challenges and Design Principles},
+  author = {Shetty, Manish and Chen, Yinfang and Somashekar, Gagan and Ma, Minghua and Simmhan, Yogesh and Zhang, Xuchao and Mace, Jonathan and Vandevoorde, Dax and Las-Casas, Pedro and Gupta, Shachee Mishra and Nath, Suman and Bansal, Chetan and Rajmohan, Saravan},
+  year = {2024},
+  booktitle = {Proceedings of 15th ACM Symposium on Cloud Computing},
 }
 ```
 
