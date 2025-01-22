@@ -1,3 +1,10 @@
+# Kubernetes control node
+k8s_host: pc780.emulab.net # Replace with your control node
+k8s_user: jclark58 # Replace with your username
+
+# ssh key path
+ssh_key_path: ~/.ssh/id_rsa # Replace with ssh key path
+
 # Directory where data files are stored
 data_dir: data
 

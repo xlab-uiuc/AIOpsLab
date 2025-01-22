@@ -43,6 +43,7 @@
           - curl
           - gnupg
           - lsb-release
+          - socat
     
     - name: Install OpenSSL development libraries (the wrk build needs it)
       apt:

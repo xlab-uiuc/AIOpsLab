@@ -35,12 +35,7 @@ class Helm:
         )
         dependency_output, dependency_error = dependency_process.communicate()
 
-        if version:
-            command = f"helm install {release_name} {chart_path} -n {namespace} --version {version}"
-        else:
-            command = f"helm install {release_name} {chart_path} -n {namespace}"
-
-        command = f"helm install {release_name} {chart_path} -n {namespace}"
+        command = f"helm install {release_name} {chart_path} -n {namespace} --create-namespace"
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
         output, error = process.communicate()
 

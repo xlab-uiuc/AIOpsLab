@@ -17,7 +17,7 @@ class Prometheus:
         self.name = None
         self.namespace = None
         self.helm_configs = {}
-        self.pv_config_file = None
+        self.pvc_config_file = None
 
         self.load_service_json()
 
@@ -39,8 +39,8 @@ class Prometheus:
                 chart_path = self.helm_configs["chart_path"]
                 self.helm_configs["chart_path"] = str(BASE_DIR / chart_path)
 
-        self.pv_config_file = os.path.join(
-            BASE_DIR, metadata.get("PersistentVolumeConfig")
+        self.pvc_config_file = os.path.join(
+            BASE_DIR, metadata.get("PersistentVolumeClaimConfig")
         )
 
     def get_service_json(self) -> dict:
@@ -73,8 +73,8 @@ class Prometheus:
         self._delete_pv()
         Helm.uninstall(**self.helm_configs)
 
-        if self.pv_config_file:
-            pv_name = self._get_pv_name_from_file(self.pv_config_file)
+        if self.pvc_config_file:
+            pv_name = self._get_pv_name_from_file(self.pvc_config_file)
             if not self._pv_exists(pv_name):
                 self._apply_pv()
 
@@ -87,19 +87,19 @@ class Prometheus:
         """Teardown the metric collector deployment."""
         Helm.uninstall(**self.helm_configs)
 
-        if self.pv_config_file:
+        if self.pvc_config_file:
             self._delete_pv()
 
     def _apply_pv(self):
         """Apply the PersistentVolume configuration."""
-        print(f"Applying PersistentVolume from {self.pv_config_file}")
+        print(f"Applying PersistentVolume from {self.pvc_config_file}")
         KubeCtl().exec_command(
-            f"kubectl apply -f {self.pv_config_file} -n {self.namespace}"
+            f"kubectl apply -f {self.pvc_config_file} -n {self.namespace}"
         )
 
     def _delete_pv(self):
         """Delete the PersistentVolume and associated PersistentVolumeClaim."""
-        pv_name = self._get_pv_name_from_file(self.pv_config_file)
+        pv_name = self._get_pv_name_from_file(self.pvc_config_file)
         result = KubeCtl().exec_command(f"kubectl get pv {pv_name} --ignore-not-found")
 
         if result:
