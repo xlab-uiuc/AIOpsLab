@@ -142,7 +142,6 @@ class PrometheusAPI:
         self.port_forward_process = None
         self.stop_event = threading.Event()
         self.start_port_forward()
-        self.start_port_forward()
         self.client = PrometheusConnect(url, disable_ssl=True)
         self.namespace = namespace
         self.pod_list, self.service_list = self.initialize_pod_and_service_lists(
@@ -169,6 +168,10 @@ class PrometheusAPI:
 
     def start_port_forward(self):
         """Starts port-forwarding to access Prometheus."""
+        if self.port_forward_process and self.port_forward_process.poll() is None:
+            print("Port-forwarding already active.")
+            return
+        
         for attempt in range(3):
             if self.is_port_in_use(self.port):
                 print(
