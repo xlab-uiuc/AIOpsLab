@@ -263,6 +263,7 @@ class TraceAPI:
         os.makedirs(path, exist_ok=True)
         file_path = os.path.join(path, f"traces_{int(time.time())}.csv")
         df.to_csv(file_path, index=False)
+        self.cleanup() # Stop port-forwarding after traces are exported
         return f"Traces data exported to: {file_path}"
 
 

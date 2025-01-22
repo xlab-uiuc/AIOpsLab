@@ -342,6 +342,7 @@ class PrometheusAPI:
                         dt.to_csv(f, header=False, index=False)
                 else:
                     dt.to_csv(file_path, index=False)
+            self.cleanup() # Stop port-forwarding after metrics are exported
 
             # # for metric in istio_metrics:
             #     data_raw = self.client.custom_query_range(f"{metric}{{namespace='{namespace}'}}", time_format_transform(start_time), time_format_transform(current_et), step=step)
