@@ -4,13 +4,27 @@ print_step 4 "Deploying 'Prometheus' service"
 
 cleanup_pv_pvc() {
     echo "   Cleaning up existing PV and PVC..."
-    kubectl delete pvc --all -n observe > /dev/null 2>&1 || true
     kubectl delete pv prometheus-pv > /dev/null 2>&1 || true
+    kubectl delete pvc --all -n observe > /dev/null 2>&1 || true
 }
 
 update_node_affinity() {
-    sed -i "s/- kubecontroller/- $NODE_NAME/" "$PROMETHEUS_PV_FILE"
+    sed -i "s/- yinfangchen-1/- $NODE_NAME/" "$PROMETHEUS_PV_FILE"
     echo "   Updated node affinity to: $NODE_NAME"
+}
+
+update_local_path() {
+    if [ -z "$CUSTOM_PROMETHEUS_PATH" ]; then
+        echo "   No custom path specified. Using default: /datadrive/prometheus"
+        CUSTOM_PROMETHEUS_PATH="/datadrive/prometheus"
+    fi
+
+    # Expand relative path to absolute path
+    CUSTOM_PROMETHEUS_PATH="$(cd "$CUSTOM_PROMETHEUS_PATH" && pwd)"
+
+    echo "   Updating local.path to: $CUSTOM_PROMETHEUS_PATH"
+    sed -i "s|path: .*|path: $CUSTOM_PROMETHEUS_PATH|" "$PROMETHEUS_PV_FILE"
+    echo "   Updated local.path in $PROMETHEUS_PV_FILE to $CUSTOM_PROMETHEUS_PATH"
 }
 
 # Check if Prometheus is already deployed and running
@@ -24,13 +38,16 @@ else
     # Update node affinity in PV file
     update_node_affinity
 
+    # Update local storage path in PV file
+    update_local_path
+
     # Apply Prometheus PersistentVolume
     if kubectl apply -f "$PROMETHEUS_PV_FILE" > /dev/null; then
         echo "   Applied Prometheus PersistentVolume."
     else
         print_result 1
         echo "${RED}   Failed to apply Prometheus PersistentVolume.${NC}"
-        exit 1
+        safe_safe_exit 1
     fi
 
     # Uninstall existing Prometheus installation if it exists
@@ -45,7 +62,7 @@ else
     else
         print_result 1
         echo "${RED}   Failed to start Prometheus deployment.${NC}"
-        exit 1
+        safe_safe_exit 1
     fi
 
     # Wait for Prometheus pods to be running
@@ -78,7 +95,7 @@ else
         kubectl get pv prometheus-pv -o yaml | grep -A 5 nodeAffinity
         echo "\n   Checking available nodes:"
         kubectl get nodes
-        exit 1
+        safe_safe_exit 1
     fi
 fi
 echo

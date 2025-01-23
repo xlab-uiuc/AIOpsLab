@@ -1,0 +1,41 @@
+all:
+  vars:
+    control_plane_ip: 130.126.139.72
+    k8s_user: yinfang
+    k8s_user2: yinfang3
+
+  children:
+    control_nodes:
+      hosts:
+        control_node:
+          ansible_host: shaolin.cs.illinois.edu
+          ansible_connection: local
+          ansible_user: "{{ k8s_user }}"
+          ansible_python_interpreter: /usr/bin/python3.10
+    worker_nodes:
+      hosts:
+        worker_node_1:
+          ansible_host: monastery.cs.illinois.edu
+          ansible_user: "{{ k8s_user2 }}"
+          ansible_ssh_private_key_file: ~/.ssh/id_rsa
+          ansible_python_interpreter: /usr/bin/python3
+        # worker_node_2:
+        #   ansible_host: apt051.apt.emulab.net
+        #   ansible_user: "{{ k8s_user }}"
+
+# all:
+#   vars:
+#     control_plane_ip: 130.126.139.72
+#   children:
+#     control_nodes:
+#       hosts:
+#         control_node:
+#           ansible_host: 130.126.139.72
+#           ansible_connection: local
+#     worker_nodes:
+#       hosts:
+#         worker_node:
+#           ansible_host: 130.126.138.200
+#           ansible_user: yinfang3
+
+
