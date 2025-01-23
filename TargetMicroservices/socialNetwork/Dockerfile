@@ -59,7 +59,7 @@ RUN wget https://github.com/protocolbuffers/protobuf/archive/refs/tags/v25.1.tar
     && cmake --build . --target install -- -j`nproc`
 
 # Dependency needed by grpc
-RUN wget --no-check-certificate https://c-ares.org/download/c-ares-1.25.0.tar.gz \
+RUN wget https://github.com/c-ares/c-ares/releases/download/cares-1_25_0/c-ares-1.25.0.tar.gz \
     && tar zxf c-ares-1.25.0.tar.gz \
     && cd c-ares-1.25.0 \
     && cmake -DCMAKE_C_FLAGS='-fPIC' -DCMAKE_CXX_FLAGS='-fPIC -std=gnu++11' -DCMAKE_C_COMPILER=gcc-7 -DCMAKE_CXX_COMPILER=g++-7 \
