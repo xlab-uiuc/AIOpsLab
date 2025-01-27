@@ -350,3 +350,4 @@ aiopslab/observer/prometheus/prometheus/charts/kube-state-metrics-5.15.3.tgz
 aiopslab/observer/prometheus/prometheus/Chart.lock
 aiopslab/observer/prometheus/prometheus/charts/alertmanager-1.7.0.tgz
 aiopslab/observer/prometheus/prometheus/Chart.lock
+aiopslab/observer/prometheus/prometheus/Chart.lock
