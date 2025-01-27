@@ -59,29 +59,40 @@ else
 fi
 echo
 
-print_step 3 "Updating es_cert_path in monitor_config.yaml"
+print_step 3 "Updating configs in monitor_config.yaml"
 
 CONFIG_FILE="$AIOPSLAB_ROOT/aiopslab/observer/monitor_config.yaml"
 CERT_PATH="$AIOPSLAB_ROOT/aiopslab/observer/ca.pem"
 API_URL="http://localhost:9200"
 PROMETHEUS_API_URL="http://localhost:32000"
 
+# Detect OS and set correct sed syntax
+case "$(uname -s)" in
+    Darwin) SED_CMD="sed -i ''" ;;  # macOS
+    Linux) SED_CMD="sed -i" ;;  # Linux
+    *) echo "Unsupported OS"; exit 1 ;;
+esac
+
+# Ensure the configuration file exists
 if [ -f "$CONFIG_FILE" ]; then
     echo "   Found monitor_config.yaml at $CONFIG_FILE."
 
-    sed -i "s|es_cert_path:.*|es_cert_path: $CERT_PATH|" "$CONFIG_FILE"
+    # Update es_cert_path
+    $SED_CMD "s|^es_cert_path:.*|es_cert_path: '$CERT_PATH'|" "$CONFIG_FILE"
     echo "   Updated es_cert_path to $CERT_PATH."
 
-    sed -i "s|api:.*|api: $API_URL|" "$CONFIG_FILE"
+    # Update API URL
+    $SED_CMD "s|^api:.*|api: '$API_URL'|" "$CONFIG_FILE"
     echo "   Updated api to $API_URL."
 
-    sed -i "s|prometheusApi:.*|prometheusApi: $PROMETHEUS_API_URL|" "$CONFIG_FILE"
+    # Update Prometheus API URL
+    $SED_CMD "s|^prometheusApi:.*|prometheusApi: '$PROMETHEUS_API_URL'|" "$CONFIG_FILE"
     echo "   Updated prometheusApi to $PROMETHEUS_API_URL."
 
     echo "   Verifying changes..."
-    if grep -q "es_cert_path: $CERT_PATH" "$CONFIG_FILE" && \
-       grep -q "api: $API_URL" "$CONFIG_FILE" && \
-       grep -q "prometheusApi: $PROMETHEUS_API_URL" "$CONFIG_FILE"; then
+    if grep -q "es_cert_path: *['\"]\?$CERT_PATH['\"]\?" "$CONFIG_FILE" && \
+       grep -q "api: *['\"]\?$API_URL['\"]\?" "$CONFIG_FILE" && \
+       grep -q "prometheusApi: *['\"]\?$PROMETHEUS_API_URL['\"]\?" "$CONFIG_FILE"; then
         echo "   All values updated successfully!"
     else
         echo "${RED}   Some values were not updated correctly. Please check $CONFIG_FILE manually.${NC}"

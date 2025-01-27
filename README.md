@@ -49,7 +49,7 @@ After that, run:
 ```bash
 $ mkdir prometheus-data
 $ cd scripts
-$ source ./setup.sh $(hostname) ../prometheus-data/ # set up the current node as control plane and the parent dir as Prometheus storage path
+$ ./setup.sh $(hostname) ../prometheus-data/ # set up the current node as control plane and the parent dir as Prometheus storage path
 ```
 
 <h2 id="🚀quickstart">🚀 Quick Start </h2>
