@@ -64,7 +64,7 @@ class Wrk:
             url,
             "-R", str(self.rate),
         ]
-        
+
         if self.latency:
             container["args"].append("--latency")
 
@@ -121,8 +121,7 @@ class Wrk:
             print(f"Error monitoring job: {e}")
 
     def start_workload(self, payload_script, url):
-        # TODO: Fix hardcoding of namespace
-        namespace = "test-hotel-reservation"
+        namespace = "default"
         configmap_name = "wrk2-payload-script"
 
         self.create_configmap(name=configmap_name, namespace=namespace, payload_script_path=payload_script)
