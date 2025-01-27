@@ -54,7 +54,7 @@ class Wrk:
         job_template["metadata"]["name"] = job_name
         container = job_template["spec"]["template"]["spec"]["containers"][0]
         container["args"] = [
-            "./wrk",
+            "wrk",
             "-D", self.dist,
             "-t", str(self.threads),
             "-c", str(self.connections),
@@ -64,6 +64,7 @@ class Wrk:
             url,
             "-R", str(self.rate),
         ]
+
         if self.latency:
             container["args"].append("--latency")
 
@@ -76,7 +77,7 @@ class Wrk:
         job_template["spec"]["template"]["spec"]["containers"][0]["volumeMounts"] = [
             {
                 "name": "wrk2-scripts",
-                "mountPath": f"/scripts/{payload_script}",  # Mount as a file
+                "mountPath": f"/scripts/{payload_script}",
                 "subPath": payload_script,
             }
         ]

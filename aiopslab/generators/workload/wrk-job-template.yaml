@@ -8,7 +8,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: wrk2
-          image: saurabhjha1/wrk2:latest
+          image: deathstarbench/wrk2-client:latest
           args: []
           volumeMounts:
             - name: wrk2-scripts
