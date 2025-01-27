@@ -69,45 +69,45 @@ class KubeCtl:
         So, we wait for the load_generator to start running since that's when flight-ticket is fully set up.
         """
         if namespace == "openwhisk":
-            console.log(
-                "[bold green]Waiting for the load-generator job to start in the openwhisk namespace (this may take a while)..."
-            )
-            with console.status(
-                "[bold green]Waiting for load-generator job..."
-            ) as status:
-                while True:
+            console.log("[bold green]Waiting for the load-generator job to start in the openwhisk namespace (this may take a while)...")
+            with console.status("[bold green]Waiting for load-generator job...") as status:
+                while True: 
                     try:
-                        pod_name = self.get_pod_name(
-                            namespace, label_selector="job-name=load-generator"
-                        )
-
-                        pod_status = self.core_v1_api.read_namespaced_pod_status(
-                            pod_name, namespace
-                        ).status.phase
+                        pod_name = self.get_pod_name(namespace, label_selector="job-name=load-generator")
+                        
+                        pod_status = self.core_v1_api.read_namespaced_pod_status(pod_name, namespace).status.phase
 
                         if pod_status == "Running":
-                            console.log(
-                                f"[bold green]Load-generator job is {pod_status}."
-                            )
+                            console.log(f"[bold green]Load-generator job is {pod_status}.")
                             return
 
                     except Exception as e:
                         console.log(f"[red]Error checking load-generator status: {e}")
 
                     time.sleep(sleep)
+        
+        elif namespace == "train-ticket":
+            with console.status("[bold green]Waiting for all pods to be ready...") as status:
+                wait = 0
+                while True:
+                    try:
+                        pod_list = self.list_pods(namespace)
+                        ready_pods = [
+                            pod for pod in pod_list.items
+                            if pod.status.container_statuses and
+                            all(cs.ready for cs in pod.status.container_statuses)
+                        ]
 
-        else:
-            wait = 0
-            with console.status("[bold green]Working on deployments...") as status:
-                while wait < max_wait:
-                    pod_list = self.list_pods(namespace)
-                    if all(pod.status.phase == state for pod in pod_list.items):
-                        break
+                        if len(ready_pods) == len(pod_list.items):
+                            console.log(f"[bold green]All pods in namespace '{namespace}' are ready.")
+                            return
+                    except Exception as e:
+                        console.log(f"[red]Error checking pod statuses: {e}")
 
                     time.sleep(sleep)
                     wait += sleep
-                else:
-                    raise Exception(f"App didn't reach the expected state: {state}")
+
+                raise Exception(f"[red]Timeout: Not all pods in namespace '{namespace}' reached the Ready state.")
 
     def update_deployment(self, name: str, namespace: str, deployment):
         """Update the deployment configuration."""
