@@ -44,14 +44,6 @@ You should also have a Kubernetes (k8s) cluster running as prerequisites. You ca
 
 You should also have a self-managed Kubernetes (k8s) cluster running as prerequisites. Consider using our Ansible playbook to automatically install, and follow the [instructions](/scripts/ansible). 
 
-After that, run:
-
-```bash
-mkdir prometheus-data
-cd scripts
-source ./setup.sh $(hostname) ../prometheus-data/ # set up the current node as control plane and the parent dir as Prometheus storage path
-```
-
 <h2 id="🚀quickstart">🚀 Quick Start </h2>
 
 Human as the agent:
