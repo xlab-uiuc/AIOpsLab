@@ -1,19 +1,19 @@
 
 all:
   vars:
-    k8s_user: yinfang
-    k8s_user2: yinfang
+    k8s_user: jclark58
+    k8s_user2: jclark58
   children:
     control_nodes:
       hosts:
         control_node:
-          ansible_host: clnode109.clemson.cloudlab.us
+          ansible_host: pc755.emulab.net
           ansible_user: "{{ k8s_user }}"
     worker_nodes:
       hosts:
         worker_node_1:
-          ansible_host: clnode111.clemson.cloudlab.us
+          ansible_host: pc750.emulab.net
           ansible_user: "{{ k8s_user2 }}"
         worker_node_2:
-          ansible_host: clnode106.clemson.cloudlab.us
+          ansible_host: pc748.emulab.net
           ansible_user: "{{ k8s_user2 }}"

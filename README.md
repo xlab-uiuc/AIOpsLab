@@ -28,14 +28,14 @@ Moreover, AIOpsLab provides a built-in benchmark suite with a set of problems to
 You can clone the repository on the control node of your cluster using the following command. We recommend `poetry` for managing dependencies. You can also use a standard `pip install -e .` to install the package.
     
 ```bash
-$ git clone --recurse-submodules <CLONE_PATH_TO_THE_REPO>
-$ cd AIOpsLab
-$ sudo apt install python3.11 python3.11-venv python3.11-dev python3-pip # poetry requires python >= 3.11
-$ pip install poetry
-$ poetry env use python3.11
-$ export PATH="$HOME/.local/bin:$PATH" # export poetry to PATH if needed
-$ poetry install # -vvv for verbose output
-$ poetry shell
+git clone --recurse-submodules <CLONE_PATH_TO_THE_REPO>
+cd AIOpsLab
+sudo apt install python3.11 python3.11-venv python3.11-dev python3-pip # poetry requires python >= 3.11
+pip install poetry
+poetry env use python3.11
+export PATH="$HOME/.local/bin:$PATH" # export poetry to PATH if needed
+poetry install # -vvv for verbose output
+poetry shell
 ```
 
 <!--
@@ -47,9 +47,9 @@ You should also have a self-managed Kubernetes (k8s) cluster running as prerequi
 After that, run:
 
 ```bash
-$ mkdir prometheus-data
-$ cd scripts
-$ source ./setup.sh $(hostname) ../prometheus-data/ # set up the current node as control plane and the parent dir as Prometheus storage path
+mkdir prometheus-data
+cd scripts
+source ./setup.sh $(hostname) ../prometheus-data/ # set up the current node as control plane and the parent dir as Prometheus storage path
 ```
 
 <h2 id="🚀quickstart">🚀 Quick Start </h2>
@@ -57,7 +57,7 @@ $ source ./setup.sh $(hostname) ../prometheus-data/ # set up the current node as
 Human as the agent:
 
 ```bash
-$ python3 cli.py
+python3 cli.py
 (aiopslab) $ start misconfig_app_hotel_res-detection-1 # or choose any problem you want to solve
 # ... wait for the setup ...
 (aiopslab) $ submit("Yes") # submit solution
@@ -66,8 +66,8 @@ $ python3 cli.py
 Run GPT-4 baseline agent:
 
 ```bash
-$ export OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>
-$ python3 clients/gpt.py # you can also change the problem to solve in the main() function
+export OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>
+python3 clients/gpt.py # you can also change the problem to solve in the main() function
 ```
 
 You can check the running status of the cluster using [k9s](https://k9scli.io/) or other cluster monitoring tools conveniently.
