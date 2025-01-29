@@ -38,6 +38,7 @@ This project offers flexible setup options to accommodate different user environ
     $ cd AIOpsLab
     $ pip install poetry
     $ poetry install -vvv
+    $ poetry self add poetry-plugin-shell
     $ poetry shell
     ```
 
