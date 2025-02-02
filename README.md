@@ -25,27 +25,43 @@ Moreover, AIOpsLab provides a built-in benchmark suite with a set of problems to
 
 <h2 id="📦installation">📦 Installation</h2>
 
-You can clone the repository on the control node of your cluster using the following command. We recommend `poetry` for managing dependencies. You can also use a standard `pip install -e .` to install the package.
-    
+### Requirements
+- Python >= 3.11
+
+Recommended installation:
+```bash
+sudo apt install python3.11 python3.11-venv python3.11-dev python3-pip # poetry requires python >= 3.11
+```
+
+We recommend [Poetry](https://python-poetry.org/docs/) for managing dependencies. You can also use a standard `pip install -e .` to install the dependencies.
+
 ```bash
 git clone --recurse-submodules <CLONE_PATH_TO_THE_REPO>
 cd AIOpsLab
-sudo apt install python3.11 python3.11-venv python3.11-dev python3-pip # poetry requires python >= 3.11
-pip install poetry
 poetry env use python3.11
 export PATH="$HOME/.local/bin:$PATH" # export poetry to PATH if needed
 poetry install # -vvv for verbose output
+poetry self add poetry-plugin-shell # installs poetry shell plugin
 poetry shell
 ```
-
-<!--
-You should also have a Kubernetes (k8s) cluster running as prerequisites. You can refer to [our k8s installation](/scripts/kube_install.sh), which installs k8s directly on the server (note that this is an installation example instead of an executable script; you may need to modify some parts to suit your case, e.g., node name and cert hash in the script). 
--->
 
 You should also have a self-managed Kubernetes (k8s) cluster running as prerequisites. Consider using our Ansible playbook to automatically install, and follow the [instructions](/scripts/ansible). 
 
 <h2 id="🚀quickstart">🚀 Quick Start </h2>
 
+<!-- TODO: Add instructions for both local cluster and remote cluster -->
+### Local cluster
+AIOpsLab can be run on a local cluster using [kind](https://kind.sigs.k8s.io/). Please follow their setup instructions then proceed to the following steps.
+
+```bash
+# Make sure current directory is set to AIOpsLab.
+kind create cluster --config kind-config.yaml
+```
+
+### Remote cluster
+AIOpsLab supports any remote kubernetes cluster that your `kubectl` context is set to, whether it's a cluster from a cloud provider or one you build yourself. We have some Ansible playbooks we have to setup clusters on providers like [CloudLab](https://www.cloudlab.us/) and our own machines. Follow this [README](./scripts/ansible/README.md) to set up your own cluster.
+
+### Running agents
 Human as the agent:
 
 ```bash
