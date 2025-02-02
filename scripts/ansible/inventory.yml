@@ -1,21 +1,19 @@
+
 all:
   vars:
-    control_plane_ip: 155.98.36.90
-    k8s_user: yinfang
-    k8s_user2: yinfang
-
+    k8s_user: <your-username>
+    k8s_user2: <your-username>
   children:
     control_nodes:
       hosts:
         control_node:
-          ansible_host: pc790.emulab.net
-          ansible_connection: local
+          ansible_host: <control-node-hostname>
           ansible_user: "{{ k8s_user }}"
     worker_nodes:
       hosts:
         worker_node_1:
-          ansible_host: pc853.emulab.net
+          ansible_host: <worker-node-1-hostname>
           ansible_user: "{{ k8s_user2 }}"
         worker_node_2:
-          ansible_host: pc854.emulab.net
+          ansible_host: <worker-node-2-hostname>
           ansible_user: "{{ k8s_user2 }}"
