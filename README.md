@@ -45,8 +45,6 @@ poetry self add poetry-plugin-shell # installs poetry shell plugin
 poetry shell
 ```
 
-You should also have a self-managed Kubernetes (k8s) cluster running as prerequisites. Consider using our Ansible playbook to automatically install, and follow the [instructions](/scripts/ansible). 
-
 <h2 id="🚀quickstart">🚀 Quick Start </h2>
 
 <!-- TODO: Add instructions for both local cluster and remote cluster -->
