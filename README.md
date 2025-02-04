@@ -45,8 +45,6 @@ poetry self add poetry-plugin-shell # installs poetry shell plugin
 poetry shell
 ```
 
-You should also have a self-managed Kubernetes (k8s) cluster running as prerequisites. Consider using our Ansible playbook to automatically install, and follow the [instructions](/scripts/ansible). 
-
 <h2 id="🚀quickstart">🚀 Quick Start </h2>
 
 <!-- TODO: Add instructions for both local cluster and remote cluster -->
@@ -60,6 +58,9 @@ kind create cluster --config kind-config.yaml
 
 ### Remote cluster
 AIOpsLab supports any remote kubernetes cluster that your `kubectl` context is set to, whether it's a cluster from a cloud provider or one you build yourself. We have some Ansible playbooks we have to setup clusters on providers like [CloudLab](https://www.cloudlab.us/) and our own machines. Follow this [README](./scripts/ansible/README.md) to set up your own cluster.
+
+### Update `config.yml`
+Update [config.yaml](./aiopslab/config.yml) so that `k8s_host` is the host name of the control plane node of your cluster. Update `k8s_user` to be your username on the control plane node.
 
 ### Running agents
 Human as the agent:
