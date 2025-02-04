@@ -68,7 +68,7 @@ After finishing cluster creation, proceed to the next "Update `config.yml`" step
 AIOpsLab supports any remote kubernetes cluster that your `kubectl` context is set to, whether it's a cluster from a cloud provider or one you build yourself. We have some Ansible playbooks we have to setup clusters on providers like [CloudLab](https://www.cloudlab.us/) and our own machines. Follow this [README](./scripts/ansible/README.md) to set up your own cluster, and then proceed to the next "Update `config.yaml`" step.
 
 ### Update `config.yml`
-Update [config.yaml](./aiopslab/config.yml) so that `k8s_host` is the host name of the control plane node of your cluster. Update `k8s_user` to be your username on the control plane node.
+Update [config.yaml](./aiopslab/config.yml) so that `k8s_host` is the host name of the control plane node of your cluster. Update `k8s_user` to be your username on the control plane node. If you are using a kind cluster, your `k8s_host` should be `kind`. If you're running AIOpsLab on cluster, your `k8s_host` should be `localhost`.
 
 ### Running agents
 Human as the agent:
