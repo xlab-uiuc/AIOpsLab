@@ -50,16 +50,22 @@ poetry shell
 <!-- TODO: Add instructions for both local cluster and remote cluster -->
 Choose either a) or b) to set up your cluster and then proceed to the next steps.
 
-### a) Local cluster
-AIOpsLab can be run on a local cluster using [kind](https://kind.sigs.k8s.io/). Please follow their setup instructions then proceed to the following steps.
+### a) Local simulated cluster
+AIOpsLab can be run on a local simulated cluster using [kind](https://kind.sigs.k8s.io/). Please follow their setup instructions then proceed to the following steps.
 
 ```bash
 # Make sure current directory is set to AIOpsLab.
 kind create cluster --config kind-config.yaml
 ```
 
+If your the installation is very slow on your MacOS (Apple Silicon), you can try to check the Settings of the Docker Desktop's dashboard and enable:
+1) Use containerd for pulling and storing images
+2) Use Rosetta for x86/amd64 emulation on Apple Silicon
+
+After finishing cluster creation, proceed to the next "Update `config.yml`" step.
+
 ### b) Remote cluster
-AIOpsLab supports any remote kubernetes cluster that your `kubectl` context is set to, whether it's a cluster from a cloud provider or one you build yourself. We have some Ansible playbooks we have to setup clusters on providers like [CloudLab](https://www.cloudlab.us/) and our own machines. Follow this [README](./scripts/ansible/README.md) to set up your own cluster.
+AIOpsLab supports any remote kubernetes cluster that your `kubectl` context is set to, whether it's a cluster from a cloud provider or one you build yourself. We have some Ansible playbooks we have to setup clusters on providers like [CloudLab](https://www.cloudlab.us/) and our own machines. Follow this [README](./scripts/ansible/README.md) to set up your own cluster, and then proceed to the next "Update `config.yaml`" step.
 
 ### Update `config.yml`
 Update [config.yaml](./aiopslab/config.yml) so that `k8s_host` is the host name of the control plane node of your cluster. Update `k8s_user` to be your username on the control plane node.
