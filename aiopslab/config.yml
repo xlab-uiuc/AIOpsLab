@@ -1,6 +1,6 @@
 # Kubernetes control node
-k8s_host: pc780.emulab.net # Replace with your control node
-k8s_user: jclark58 # Replace with your username
+k8s_host: control_node_hostname
+k8s_user: your_username
 
 # ssh key path
 ssh_key_path: ~/.ssh/id_rsa # Replace with ssh key path
