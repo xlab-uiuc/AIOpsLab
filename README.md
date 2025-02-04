@@ -48,7 +48,7 @@ poetry shell
 <h2 id="🚀quickstart">🚀 Quick Start </h2>
 
 <!-- TODO: Add instructions for both local cluster and remote cluster -->
-Choose either a or b to set up your cluster and then proceed to the next steps.
+Choose either a) or b) to set up your cluster and then proceed to the next steps.
 
 ### a) Local cluster
 AIOpsLab can be run on a local cluster using [kind](https://kind.sigs.k8s.io/). Please follow their setup instructions then proceed to the following steps.
