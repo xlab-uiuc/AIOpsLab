@@ -380,7 +380,18 @@ class PrometheusAPI:
             #     else:
             #         dt.to_csv(file_path, index=False)
             start_time = current_et
-        return f"Metrics data exported to directory: {save_path}"
+            
+        # Print the folder structure
+        export_msg = f"Metrics data exported to directory: {save_path}\n\nFolder structure of exported metrics:\n"
+        for root, dirs, files in os.walk(save_path):
+            level = root.replace(save_path, "").count(os.sep)
+            indent = " " * 4 * level
+            export_msg += f"{indent}{os.path.basename(root)}/\n"  
+            subindent = " " * 4 * (level + 1)
+            for f in files:
+                export_msg += f"{subindent}{f}\n"
+        # print(export_msg)
+        return export_msg
 
     def get_all_metrics(self):
         """Get all of the metrics"""
