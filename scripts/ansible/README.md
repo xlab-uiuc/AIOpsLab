@@ -53,7 +53,7 @@ Modify the IPs and user names in the inventory file accordingly, `inventory.yml`
 
 Install some common requirements (e.g., package installation) in all of the nodes; and setup the controllers and workers to run K8S:
 ```shell
-ansible-playbook -i inventory.yml setup_common.yml && ansible-playbook -i inventory.yml setup_controller_worker.yml
+ansible-playbook -i inventory.yml setup_common.yml && ansible-playbook -i inventory.yml remote_setup_controller_worker.yml
 ```
 
 After these, you should see every node running inside a K8S cluster:
