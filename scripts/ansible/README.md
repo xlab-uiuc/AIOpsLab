@@ -2,7 +2,12 @@
 
 This is the instruction to use Ansible to build a remote cluster for AIOpsLab. We currently use [CloudLab](https://www.cloudlab.us/) but we believe this will work on any servers you have access to.
 
-### Exchange SSH keys (Optional)
+There are two ways to setup AIOpsLab for a remote cluster, please choose either approach (A) or (B) to run AIOpsLab.
+
+## (A) Run AIOpsLab inside the cluster
+If you want to run your agent and AIOpsLab **inside** the cluster, please upload the _whole AIOpsLab codebase_ to the control node, and follow steps 1, 2, 3, 4.
+
+### 1) Exchange SSH keys
 
 Your nodes need to be able to ssh into each other to setup the cluster. If your nodes have different keys then the device you're running AIOpsLab on, or if you're unsure, proceed with the following steps to exchange ssh keys between the nodes.
 
@@ -16,7 +21,7 @@ cd ssh
 ./keys.sh
 ```
 
-### Install Ansible (Ubuntu)
+### 2) Install Ansible (Ubuntu)
 
 SSH into your desired control node: `ssh <USER_NAME>@<HOST>`
 
@@ -36,11 +41,15 @@ ansible --version
 
 Once those commands have completed, you can exit the SSH session.
 
-### Modify the inventory file
+## (B) Run AIOpsLab outside of the cluster
+If you want to run your agent and AIOpsLab **outside** of the cluster (e.g., on your own workstation), please follow steps 3, 4.
+
+
+### 3) Modify the inventory file
  
 Modify the IPs and user names in the inventory file accordingly, `inventory.yml`. You can get the control plane IP by running `hostname -I` in the control plane node.
 
-### Run the Ansible playbook
+### 4) Run the Ansible playbook
 
 Install some common requirements (e.g., package installation) in all of the nodes; and setup the controllers and workers to run K8S:
 ```shell
