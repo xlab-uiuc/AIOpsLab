@@ -5,10 +5,10 @@ This is the instruction to use Ansible to build a remote cluster for AIOpsLab. W
 There are two ways to setup AIOpsLab for a remote cluster, please choose either approach (A) or (B) to run AIOpsLab.
 
 ## (A) Run AIOpsLab inside the cluster
-If you want to run your agent and AIOpsLab **inside** the cluster, please upload the _whole AIOpsLab codebase_ to the control node, and follow steps 1, 2, 3, 4.
+If you want to run your agent and AIOpsLab **inside** the cluster, please upload the _whole AIOpsLab codebase_ to the control node, and follow steps 1), 2), 3), 4).
 
 ### 1) Exchange SSH keys
-
+**Do this on your own machine that is controlling the cluster.**
 Your nodes need to be able to ssh into each other to setup the cluster. If your nodes have different keys then the device you're running AIOpsLab on, or if you're unsure, proceed with the following steps to exchange ssh keys between the nodes.
 
 The nodes should exchange their public keys with each other before running Ansible.
@@ -42,12 +42,15 @@ ansible --version
 Once those commands have completed, you can exit the SSH session.
 
 ## (B) Run AIOpsLab outside of the cluster
-If you want to run your agent and AIOpsLab **outside** of the cluster (e.g., on your own workstation), please follow steps 3, 4.
+If you want to run your agent and AIOpsLab **outside** of the cluster (e.g., on your own workstation), please follow steps 3), 4) (1 and 2 are no longer needed).
 
 
 ### 3) Modify the inventory file
- 
-Modify the IPs and user names in the inventory file accordingly, `inventory.yml`. You can get the control plane IP by running `hostname -I` in the control plane node.
+```bash
+cp inventory.yml.example inventory.yml
+```
+
+Modify the IPs and user names in the inventory file accordingly, `inventory.yml`. 
 
 ### 4) Run the Ansible playbook
 
