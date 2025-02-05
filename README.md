@@ -73,7 +73,7 @@ AIOpsLab supports any remote kubernetes cluster that your `kubectl` context is s
 cd aiopslab
 cp config.yml.example config.yml
 ```
-Update [config.yml](./aiopslab/config.yml) so that `k8s_host` is the host name of the control plane node of your cluster. Update `k8s_user` to be your username on the control plane node. If you are using a kind cluster, your `k8s_host` should be `kind`. If you're running AIOpsLab on cluster, your `k8s_host` should be `localhost`.
+Update your `config.yml` so that `k8s_host` is the host name of the control plane node of your cluster. Update `k8s_user` to be your username on the control plane node. If you are using a kind cluster, your `k8s_host` should be `kind`. If you're running AIOpsLab on cluster, your `k8s_host` should be `localhost`.
 
 ### Running agents
 Human as the agent:
