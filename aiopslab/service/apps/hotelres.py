@@ -68,7 +68,7 @@ class HotelReservation(Application):
         """Deploy the Kubernetes configurations."""
         print(f"Deploying Kubernetes configurations in namespace: {self.namespace}")
         self.kubectl.apply_configs(self.namespace, self.k8s_deploy_path)
-        time.sleep(40)
+        time.sleep(100)
 
     def delete(self):
         """Delete the configmap."""
