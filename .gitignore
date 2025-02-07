@@ -353,5 +353,4 @@ aiopslab/observer/prometheus/prometheus/Chart.lock
 aiopslab/observer/prometheus/prometheus/Chart.lock
 
 # Ignore customized config files
-aiopslab/config.yml
 scripts/ansible/inventory.yml
