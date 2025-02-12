@@ -105,7 +105,7 @@ class Helm:
         """
         kubectl = KubeCtl()
         try:
-            kubectl.wait_for_state(namespace, "Running")
+            kubectl.wait_for_ready(namespace)
         except Exception as e:
             raise e
 
