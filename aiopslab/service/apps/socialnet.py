@@ -48,7 +48,6 @@ class SocialNetwork(Application):
         """Deploy the Helm configurations."""
         Helm.install(**self.helm_configs)
         Helm.assert_if_deployed(self.helm_configs["namespace"])
-        time.sleep(30)
 
     def delete(self):
         """Delete the Helm configurations."""

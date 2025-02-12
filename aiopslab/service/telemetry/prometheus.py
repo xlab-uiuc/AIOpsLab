@@ -79,8 +79,6 @@ class Prometheus:
                 self._apply_pv()
 
         Helm.install(**self.helm_configs)
-        print("Waiting for 30 seconds to allow the Prometheus deployment to finish...")
-        time.sleep(30)
         Helm.assert_if_deployed(self.namespace)
 
     def teardown(self):
