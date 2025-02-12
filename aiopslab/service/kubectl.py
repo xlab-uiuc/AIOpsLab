@@ -90,6 +90,27 @@ class KubeCtl:
                 wait += sleep
 
             raise Exception(f"[red]Timeout: Not all pods in namespace '{namespace}' reached the Ready state within {max_wait} seconds.")
+    
+    def wait_for_namespace_deletion(self, namespace, sleep=2, max_wait=300):
+        """Wait for a namespace to be fully deleted before proceeding."""
+
+        console = Console()
+        console.log(f"[bold green]Waiting for namespace '{namespace}' to be deleted...")
+
+        with console.status("[bold green]Waiting for namespace deletion...") as status:
+            wait = 0
+
+            while wait < max_wait:
+                try:
+                    self.core_v1_api.read_namespace(name=namespace)
+                except Exception as e:
+                    console.log(f"[bold green]Namespace '{namespace}' has been deleted.")
+                    return
+
+                time.sleep(sleep)
+                wait += sleep
+
+            raise Exception(f"[red]Timeout: Namespace '{namespace}' was not deleted within {max_wait} seconds.")
 
     def update_deployment(self, name: str, namespace: str, deployment):
         """Update the deployment configuration."""
@@ -201,6 +222,7 @@ class KubeCtl:
         """Delete a specified namespace."""
         try:
             self.core_v1_api.delete_namespace(name=namespace)
+            self.wait_for_namespace_deletion(namespace)
             print(f"Namespace '{namespace}' deleted successfully.")
         except ApiException as e:
             if e.status == 404:
