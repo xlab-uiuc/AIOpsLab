@@ -164,8 +164,8 @@ class ProblemRegistry:
             # There's a bug in chaos mesh regarding this fault, wait for resolution and retest kernel fault
             # "kernel_fault_hotel_reservation-detection-1": KernelFaultDetection,
             # "kernel_fault_hotel_reservation-localization-1": KernelFaultLocalization
-            "disk_woreout-detection-1": DiskWoreoutDetection,
-            "disk_woreout-localization-1": DiskWoreoutLocalization,
+            # "disk_woreout-detection-1": DiskWoreoutDetection,
+            # "disk_woreout-localization-1": DiskWoreoutLocalization,
             # Open Telemetry Demo (Astronomy Shop) feature flag failures
             "astronomy_shop_ad_service_failure-detection-1": AdServiceFailureDetection,
             "astronomy_shop_ad_service_failure-localization-1": AdServiceFailureLocalization,
