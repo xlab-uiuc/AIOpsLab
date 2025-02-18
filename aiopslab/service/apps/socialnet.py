@@ -13,7 +13,6 @@ from aiopslab.paths import SOCIAL_NETWORK_METADATA
 
 
 class SocialNetwork(Application):
-
     def __init__(self):
         super().__init__(SOCIAL_NETWORK_METADATA)
         self.load_app_json()
@@ -49,7 +48,6 @@ class SocialNetwork(Application):
         """Deploy the Helm configurations."""
         Helm.install(**self.helm_configs)
         Helm.assert_if_deployed(self.helm_configs["namespace"])
-        time.sleep(30)
 
     def delete(self):
         """Delete the Helm configurations."""
