@@ -165,6 +165,8 @@
   # Step 6: Verify the setup
   - name: Verify Persistent Volumes
     shell: kubectl get pv
+    environment:
+      KUBECONFIG: "{{ kubeconfig_path }}"
     register: pv_output
 
   - debug:
