@@ -40,7 +40,7 @@ We recommend [Poetry](https://python-poetry.org/docs/) for managing dependencies
 git clone --recurse-submodules <CLONE_PATH_TO_THE_REPO>
 cd AIOpsLab
 poetry env use python3.11
-export PATH="HOME/.local/bin:PATH" # export poetry to PATH if needed
+export PATH="$HOME/.local/bin:$PATH" # export poetry to PATH if needed
 poetry install # -vvv for verbose output
 poetry self add poetry-plugin-shell # installs poetry shell plugin
 poetry shell
