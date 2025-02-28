@@ -11,6 +11,10 @@ from aiopslab.service.helm import Helm
 from aiopslab.service.kubectl import KubeCtl
 from aiopslab.generators.fault.base import FaultInjector
 
+from aiopslab.config import Config
+from aiopslab.paths import BASE_DIR
+
+config = Config(BASE_DIR / "config.yml")
 
 class SymptomFaultInjector(FaultInjector):
     def __init__(self, namespace: str):
@@ -25,6 +29,21 @@ class SymptomFaultInjector(FaultInjector):
             "namespace": "chaos-mesh",
             "version": "2.6.2",
         }
+
+        container_runtime = config.get("container_runtime", "docker")
+        # print("DEBUG: container_runtime", container_runtime)
+        if container_runtime == "docker":
+            pass
+        elif container_runtime == "containerd":
+            chaos_configs["extra_args"] = [
+                "--set chaosDaemon.runtime=containerd",
+                "--set chaosDaemon.socketPath=/run/containerd/containerd.sock",
+            ]
+        else:
+            raise ValueError(f"Unsupported container runtime: {container_runtime}")
+        
+        # TODO: Add support for K3s, MicroK8s, and CRI-O
+
         Helm.install(**chaos_configs)
         time.sleep(6)
         # Helm.uninstall(**sn_configs)
