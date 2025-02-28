@@ -1,6 +1,6 @@
-# AIOpsLab Deployment on WSL2 (Ubuntu)
+# AIOpsLab Deployment on WSL2 (Ubuntu) or native Ubuntu 24.04
 
-This document provides detailed, step-by-step instructions for deploying AIOpsLab in an Ubuntu environment running on WSL2. It covers all prerequisites (installing Docker, kind, kubectl, Lua, Luarocks, and Luasocket), building the custom KIND image, creating a local Kubernetes cluster with kind, and deploying the AIOpsLab application.
+This document provides detailed, step-by-step instructions for deploying AIOpsLab in an Ubuntu environment running on WSL2 or native Ubuntu 24.04. It covers all prerequisites (installing Docker, kind, kubectl, Lua, Luarocks, and Luasocket), building the custom KIND image, creating a local Kubernetes cluster with kind, and deploying the AIOpsLab application.
 
 ---
 
@@ -166,10 +166,10 @@ sudo chmod -R 777 /mnt/datadrive/prometheus
 
 ### 4. Create a KIND Kubernetes Cluster
 
-Use the provided or updated `kind-config.yaml` to create a Kubernetes cluster:
+Use the provided or updated `kind-config-amd64.yaml` to create a Kubernetes cluster:
 
 ```bash
-kind create cluster --config kind/kind-config.yaml
+kind create cluster --config kind/kind-config-amd64.yaml
 ```
 
 After finishing cluster creation, proceed to the next "Update config.yml" step.
