@@ -55,6 +55,7 @@ Choose either a) or b) to set up your cluster and then proceed to the next steps
 AIOpsLab can be run on a local simulated cluster using [kind](https://kind.sigs.k8s.io/) on your local machine (we have test the MacOS, WSL2 Ubuntu and native Ubuntu). Please follow their setup instructions then proceed to the following steps.
 
 Run the following command to auto-detect your architecture and create the cluster:
+
 ```bash
 # Make sure current directory is set to AIOpsLab.
 ARCH=$(uname -m)
@@ -69,11 +70,14 @@ fi
 ```
 
 For manual selection:
+
+```bash
 # AMD64
 kind create cluster --config kind/kind-config-amd64.yaml
 
 # ARM64
 kind create cluster --config kind/kind-config-arm64.yaml
+```
 
 If your the installation is very slow on your MacOS (Apple Silicon), you can try to check the Settings of the Docker Desktop's dashboard and enable:
 1) Use containerd for pulling and storing images
