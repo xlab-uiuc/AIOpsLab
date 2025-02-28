@@ -195,7 +195,7 @@ class VirtualizationFaultInjector(FaultInjector):
         time.sleep(15)
         print(f"Redeploying {self.namespace}.")
         app = type(app)()
-        app.deploy()
+        app.deploy_without_wait()
 
     def recover_redepoly_without_pv(self, app: Application):
         app.cleanup()
