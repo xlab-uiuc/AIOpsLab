@@ -24,13 +24,26 @@ class Shell:
         needs_confirmation = config.get("confirm_execution", False)
         if not needs_confirmation:
             return True
-
-        if command.startswith("kubectl"):
-            tokens = list(map(lambda x: x.lower() , command.split()))
-            for x in ["get", "describe", "logs"]:
-                if x in tokens:
-                    return True
-
+        
+        # TODO: Current implementation has assumption that only one command is passed at a time.
+        # Need to handle multiple commands, e.g. `kubectl get pods; kubectl describe pod <pod_name>`
+        tokens = list(map(lambda x: x.lower() for x in command.split()))
+        if len(tokens) > 1 and tokens[0] == "kubectl":
+            command = tokens[1]
+            # Command verifications are sort in `kubectl help` order.
+            if command in ["explain", "get"]: # Basic Commands
+                return True
+            if command in ["cluster-info", "top"]: # Cluster Management Commands
+                return True
+            if command in ["describe", "logs", "debug", "events"]: # Troubleshooting and Debugging Commands
+                return True
+            if command in ["diff"]: # Advanced Commands
+                return True
+            if command in ["completion"]: # Settings Commands
+                return True
+            if command in ["api-resources", "api-versions", "version"]: # Other Commands
+                return True
+   
         comment = input(f"Going to execute: {command} \r\nPlease confirm (Y(es)/N(o)):")
         return comment.lstrip().lower() in ["yes", "y"]
 
