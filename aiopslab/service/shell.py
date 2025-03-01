@@ -16,10 +16,30 @@ class Shell:
     TODO: expand to a stateful shell session interface.
     """
 
+    def _approve(command: str) -> bool:
+        """
+            Confirm the command to be executed.
+            Return True if the commnd a
+        """
+        needs_confirmation = config.get("confirm_execution", False)
+        if not needs_confirmation:
+            return True
+
+        if command.startswith("kubectl"):
+            tokens = list(map(lambda x: x.lower() , command.split()))
+            for x in ["get", "describe", "logs"]:
+                if x in tokens:
+                    return True
+
+        comment = input(f"Going to execute: {command} \r\nPlease confirm (Y(es)/N(o)):")
+        return comment.lstrip().lower() in ["yes", "y"]
+
     @staticmethod
     def exec(command: str, input_data=None, cwd=None):
         """Execute a shell command on localhost, via SSH, or inside kind's control-plane container."""
         k8s_host = config.get("k8s_host", "localhost")  # Default to localhost
+        if not Shell._approve(command):
+            print(f"[WARNING] Execution of {command} has been rejected.")
 
         if k8s_host == "kind":
             print("[INFO] Running command inside kind-control-plane Docker container.")

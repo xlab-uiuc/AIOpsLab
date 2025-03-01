@@ -13,3 +13,6 @@ qualitative_eval: false
 
 # Flag to enable/disable printing the session
 print_session: false
+
+# Flag to enable/disable confirmation on command execution
+confirm_execution: false
