@@ -30,19 +30,17 @@ class SymptomFaultInjector(FaultInjector):
             "version": "2.6.2",
         }
 
-        container_runtime = config.get("container_runtime", "docker")
-        # print("DEBUG: container_runtime", container_runtime)
-        if container_runtime == "docker":
+        container_runtime = self.kubectl.get_container_runtime()
+
+        if "docker" in container_runtime:
             pass
-        elif container_runtime == "containerd":
+        elif "containerd" in container_runtime:
             chaos_configs["extra_args"] = [
                 "--set chaosDaemon.runtime=containerd",
                 "--set chaosDaemon.socketPath=/run/containerd/containerd.sock",
             ]
         else:
             raise ValueError(f"Unsupported container runtime: {container_runtime}")
-        
-        # TODO: Add support for K3s, MicroK8s, and CRI-O
 
         Helm.install(**chaos_configs)
         time.sleep(6)
