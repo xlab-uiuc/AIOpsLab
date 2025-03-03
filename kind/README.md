@@ -1,6 +1,6 @@
-# AIOpsLab Deployment on WSL2 (Ubuntu) or native Ubuntu 24.04
+# Building your own image
 
-This document provides detailed, step-by-step instructions for deploying AIOpsLab in an Ubuntu environment running on WSL2 or native Ubuntu 24.04. It covers all prerequisites (installing Docker, kind, kubectl, Lua, Luarocks, and Luasocket), building the custom KIND image, creating a local Kubernetes cluster with kind, and deploying the AIOpsLab application.
+This document provides detailed, step-by-step instructions for building your own kind image to deploy AIOpsLab.
 
 ---
 
@@ -14,12 +14,10 @@ This document provides detailed, step-by-step instructions for deploying AIOpsLa
   - [Install kind](#install-kind)
   - [Install kubectl](#install-kubectl)
   - [Install Helm](#install-helm)
-  - [Install Lua, Luarocks, and Luasocket](#install-lua-luarocks-and-luasocket)
 - [Deployment Steps](#deployment-steps)
   - [1. Build the Custom KIND Image](#1-build-the-custom-kind-image)
   - [2. (Optional) Push the Image to Dockerhub](#2-optional-push-the-image-to-dockerhub)
-  - [3. Create persistent directories for Prometheus data](#3-create-persistent-directories-for-prometheus-data)
-  - [4. Create a KIND Kubernetes Cluster](#4-create-a-kind-kubernetes-cluster)
+  - [3. Create a kind Kubernetes Cluster](#4-create-a-kind-kubernetes-cluster)
 - [Troubleshooting](#troubleshooting)
 - [Conclusion](#conclusion)
 
@@ -30,7 +28,7 @@ AIOpsLab is deployed using **containerized components** and Kubernetes manifests
 
 - Setting up **WSL2 (Windows Subsystem for Linux) or native Ubuntu 24.04**.
 - Installing **Docker, kind, kubectl, Helm, Lua, Luarocks, and Luasocket**.
-- Building a custom **KIND image** and deploying AIOpsLab into a **local Kubernetes cluster**.
+- Building a custom **kind image** and deploying AIOpsLab into a **local Kubernetes cluster**.
 
 ---
 
@@ -103,39 +101,13 @@ sudo apt-get install helm
 
 For more information, see the [Helm installation guide](https://helm.sh/docs/intro/install/).
 
-### Install lua, luarocks, and luasocket
-
-Install lua, luarocks, and luasocket to run the AIOpsLab application:
-
-Install Lua:
-```bash
-sudo apt install build-essential libreadline-dev unzip
-curl -L -R -O http://www.lua.org/ftp/lua-5.3.5.tar.gz
-tar zxf lua-5.3.5.tar.gz
-cd lua-5.3.5
-make linux test
-sudo make install
-```
-
-Install LuaRocks and LuaSocket:
-```bash
-wget https://luarocks.org/releases/luarocks-3.11.1.tar.gz
-tar zxpf luarocks-3.11.1.tar.gz
-cd luarocks-3.11.1
-./configure --with-lua-include=/usr/local/include && make && sudo make install
-sudo luarocks install luasocket
-```
-
-For more information, see the [Lua installation guide](https://www.lua.org/download.html) and the [LuaRocks installation guide](https://github.com/luarocks/luarocks/blob/master/docs/index.md).
-
 ---
 
 ## Deployment Steps
 
 ### 1. Build the Custom KIND Image
 
-The Dockerfile in this directory is designed specifically for Ubuntu running under WSL2 (amd64). **Please refer to this Dockerfile** to build an image that is compatible with your own machine —this is critical because the published AIOpsLab image
-```jacksonarthurclark/aiopslab-kind:latest``` is built for macOS (arm64) and will not work on Ubuntu (amd64).
+The Dockerfile in this directory is designed specifically for Ubuntu running under WSL2 (amd64). **Please refer to this Dockerfile** to build an image that is compatible with your own machine 
 
 Build the custom image using:
 
@@ -154,23 +126,6 @@ docker push your_dockerhub_username/aiopslab-kind:latest
 
 Remember to update the `kind-config.yaml` file with your image name if you are using your own published image.
 
-### 3. Create persistent directories for Prometheus data
-
-Before proceeding the creation of the Kubernetes cluster, you need to ensure that the Prometheus data directory is created and has the correct permissions. This is necessary because the Prometheus container will write data to this directory. Run the following commands to create the directory and set the correct permissions:
-
-```bash
-sudo mkdir -p /mnt/datadrive/prometheus
-sudo chown -R $(whoami):$(whoami) /mnt/datadrive/prometheus
-sudo chmod -R 777 /mnt/datadrive/prometheus
-```
-
-### 4. Create a KIND Kubernetes Cluster
-
-Use the provided or updated `kind-config-amd64.yaml` to create a Kubernetes cluster:
-
-```bash
-kind create cluster --config kind/kind-config-amd64.yaml
-```
 
 After finishing cluster creation, proceed to the next "Update config.yml" step.
 
