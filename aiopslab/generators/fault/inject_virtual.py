@@ -188,7 +188,7 @@ class VirtualizationFaultInjector(FaultInjector):
             print(f"Removed nodeSelector for service {service} and redeployed.")
 
     # V.5 - redeploy without deleting the PV - only for HotelReservation
-    def inject_redepoly_without_pv(self, app: Application):
+    def inject_redeploy_without_pv(self, app: Application):
         """Inject a fault to delete the namespace without deleting the PV."""
         self.kubectl.delete_namespace(self.namespace)
         print(f"Deleting namespace {self.namespace} without deleting the PV.")
