@@ -11,11 +11,6 @@ from aiopslab.service.helm import Helm
 from aiopslab.service.kubectl import KubeCtl
 from aiopslab.generators.fault.base import FaultInjector
 
-from aiopslab.config import Config
-from aiopslab.paths import BASE_DIR
-
-config = Config(BASE_DIR / "config.yml")
-
 class SymptomFaultInjector(FaultInjector):
     def __init__(self, namespace: str):
         super().__init__(namespace)
