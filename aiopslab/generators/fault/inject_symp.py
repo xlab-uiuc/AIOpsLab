@@ -43,8 +43,6 @@ class SymptomFaultInjector(FaultInjector):
             raise ValueError(f"Unsupported container runtime: {container_runtime}")
 
         Helm.install(**chaos_configs)
-        time.sleep(6)
-        # Helm.uninstall(**sn_configs)
 
     def create_chaos_experiment(self, experiment_yaml: dict, experiment_name: str):
         chaos_yaml_path = f"/tmp/{experiment_name}.yaml"
