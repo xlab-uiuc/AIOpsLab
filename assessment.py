@@ -119,6 +119,8 @@ async def main():
     agent = HumanAgent(orchestrator)
     orchestrator.register_agent(agent, name="human")
 
+    first_name = input("What is your first name?: ")
+
     agent.display_welcome_message()
     await agent.set_problem()
 
@@ -126,10 +128,10 @@ async def main():
     
     session_data = orchestrator.session.to_dict()
     
-    with open("results.json", "w") as f:
+    with open(f"{first_name}_results.json", "w") as f:
         json.dump(session_data, f, indent=2)
     
-    print(f"Results saved to results.json")
+    print(f"Results saved to {first_name}_results.json")
     
     return results
 
