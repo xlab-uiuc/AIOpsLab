@@ -50,6 +50,9 @@ class SocialNetwork(Application):
         """Deploy the Helm configurations."""
         if self.is_arm:
             # Update image to use arm build image
+            if "extra_args" not in self.helm_configs:
+                self.helm_configs["extra_args"] = []
+            
             self.helm_configs["extra_args"].append("--set media-frontend.container.image=jacksonarthurclark/media-frontend")
             self.helm_configs["extra_args"].append("--set media-frontend.container.imageVersion=latest")
         
