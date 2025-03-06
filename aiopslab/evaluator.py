@@ -176,9 +176,10 @@ class Evaluator:
             self.sprint.service(env_response)
             
             if env_response == SubmissionStatus.VALID_SUBMISSION:
+                print("Submission is correct!")
                 break
             elif env_response == SubmissionStatus.INVALID_SUBMISSION:
-                action_instr = "Your submission was invalid. Please continue working on the problem."
+                print("Your submission was invalid. Please continue working on the problem.")
             else:
                 action_instr = env_response
         
