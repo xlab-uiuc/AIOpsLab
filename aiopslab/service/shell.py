@@ -78,7 +78,6 @@ class Shell:
 
             if exit_status != 0:
                 error_message = stderr.read().decode("utf-8")
-                print(f"[ERROR] SSH Command execution failed: {error_message}")
                 return error_message
             else:
                 output_message = stdout.read().decode("utf-8")
