@@ -24,6 +24,8 @@ WELCOME = """
 TASK_MESSAGE = """\n\n\n\n
 There's a problem in the kubernetes cluster in the test-hotel-reservation namespace.
 
+The issue is that there are unmet PersistentVolumeClaims (PVCs) because of unbound persistent volumes.
+
 You need to fix the issue and get all the pods into a ready state.
 
 You have access to a shell, take whatever action you deem necessary to resolve the issue.
