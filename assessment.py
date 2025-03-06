@@ -18,26 +18,23 @@ from aiopslab.evaluator import Evaluator
 
 
 WELCOME = """
-# AIOpsLab
-- Type your commands or actions below.
-- Use `exit` to quit the application.
-- Use `start <problem_id>` to begin a new problem.
+# AIOpsLab Onboarding Assessment
 """
 
-TASK_MESSAGE = """{prob_desc}
-You are provided with the following APIs to interact with the service:
+TASK_MESSAGE = """\n\n\n\n
+There's a problem in the kubernetes cluster in the test-hotel-reservation namespace.
 
-{telemetry_apis}
+You need to fix the issue and get all the pods into a ready state.
 
-You are also provided an API to a secure terminal to the service where you can run commands:
+You have access to a shell, take whatever action you deem necessary to resolve the issue.
 
-{shell_api}
+Once you believe the incident is resolved, run the `submit` command. If your solution is incorrect, it will tell you.
 
-Finally, you will submit your solution for this task using the following API:
+You can use any resources you want to complete the assessment except for another person. However, please run all shell commands inside of the interface.
 
-{submit_api}
+Your results will be saved in a file called yourFistName_results.json, please email it to jclark58@illinois.edu
 
-At each turn think step-by-step and respond with your action.
+If you encounter a bug, send it to jclark58@illinois.edu
 """
 
 
