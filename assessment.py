@@ -124,8 +124,14 @@ async def main():
 
     results = await orchestrator.start_problem()
     
+    session_data = orchestrator.session.to_dict()
+    
     with open("results.json", "w") as f:
-        json.dump(results, f, indent=2)
+        json.dump(session_data, f, indent=2)
+    
+    print(f"Results saved to results.json")
+    
+    return results
 
 
 if __name__ == "__main__":
