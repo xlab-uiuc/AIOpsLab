@@ -52,16 +52,17 @@ poetry shell
 Choose either a) or b) to set up your cluster and then proceed to the next steps.
 
 ### a) Local simulated cluster
-AIOpsLab can be run on a local simulated cluster using [kind](https://kind.sigs.k8s.io/). Please follow their setup instructions then proceed to the following steps.
+AIOpsLab can be run on a local simulated cluster using [kind](https://kind.sigs.k8s.io/) on your local machine.
 
 ```bash
-# Make sure current directory is set to AIOpsLab.
-kind create cluster --config kind-config.yaml
+# For x86 machines
+kind create cluster --config kind/kind-config-x86.yaml
+
+# For ARM machines
+kind create cluster --config kind/kind-config-arm.yaml
 ```
 
-If your the installation is very slow on your MacOS (Apple Silicon), you can try to check the Settings of the Docker Desktop's dashboard and enable:
-1) Use containerd for pulling and storing images
-2) Use Rosetta for x86/amd64 emulation on Apple Silicon
+If you're running into issues, consider building a Docker image for your machine by following this [README](kind/README.md). Please also open an issue.
 
 After finishing cluster creation, proceed to the next "Update `config.yml`" step.
 
