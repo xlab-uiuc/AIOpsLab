@@ -25,7 +25,7 @@ class Shell:
         if not needs_confirmation:
             return True
 
-        tokens = list(map(lambda x: x.lower() for x in command.split()))
+        tokens = list(map(lambda x: x.lower(), command.split()))
         multi = True if [';', '&&', '||'] in tokens else False
         if len(tokens) > 1 and tokens[0] == "kubectl" and not multi:
             command = tokens[1]
@@ -47,11 +47,11 @@ class Shell:
         return comment.lstrip().lower() in ["yes", "y"]
 
     @staticmethod
-    def exec(command: str, input_data=None, cwd=None):
+    def exec(command: str, input_data=None, cwd=None) -> str:
         """Execute a shell command on localhost, via SSH, or inside kind's control-plane container."""
         k8s_host = config.get("k8s_host", "localhost")  # Default to localhost
         if not Shell._approve(command):
-            raise RuntimeError(f"Command {command} rejected by user.") 
+            return f"Command {command} rejected by user."
 
         if k8s_host == "kind":
             print("[INFO] Running command inside kind-control-plane Docker container.")
