@@ -24,11 +24,10 @@ class Shell:
         needs_confirmation = config.get("confirm_execution", False)
         if not needs_confirmation:
             return True
-        
-        # TODO: Current implementation has assumption that only one command is passed at a time.
-        # Need to handle multiple commands, e.g. `kubectl get pods; kubectl describe pod <pod_name>`
+
         tokens = list(map(lambda x: x.lower() for x in command.split()))
-        if len(tokens) > 1 and tokens[0] == "kubectl":
+        multi = True if [';', '&&', '||'] in tokens else False
+        if len(tokens) > 1 and tokens[0] == "kubectl" and not multi:
             command = tokens[1]
             # Command verifications are sort in `kubectl help` order.
             if command in ["explain", "get"]: # Basic Commands
@@ -52,7 +51,7 @@ class Shell:
         """Execute a shell command on localhost, via SSH, or inside kind's control-plane container."""
         k8s_host = config.get("k8s_host", "localhost")  # Default to localhost
         if not Shell._approve(command):
-            print(f"[WARNING] Execution of {command} has been rejected.")
+            raise RuntimeError(f"Command {command} rejected by user.") 
 
         if k8s_host == "kind":
             print("[INFO] Running command inside kind-control-plane Docker container.")
