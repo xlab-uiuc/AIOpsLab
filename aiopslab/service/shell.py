@@ -47,7 +47,7 @@ class Shell:
         return comment.lstrip().lower() in ["yes", "y"]
 
     @staticmethod
-    def exec(command: str, input_data=None, cwd=None) -> str:
+    def exec(command: str, input_data=None, cwd=None):
         """Execute a shell command on localhost, via SSH, or inside kind's control-plane container."""
         k8s_host = config.get("k8s_host", "localhost")  # Default to localhost
         if not Shell._approve(command):
