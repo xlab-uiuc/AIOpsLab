@@ -28,19 +28,19 @@ class Shell:
         tokens = list(map(lambda x: x.lower(), command.split()))
         multi = True if [';', '&&', '||'] in tokens else False
         if len(tokens) > 1 and tokens[0] == "kubectl" and not multi:
-            command = tokens[1]
+            cmd = tokens[1]
             # Command verifications are sort in `kubectl help` order.
-            if command in ["explain", "get"]: # Basic Commands
+            if cmd in ["explain", "get"]: # Basic Commands
                 return True
-            if command in ["cluster-info", "top"]: # Cluster Management Commands
+            if cmd in ["cluster-info", "top"]: # Cluster Management Commands
                 return True
-            if command in ["describe", "logs", "debug", "events"]: # Troubleshooting and Debugging Commands
+            if cmd in ["describe", "logs", "debug", "events"]: # Troubleshooting and Debugging Commands
                 return True
-            if command in ["diff"]: # Advanced Commands
+            if cmd in ["diff"]: # Advanced Commands
                 return True
-            if command in ["completion"]: # Settings Commands
+            if cmd in ["completion"]: # Settings Commands
                 return True
-            if command in ["api-resources", "api-versions", "version"]: # Other Commands
+            if cmd in ["api-resources", "api-versions", "version"]: # Other Commands
                 return True
    
         comment = input(f"Going to execute: {command} \r\nPlease confirm (Y(es)/N(o)):")
