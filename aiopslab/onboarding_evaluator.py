@@ -7,7 +7,7 @@ from aiopslab.service.helm import Helm
 from aiopslab.service.kubectl import KubeCtl
 from aiopslab.session import Session
 from aiopslab.orchestrator.problems.registry import ProblemRegistry
-from aiopslab.orchestrator.eval_parser import EvalParser
+from aiopslab.orchestrator.onboarding_eval_parser import EvalParser
 from aiopslab.utils.status import *
 from aiopslab.service.telemetry.prometheus import Prometheus
 import time

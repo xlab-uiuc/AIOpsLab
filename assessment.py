@@ -14,7 +14,7 @@ from rich.markdown import Markdown
 from rich.panel import Panel
 from prompt_toolkit.completion import WordCompleter
 
-from aiopslab.evaluator import Evaluator
+from aiopslab.onboarding_evaluator import Evaluator
 
 
 WELCOME = """
