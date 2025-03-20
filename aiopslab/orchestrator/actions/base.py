@@ -39,6 +39,8 @@ class TaskActions:
                 user_service_pod = kubectl.get_pod_name(
                     namespace, f"io.kompose.service={service}"
                 )
+            elif namespace == "default" and "wrk2-job" in service:
+                user_service_pod = kubectl.get_pod_name(namespace, f"job-name=wrk2-job")
             else:
                 raise Exception
             logs = kubectl.get_pod_logs(user_service_pod, namespace)
