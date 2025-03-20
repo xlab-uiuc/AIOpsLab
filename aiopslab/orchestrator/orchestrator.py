@@ -121,8 +121,15 @@ class Orchestrator:
 
         try:
             env_response = self.session.problem.perform_action(api, *args, **kwargs)
+        
+            if hasattr(env_response, "error"):
+                env_response = str(env_response)
+                print("An error occurred:", env_response)
         except InvalidActionError as e:
             env_response = str(e)
+        except Exception as e:
+            env_response = str(e)
+            print("Unhandled exception:", e)
 
         self.session.add({"role": "env", "content": env_response})
 
