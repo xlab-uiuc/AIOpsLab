@@ -28,7 +28,7 @@ Moreover, AIOpsLab provides a built-in benchmark suite with a set of problems to
 
 ### Requirements
 - Python >= 3.11
-- [Helm](https://helm.sh/docs/helm/helm_install/](https://helm.sh/)
+- [Helm](https://helm.sh/)
 
 Recommended installation:
 ```bash
