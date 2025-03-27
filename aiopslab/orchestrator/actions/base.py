@@ -113,7 +113,7 @@ class TaskActions:
             str: The requested metrics or an error message.
         """
         if not os.path.exists(file_path):
-            return {"error": f"Metrics file '{file_path}' not found."}
+            return f"error: Metrics file '{file_path}' not found."
 
         try:
             df_metrics = pd.read_csv(file_path)
@@ -163,7 +163,7 @@ class TaskActions:
             str: The requested traces or an error message.
         """
         if not os.path.exists(file_path):
-            return {"error": f"Traces file '{file_path}' not found."}
+            return f"error: Traces file '{file_path}' not found."
 
         try:
             df_traces = pd.read_csv(file_path)
