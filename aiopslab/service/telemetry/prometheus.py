@@ -102,7 +102,7 @@ class Prometheus:
 
         if result:
             print(f"Deleting PersistentVolumeClaim {pvc_name}")
-            KubeCtl().exec_command(f"kubectl delete pv {pvc_name}")
+            KubeCtl().exec_command(f"kubectl delete pvc {pvc_name}")
             print(f"Successfully deleted PersistentVolumeClaim from {pvc_name}")
         else:
             print(f"PersistentVolumeClaim {pvc_name} not found. Skipping deletion.")
