@@ -75,7 +75,7 @@ class Prometheus:
 
         if self.pvc_config_file:
             pvc_name = self._get_pvc_name_from_file(self.pvc_config_file)
-            if not self._pv_exists(pvc_name):
+            if not self._pvc_exists(pvc_name):
                 self._apply_pvc()
 
         Helm.install(**self.helm_configs)
