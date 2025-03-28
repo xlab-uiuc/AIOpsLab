@@ -113,9 +113,9 @@ class Prometheus:
             pv_config = yaml.safe_load(file)
             return pv_config["metadata"]["name"]
 
-    def _pvc_exists(self, pv_name: str) -> bool:
+    def _pvc_exists(self, pvc_name: str) -> bool:
         """Check if the PersistentVolumeClaim exists."""
-        command = f"kubectl get pvc {pv_name}"
+        command = f"kubectl get pvc {pvc_name}"
         try:
             result = KubeCtl().exec_command(command)
             if "No resources found" in result or "Error" in result:
