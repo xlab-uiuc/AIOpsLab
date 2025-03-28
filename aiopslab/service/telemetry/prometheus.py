@@ -97,7 +97,7 @@ class Prometheus:
 
     def _delete_pvc(self):
         """Delete the PersistentVolume and associated PersistentVolumeClaim."""
-        pvc_name = self._get_pv_name_from_file(self.pvc_config_file)
+        pvc_name = self._get_pvc_name_from_file(self.pvc_config_file)
         result = KubeCtl().exec_command(f"kubectl get pvc {pvc_name} --ignore-not-found")
 
         if result:
@@ -107,7 +107,7 @@ class Prometheus:
         else:
             print(f"PersistentVolumeClaim {pvc_name} not found. Skipping deletion.")
 
-    def _get_pv_name_from_file(self, pv_config_file):
+    def _get_pvc_name_from_file(self, pv_config_file):
         """Extract PVC name from the configuration file."""
         with open(pv_config_file, "r") as file:
             pv_config = yaml.safe_load(file)
