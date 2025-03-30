@@ -54,7 +54,6 @@ class Shell:
             return f"Command {command} rejected by user."
 
         if k8s_host == "kind":
-            print("[INFO] Running command inside kind-control-plane Docker container.")
             return Shell.docker_exec("kind-control-plane", command)
 
         elif k8s_host == "localhost":
@@ -111,7 +110,6 @@ class Shell:
 
             if exit_status != 0:
                 error_message = stderr.read().decode("utf-8")
-                print(f"[ERROR] SSH Command execution failed: {error_message}")
                 return error_message
             else:
                 output_message = stdout.read().decode("utf-8")
@@ -127,7 +125,9 @@ class Shell:
     @staticmethod
     def docker_exec(container_name: str, command: str):
         """Execute a command inside a running Docker container."""
-        docker_command = f"docker exec {container_name} sh -c '{command}'"
+        escaped_command = command.replace('"', '\\"')
+        
+        docker_command = f'docker exec {container_name} sh -c "{escaped_command}"'
 
         try:
             out = subprocess.run(
