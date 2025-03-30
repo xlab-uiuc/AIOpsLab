@@ -26,8 +26,13 @@ class Shell:
             return True
 
         tokens = list(map(lambda x: x.lower(), command.split()))
-        multi = True if [';', '&&', '||'] in tokens else False
-        if len(tokens) > 1 and tokens[0] == "kubectl" and not multi:
+        # Agent does not allow multiple commands
+        if ['&&', '||', ';'] in tokens:
+            print('[WARNING] Command contains multiple commands. ')
+            return False
+        
+        cmd = ""
+        if len(tokens) > 1 and tokens[0] == "kubectl":
             cmd = tokens[1]
             # Command verifications are sort in `kubectl help` order.
             if cmd in ["explain", "get"]: # Basic Commands
@@ -42,8 +47,18 @@ class Shell:
                 return True
             if cmd in ["api-resources", "api-versions", "version"]: # Other Commands
                 return True
-   
-        comment = input(f"Going to execute: {command} \r\nPlease confirm (Y(es)/N(o)):")
+        
+        print(f"Going to execute: {command}")
+        if cmd in ["apply", "delete", "patch", "replace", "scale", "annotate", "label"]:
+            dry_run = command.replace(cmd, f"{cmd} --dry-run=server")
+            result = subprocess.run(dry_run, shell=True, capture_output=True)
+            print(f"Executing dry-run command: {dry_run}")
+            if result.returncode != 0:
+                print(f"Command {dry_run} failed. The command will not be executed.")
+                return False
+            print(f"{result.stdout.decode('utf-8')}")
+
+        comment = input("Please confirm (Y(es)/N(o)):")   
         return comment.lstrip().lower() in ["yes", "y"]
 
     @staticmethod
