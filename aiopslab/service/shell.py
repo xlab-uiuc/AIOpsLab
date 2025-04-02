@@ -6,8 +6,15 @@
 import subprocess
 import paramiko
 import os
+import readline
 from aiopslab.paths import config
 
+def rlinput(prompt: str, prefill=''):
+    readline.set_startup_hook(lambda: readline.insert_text(prefill))
+    try:
+        return input(prompt)
+    finally:
+        readline.set_startup_hook()
 
 class Shell:
     """Interface to run shell commands in the service cluster.
@@ -16,37 +23,42 @@ class Shell:
     TODO: expand to a stateful shell session interface.
     """
 
-    def _approve(command: str) -> bool:
+    def _approve(command: str) -> tuple[str, bool]:
         """
             Confirm the command to be executed.
-            Return True if the commnd a
+
+            Args:
+                command (str): The command to be executed.
+            
+            Returns:
+                tuple[str, bool]: A tuple containing the command and a boolean indicating whether to execute it.
         """
         needs_confirmation = config.get("confirm_execution", False)
         if not needs_confirmation:
-            return True
+            return command, True
 
         tokens = list(map(lambda x: x.lower(), command.split()))
         # Agent does not allow multiple commands
         if ['&&', '||', ';'] in tokens:
             print('[WARNING] Command contains multiple commands. ')
-            return False
+            return command, False
         
         cmd = ""
         if len(tokens) > 1 and tokens[0] == "kubectl":
             cmd = tokens[1]
             # Command verifications are sort in `kubectl help` order.
             if cmd in ["explain", "get"]: # Basic Commands
-                return True
+                return command, True
             if cmd in ["cluster-info", "top"]: # Cluster Management Commands
-                return True
+                return command, True
             if cmd in ["describe", "logs", "debug", "events"]: # Troubleshooting and Debugging Commands
-                return True
+                return command, True
             if cmd in ["diff"]: # Advanced Commands
-                return True
+                return command, True
             if cmd in ["completion"]: # Settings Commands
-                return True
+                return command, True
             if cmd in ["api-resources", "api-versions", "version"]: # Other Commands
-                return True
+                return command, True
         
         print(f"Going to execute: {command}")
         if cmd in ["apply", "delete", "patch", "replace", "scale", "annotate", "label"]:
@@ -55,21 +67,32 @@ class Shell:
             print(f"Executing dry-run command: {dry_run}")
             if result.returncode != 0:
                 print(f"Command {dry_run} failed. The command will not be executed.")
-                return False
+                return command, False
             print(f"{result.stdout.decode('utf-8')}")
 
-        comment = input("Please confirm (Y(es)/N(o)):")   
-        return comment.lstrip().lower() in ["yes", "y"]
+        comment = input("Please confirm (Y(es)/N(o)/E(dit)):")
+
+        if comment.strip().lower() in ["n", "no"]:
+            return command, False
+
+        if comment.strip().lower() in ["e", "edit"]:
+            edited_command = rlinput("Edit command:", command)
+            if edited_command.strip():
+                command = edited_command
+
+        return command, True
 
     @staticmethod
     def exec(command: str, input_data=None, cwd=None):
         """Execute a shell command on localhost, via SSH, or inside kind's control-plane container."""
         k8s_host = config.get("k8s_host", "localhost")  # Default to localhost
-        if not Shell._approve(command):
+
+        cmd, approved = Shell._approve(command)
+        if not approved:
             return f"Command {command} rejected by user."
 
         if k8s_host == "kind":
-            return Shell.docker_exec("kind-control-plane", command)
+            return Shell.docker_exec("kind-control-plane", cmd)
 
         elif k8s_host == "localhost":
             print(
@@ -77,12 +100,12 @@ class Shell:
                 "This may pose safety and security risks when using an AI agent locally. "
                 "I hope you know what you're doing!!!"
             )
-            return Shell.local_exec(command, input_data, cwd)
+            return Shell.local_exec(cmd, input_data, cwd)
 
         else:
             k8s_user = config.get("k8s_user")
             ssh_key_path = config.get("ssh_key_path", "~/.ssh/id_rsa")
-            return Shell.ssh_exec(k8s_host, k8s_user, ssh_key_path, command)
+            return Shell.ssh_exec(k8s_host, k8s_user, ssh_key_path, cmd)
 
     @staticmethod
     def local_exec(command: str, input_data=None, cwd=None):
