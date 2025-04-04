@@ -308,7 +308,6 @@ class VirtualizationFaultInjector(FaultInjector):
 
     def _write_yaml_to_file(self, service_name: str, yaml_content: dict):
         """Helper function to write YAML content to a temporary file."""
-        import yaml
 
         file_path = f"/tmp/{service_name}_modified.yaml"
         with open(file_path, "w") as file:
