@@ -8,6 +8,7 @@ import uuid
 import json
 from pydantic import BaseModel
 
+from aiopslab.orchestrator.tasks.base import Task
 from aiopslab.paths import RESULTS_DIR
 
 
@@ -19,16 +20,16 @@ class SessionItem(BaseModel):
 class Session:
     def __init__(self) -> None:
         self.session_id = uuid.uuid4()
-        self.pid = None
-        self.problem = None
+        self.pid: str | None = None
+        self.problem: Task | None = None
         self.solution = None
         self.results = {}
         self.history: list[SessionItem] = []
         self.start_time = None
         self.end_time = None
-        self.agent_name = None
+        self.agent_name: str | None = None
 
-    def set_problem(self, problem, pid=None):
+    def set_problem(self, problem: Task, pid: str | None=None):
         """Set the problem instance for the session.
 
         Args:

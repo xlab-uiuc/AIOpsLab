@@ -1,3 +1,4 @@
+from typing import Callable
 from aiopslab.orchestrator.problems.k8s_target_port_misconfig import *
 from aiopslab.orchestrator.problems.auth_miss_mongodb import *
 from aiopslab.orchestrator.problems.revoke_auth import *
@@ -27,7 +28,7 @@ from aiopslab.orchestrator.problems.recommendation_service_cache_failure import 
 from aiopslab.orchestrator.problems.redeploy_without_pv import *
 from aiopslab.orchestrator.problems.wrong_bin_usage import *
 from aiopslab.orchestrator.problems.operator_misoperation import *
-
+from aiopslab.orchestrator.tasks.base import Task
 
 class ProblemRegistry:
     def __init__(self):
@@ -212,13 +213,13 @@ class ProblemRegistry:
             "operator_wrong_update_strategy-localization-1": K8SOperatorWrongUpdateStrategyLocalization,
         }
 
-    def get_problem_instance(self, problem_id: str):
+    def get_problem_instance(self, problem_id: str) -> Task:
         if problem_id not in self.PROBLEM_REGISTRY:
             raise ValueError(f"Problem ID {problem_id} not found in registry.")
 
         return self.PROBLEM_REGISTRY.get(problem_id)()
 
-    def get_problem(self, problem_id: str):
+    def get_problem(self, problem_id: str) -> Callable[...,Task]:
         return self.PROBLEM_REGISTRY.get(problem_id)
 
     def get_problem_ids(self, task_type: str = None):

@@ -18,10 +18,10 @@ class Task:
         self.results = {}
         self.kubectl = KubeCtl()
 
-    def get_task_description(self):
+    def get_task_description(self) -> str:
         raise NotImplementedError("Subclasses must implement this method.")
 
-    def get_instructions(self):
+    def get_instructions(self) -> str:
         raise NotImplementedError("Subclasses must implement this method.")
 
     def get_available_actions(self):
