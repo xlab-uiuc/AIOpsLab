@@ -40,6 +40,7 @@ class DiskWoreoutBaseTask:
     def inject_fault(self):
         print("== Fault Injection ==")
         self.injector._inject(fault_type="disk_woreout")
+        return ['*']
 
     def recover_fault(self):
         print("== Fault Recovery ==")

@@ -28,6 +28,7 @@ class RecommendationServiceCacheFailureBaseTask:
         print(
             f"Fault: recommendationServiceCacheFailure | Namespace: {self.namespace}\n"
         )
+        return ['*']
 
     def recover_fault(self):
         print("== Fault Recovery ==")

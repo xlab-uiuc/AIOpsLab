@@ -25,6 +25,7 @@ class K8SOperatorSecurityContextFaultBaseTask:
         print("== Fault Injection ==")
         self.injector._inject("security_context_fault")
         print(f"Injecting security context failure of the TiDB cluster\n")
+        return ['*']
 
     def recover_fault(self):
         print("== Fault Recovery ==")

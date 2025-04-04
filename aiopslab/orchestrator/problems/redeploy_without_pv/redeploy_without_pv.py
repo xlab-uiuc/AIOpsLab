@@ -38,6 +38,7 @@ class RedeployWithoutPVBaseTask:
     def inject_fault(self):
         print("== Fault Injection ==")
         self.injector.inject_redeploy_without_pv(app=self.app)
+        return ['*']
         # self.injector._inject(
         #     fault_type="redepoly_without_pv",
         #     app=self.app,

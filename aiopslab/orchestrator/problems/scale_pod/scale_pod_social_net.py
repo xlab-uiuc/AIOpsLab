@@ -52,6 +52,7 @@ class ScalePodSocialNetBaseTask:
         # Terminating the pod may take long time when scaling
         time.sleep(30)
         print(f"Service: {self.faulty_service} | Namespace: {self.namespace}\n")
+        return [self.faulty_service]
 
     def recover_fault(self):
         print("== Fault Recovery ==")

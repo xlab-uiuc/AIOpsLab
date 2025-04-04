@@ -25,6 +25,7 @@ class K8SOperatorWrongUpdateStrategyBaseTask:
         print("== Fault Injection ==")
         self.injector._inject("wrong_update_strategy")
         print(f"Injecting wrong update strategy failure of the TiDB cluster\n")
+        return ['*']
 
     def recover_fault(self):
         print("== Fault Recovery ==")

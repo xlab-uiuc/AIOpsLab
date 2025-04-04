@@ -26,6 +26,7 @@ class PaymentServiceUnreachableBaseTask:
         print("== Fault Injection ==")
         self.injector.inject_fault("paymentServiceUnreachable")
         print(f"Fault: paymentServiceUnreachable | Namespace: {self.namespace}\n")
+        return ['*']
 
     def recover_fault(self):
         print("== Fault Recovery ==")

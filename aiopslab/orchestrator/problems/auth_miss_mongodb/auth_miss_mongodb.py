@@ -38,7 +38,7 @@ class MongoDBAuthMissingBaseTask:
             url=f"{frontend_url}/wrk2-api/post/compose",
         )
 
-    def inject_fault(self):
+    def inject_fault(self) -> list[str]:
         print("== Fault Injection ==")
         injector = VirtualizationFaultInjector(namespace=self.namespace)
         injector._inject(
@@ -46,6 +46,7 @@ class MongoDBAuthMissingBaseTask:
             microservices=[self.faulty_service],
         )
         print(f"Service: {self.faulty_service} | Namespace: {self.namespace}\n")
+        return [self.faulty_service]
 
     def recover_fault(self):
         print("== Fault Recovery ==")

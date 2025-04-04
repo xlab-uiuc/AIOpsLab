@@ -47,6 +47,7 @@ class NetworkLossBaseTask:
             duration="200s"
         )
         print(f"Service: {self.faulty_service} | Namespace: {self.namespace}\n")
+        return [self.faulty_service]
 
     def recover_fault(self):
         print("== Fault Recovery ==")

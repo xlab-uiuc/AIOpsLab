@@ -25,6 +25,7 @@ class K8SOperatorInvalidAffinityTolerationBaseTask:
         print("== Fault Injection ==")
         self.injector._inject("invalid_affinity_toleration")
         print(f"Injecting affinity toleration failure of the TiDB cluster\n")
+        return ['*']
 
     def recover_fault(self):
         print("== Fault Recovery ==")

@@ -30,6 +30,7 @@ class K8SOperatorOverloadReplicasBaseTask:
         print("== Fault Injection ==")
         self.injector._inject("overload_replicas")
         print(f"Injecting overload replica failure of the TiDB cluster\n")
+        return ['*']
 
     def recover_fault(self):
         print("== Fault Recovery ==")

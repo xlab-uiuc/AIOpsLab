@@ -50,6 +50,7 @@ class ChaosFaultBaseTask:
         print(
             f"Service: {self.faulty_service} | Container: {self.faulty_container} | Namespace: {self.namespace}\n"
         )
+        return [self.faulty_service]
 
     def recover_fault(self):
         print("== Fault Recovery ==")

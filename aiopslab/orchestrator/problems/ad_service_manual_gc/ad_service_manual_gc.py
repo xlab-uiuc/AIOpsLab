@@ -26,6 +26,7 @@ class AdServiceManualGcBaseTask:
         print("== Fault Injection ==")
         self.injector.inject_fault("adServiceManualGc")
         print(f"Fault: adServiceManualGc | Namespace: {self.namespace}\n")
+        return ['*']
 
     def recover_fault(self):
         print("== Fault Recovery ==")

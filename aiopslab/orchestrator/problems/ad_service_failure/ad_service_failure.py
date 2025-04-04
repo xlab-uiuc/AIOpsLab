@@ -26,6 +26,7 @@ class AdServiceFailureBaseTask:
         print("== Fault Injection ==")
         self.injector.inject_fault("adServiceFailure")
         print(f"Fault: adServiceFailure | Namespace: {self.namespace}\n")
+        return ['*']
 
     def recover_fault(self):
         print("== Fault Recovery ==")

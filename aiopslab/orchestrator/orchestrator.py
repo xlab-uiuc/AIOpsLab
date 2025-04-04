@@ -69,7 +69,8 @@ class Orchestrator:
         prob.app.deploy()
 
         # inject fault
-        prob.inject_fault()
+        mutables = prob.inject_fault()
+        self.session.add_mutable(mutables)
 
         # Check if start_workload is async or sync
         if inspect.iscoroutinefunction(prob.start_workload):
@@ -121,7 +122,7 @@ class Orchestrator:
 
         try:
             env_response = self.session.problem.perform_action(api, *args, **kwargs)
-        
+
             if hasattr(env_response, "error"):
                 env_response = str(env_response)
                 print("An error occurred:", env_response)

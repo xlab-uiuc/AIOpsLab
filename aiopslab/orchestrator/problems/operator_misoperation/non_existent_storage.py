@@ -26,6 +26,7 @@ class K8SOperatorNonExistentStorageBaseTask:
         print("== Fault Injection ==")
         self.injector._inject("non_existent_storage")
         print(f"Injecting non-existent storage failure of the TiDB cluster\n")
+        return ['*']
 
     def recover_fault(self):
         print("== Fault Recovery ==")

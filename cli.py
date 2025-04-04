@@ -41,7 +41,7 @@ At each turn think step-by-step and respond with your action.
 
 
 class HumanAgent:
-    def __init__(self, orchestrator):
+    def __init__(self, orchestrator: Orchestrator):
         self.session = PromptSession()
         self.console = Console(force_terminal=True, color_system="auto")
         self.orchestrator = orchestrator
