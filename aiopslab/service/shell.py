@@ -15,30 +15,33 @@ class Shell:
     Note: this can only run a single command and get its output.
     TODO: expand to a stateful shell session interface.
     """
+    def __init__(self, session = None):
+        """Initialize the Shell class."""
+        self._session = session
+        
+        # Configured via config.yml
+        self._host = config.get("k8s_host", "localhost")
+        self._user = config.get("k8s_user")
+        self._ssh_key_path = config.get("ssh_key_path", "~/.ssh/id_rsa")
 
-    @staticmethod
-    def exec(command: str, input_data=None, cwd=None):
+    def exec(self, command: str, input_data=None, cwd=None):
         """Execute a shell command on localhost, via SSH, or inside kind's control-plane container."""
-        k8s_host = config.get("k8s_host", "localhost")  # Default to localhost
 
-        if k8s_host == "kind":
-            return Shell.docker_exec("kind-control-plane", command)
+        if self._host == "kind":
+            return self.docker_exec("kind-control-plane", command)
 
-        elif k8s_host == "localhost":
+        elif self._host == "localhost":
             print(
                 "[WARNING] Running commands on localhost is not recommended. "
                 "This may pose safety and security risks when using an AI agent locally. "
                 "I hope you know what you're doing!!!"
             )
-            return Shell.local_exec(command, input_data, cwd)
+            return self.local_exec(command, input_data, cwd)
 
         else:
-            k8s_user = config.get("k8s_user")
-            ssh_key_path = config.get("ssh_key_path", "~/.ssh/id_rsa")
-            return Shell.ssh_exec(k8s_host, k8s_user, ssh_key_path, command)
+            return self.ssh_exec(self._host, self._user, self._ssh_key_path, command)
 
-    @staticmethod
-    def local_exec(command: str, input_data=None, cwd=None):
+    def local_exec(self, command: str, input_data=None, cwd=None):
         if input_data is not None:
             input_data = input_data.encode("utf-8")
 
@@ -64,8 +67,7 @@ class Shell:
         except Exception as e:
             raise RuntimeError(f"Failed to execute command: {command}\nError: {str(e)}")
 
-    @staticmethod
-    def ssh_exec(host: str, user: str, ssh_key_path: str, command: str):
+    def ssh_exec(self, host: str, user: str, ssh_key_path: str, command: str):
         ssh_key_path = os.path.expanduser(ssh_key_path)
         ssh_client = paramiko.SSHClient()
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -90,8 +92,7 @@ class Shell:
         finally:
             ssh_client.close()
 
-    @staticmethod
-    def docker_exec(container_name: str, command: str):
+    def docker_exec(self, container_name: str, command: str):
         """Execute a command inside a running Docker container."""
         escaped_command = command.replace('"', '\\"')
         

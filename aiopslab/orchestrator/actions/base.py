@@ -68,7 +68,7 @@ class TaskActions:
         if "kubectl edit" in command or "edit svc" in command:
             return "Error: Cannot use `kubectl edit`. Use `kubectl patch` instead."
 
-        return Shell.exec(command)
+        return Shell().exec(command)
 
     @staticmethod
     @read

@@ -4,7 +4,6 @@
 """Actions for the root-cause analysis task."""
 
 from aiopslab.orchestrator.actions.base import TaskActions
-from aiopslab.service.shell import Shell
 from aiopslab.utils.actions import action
 from aiopslab.utils.status import SubmissionStatus
 

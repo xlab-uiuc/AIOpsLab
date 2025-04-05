@@ -8,25 +8,35 @@ from aiopslab.utils.actions import get_actions
 class TestGetActions(unittest.TestCase):
     def test_get_actions(self):
         actions = get_actions("detection")
-        self.assertEqual(len(actions), 6)
+        expected = {
+            "get_logs",
+            "get_metrics",
+            "get_traces",
+            "read_metrics",
+            "read_traces",
+            "exec_shell",
+            "submit",
+        }
+        self.assertEqual(len(actions), len(expected))
         self.assertEqual(
             set(actions.keys()),
-            {
-                "get_logs",
-                "get_metrics",
-                "get_traces",
-                "exec_shell",
-                "submit",
-                "get_microservice_repo_diff",
-            },
+            expected,
         )
 
     def test_get_read_actions(self):
         actions = get_actions("detection", "read")
-        self.assertEqual(len(actions), 4)
+        expected = {
+            "get_logs",
+            "get_metrics",
+            "get_traces",
+            "read_metrics",
+            "read_traces",
+        }
+
+        self.assertEqual(len(actions), len(expected))
         self.assertEqual(
             set(actions.keys()),
-            {"get_logs", "get_metrics", "get_traces", "get_microservice_repo_diff"},
+            expected,
         )
 
     def test_get_write_actions(self):
