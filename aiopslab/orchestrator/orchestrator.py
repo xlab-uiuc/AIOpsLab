@@ -9,10 +9,12 @@ from aiopslab.session import Session
 from aiopslab.orchestrator.problems.registry import ProblemRegistry
 from aiopslab.orchestrator.parser import ResponseParser
 from aiopslab.utils.status import *
+from aiopslab.utils.critical_section import CriticalSection
 from aiopslab.service.telemetry.prometheus import Prometheus
 import time
 import inspect
 import asyncio
+import atexit
 
 
 class Orchestrator:
@@ -68,8 +70,12 @@ class Orchestrator:
         prob.app.delete()
         prob.app.deploy()
 
-        # inject fault
-        prob.inject_fault()
+        # make sure is_fault_injected is correct to apply appropriate
+        # function with atexit to recover fault
+        with CriticalSection():
+            # inject fault
+            prob.inject_fault()
+            atexit.register(exit_cleanup_fault, prob=prob)
 
         # Check if start_workload is async or sync
         if inspect.iscoroutinefunction(prob.start_workload):
@@ -121,7 +127,7 @@ class Orchestrator:
 
         try:
             env_response = self.session.problem.perform_action(api, *args, **kwargs)
-        
+
             if hasattr(env_response, "error"):
                 env_response = str(env_response)
                 print("An error occurred:", env_response)
@@ -174,13 +180,15 @@ class Orchestrator:
 
         self.session.set_results(results)
         self.session.to_json()
-        self.session.problem.recover_fault()
 
-        # Beyond recovering from fault,
-        # I feel sometimes it is safer to delete the whole namespace.
-        # But this will take more time.
-        # if not self.session.problem.sys_status_after_recovery():
-        self.session.problem.app.cleanup()
+        with CriticalSection():
+            self.session.problem.recover_fault()
+            # Beyond recovering from fault,
+            # I feel sometimes it is safer to delete the whole namespace.
+            # But this will take more time.
+            # if not self.session.problem.sys_status_after_recovery():
+            self.session.problem.app.cleanup()
+            atexit.unregister(exit_cleanup_fault)
 
         self.execution_end_time = time.time()
         total_execution_time = self.execution_end_time - self.execution_start_time
@@ -197,3 +205,8 @@ class Orchestrator:
             "results": results,
             "framework_overhead": framework_overhead,
         }
+
+
+def exit_cleanup_fault(prob):
+    print("Recovering fault before exit...")
+    prob.recover_fault()
