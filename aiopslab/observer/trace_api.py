@@ -223,22 +223,20 @@ class TraceAPI:
     def process_traces(self, traces) -> pd.DataFrame:
         """Process raw traces data into a structured DataFrame."""
         trace_id_list = []
+        span_id_list = []
         service_name_list = []
         operation_name_list = []
         start_time_list = []
         duration_list = []
         parent_span_list = []
+        error_list = []
+        response_list = []
 
         for trace in traces:
             trace_id = trace["traceID"]
             for span in trace["spans"]:
                 trace_id_list.append(trace_id)
-                service_name_list.append(
-                    span["serviceName"]
-                )  # Use the correct service name from the span
-                operation_name_list.append(span["operationName"])
-                start_time_list.append(span["startTime"])
-                duration_list.append(span["duration"])
+                span_id_list.append(span["spanID"])
                 parent_span = "ROOT"
                 if "references" in span:
                     for ref in span["references"]:
@@ -247,14 +245,35 @@ class TraceAPI:
                             break
                 parent_span_list.append(parent_span)
 
+                service_name_list.append(
+                    span["serviceName"]
+                )  # Use the correct service name from the span
+                operation_name_list.append(span["operationName"])
+                start_time_list.append(span["startTime"])
+                duration_list.append(span["duration"])
+                
+                has_error = False
+                response = "Unknown"
+                for tag in span.get("tags", []):
+                    if tag["key"] == "error" and tag["value"] == True:
+                        has_error = True
+                    if tag["key"] == "http.status_code" or tag["key"] == "response_class":
+                        response = tag["value"]
+                error_list.append(has_error)
+                response_list.append(response)
+                    
+
         df = pd.DataFrame(
             {
                 "trace_id": trace_id_list,
+                "span_id": span_id_list,
+                "parent_span": parent_span_list,
                 "service_name": service_name_list,
                 "operation_name": operation_name_list,
                 "start_time": start_time_list,
                 "duration": duration_list,
-                "parent_span": parent_span_list,
+                "has_error": error_list,
+                "response": response_list,
             }
         )
         return df
