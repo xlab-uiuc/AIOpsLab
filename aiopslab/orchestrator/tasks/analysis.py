@@ -81,6 +81,6 @@ class AnalysisTask(Task):
             raise InvalidActionError(action_name)
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
-        self.add_result("TTR", duration)
+        self.add_result("TTA", duration)
         self.common_eval(trace)
         return self.results
