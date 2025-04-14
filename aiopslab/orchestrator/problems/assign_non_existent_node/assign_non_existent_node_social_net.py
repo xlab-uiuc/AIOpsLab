@@ -191,7 +191,7 @@ class AssignNonExistentNodeSocialNetMitigation(
 
         # Check if the faulty service exists
         faulty_service_exists = any(
-            pod.metadata.name == self.faulty_service for pod in pod_list.items
+            self.faulty_service in pod.metadata.name for pod in pod_list.items
         )
         if not faulty_service_exists:
             print(f"Pod named {self.faulty_service} does not exist.")
