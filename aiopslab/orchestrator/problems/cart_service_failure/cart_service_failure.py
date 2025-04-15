@@ -61,7 +61,6 @@ class CartServiceFailureLocalization(CartServiceFailureBaseTask, LocalizationTas
     def __init__(self):
         CartServiceFailureBaseTask.__init__(self)
         LocalizationTask.__init__(self, self.app)
-        self.task_desc += "Start by investigating the cart service."
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
         print("== Evaluation ==")

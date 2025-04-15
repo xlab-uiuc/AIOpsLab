@@ -63,7 +63,6 @@ class PaymentServiceFailureLocalization(
     def __init__(self):
         PaymentServiceFailureBaseTask.__init__(self)
         LocalizationTask.__init__(self, self.app)
-        self.task_desc += "Start by investigating the payment service."
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
         print("== Evaluation ==")
