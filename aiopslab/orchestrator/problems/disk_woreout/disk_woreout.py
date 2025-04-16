@@ -1,6 +1,5 @@
 """Kernal fault problem in the HotelReservation application."""
 
-
 from typing import Any
 
 from aiopslab.orchestrator.tasks import *
@@ -40,7 +39,7 @@ class DiskWoreoutBaseTask:
     def inject_fault(self):
         print("== Fault Injection ==")
         self.injector._inject(fault_type="disk_woreout")
-        return ['*']
+        return []
 
     def recover_fault(self):
         print("== Fault Recovery ==")

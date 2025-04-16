@@ -1,6 +1,5 @@
 """Kernal fault problem in the HotelReservation application."""
 
-
 """
 IMPORTANT NOTE:
 Kernel fault is not working and is a known bug in chaos-mesh 0> https://github.com/xlab-uiuc/agent-ops/pull/10#issuecomment-2468992285
@@ -48,7 +47,7 @@ class KernelFaultBaseTask:
         print("== Fault Injection ==")
         self.injector.inject_kernel_fault([self.faulty_service])
         print(f"Service: {self.faulty_service} | Namespace: {self.namespace}\n")
-        return [self.faulty_service]
+        return [f"service/{self.faulty_service}"]
 
     def recover_fault(self):
         print("== Fault Recovery ==")

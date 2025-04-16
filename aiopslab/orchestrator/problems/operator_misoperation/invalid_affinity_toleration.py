@@ -1,6 +1,7 @@
 """
 This misoperation specifies an invalid toleration effect.
 """
+
 from typing import Any
 from aiopslab.orchestrator.tasks import *
 from aiopslab.orchestrator.evaluators.quantitative import *
@@ -9,6 +10,7 @@ from aiopslab.service.apps.tidb_cluster_operator import TiDBCluster
 from aiopslab.session import SessionItem
 from datetime import datetime, timedelta
 import time
+
 
 class K8SOperatorInvalidAffinityTolerationBaseTask:
     def __init__(self):
@@ -25,7 +27,7 @@ class K8SOperatorInvalidAffinityTolerationBaseTask:
         print("== Fault Injection ==")
         self.injector._inject("invalid_affinity_toleration")
         print(f"Injecting affinity toleration failure of the TiDB cluster\n")
-        return ['*']
+        return [f"namespace/{self.app.namespace}"]
 
     def recover_fault(self):
         print("== Fault Recovery ==")

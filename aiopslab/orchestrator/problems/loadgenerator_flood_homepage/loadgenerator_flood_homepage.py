@@ -27,7 +27,7 @@ class LoadGeneratorFloodHomepageBaseTask:
         print("== Fault Injection ==")
         self.injector.inject_fault("loadgeneratorFloodHomepage")
         print(f"Fault: loadgeneratorFloodHomepage | Namespace: {self.namespace}\n")
-        return ['*']
+        return [f"namespace/{self.namespace}"]
 
     def recover_fault(self):
         print("== Fault Recovery ==")

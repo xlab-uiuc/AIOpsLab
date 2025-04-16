@@ -26,7 +26,7 @@ class AdServiceHighCpuBaseTask:
         print("== Fault Injection ==")
         self.injector.inject_fault("adServiceHighCpu")
         print(f"Fault: AdServiceHighCpu | Namespace: {self.namespace}\n")
-        return ['*']
+        return [f"namespace/{self.namespace}"]
 
     def recover_fault(self):
         print("== Fault Recovery ==")

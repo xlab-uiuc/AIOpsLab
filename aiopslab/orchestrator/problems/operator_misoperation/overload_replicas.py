@@ -1,4 +1,4 @@
-# Ramifications: The TiDB cluster can become unhealthy: 
+# Ramifications: The TiDB cluster can become unhealthy:
 # $ kubectl get events -n tidb-cluster
 # 10m         Warning   Unhealthy              pod/basic-tidb-0                                                   Readiness probe failed: dial tcp 10.244.0.27:4000: connect: connection refused
 
@@ -30,7 +30,7 @@ class K8SOperatorOverloadReplicasBaseTask:
         print("== Fault Injection ==")
         self.injector._inject("overload_replicas")
         print(f"Injecting overload replica failure of the TiDB cluster\n")
-        return ['*']
+        return [f"namespace/{self.app.namespace}"]
 
     def recover_fault(self):
         print("== Fault Recovery ==")

@@ -49,7 +49,7 @@ class AssignNonExistentNodeSocialNetBaseTask:
         )
         time.sleep(25)
         print(f"Service: {self.faulty_service} | Namespace: {self.namespace}\n")
-        return [self.faulty_service]
+        return [f"service/{self.faulty_service}"]
 
     def recover_fault(self):
         print("== Fault Recovery ==")

@@ -54,7 +54,7 @@ class NoOpBaseTask:
             fault_type="no_op", microservices=[self.faulty_service], duration="200s"
         )
         print(f"Service: {self.faulty_service} | Namespace: {self.namespace}\n")
-        return [self.faulty_service]
+        return []
 
     def recover_fault(self):
         print("== Fault Recovery ==")

@@ -44,7 +44,7 @@ class WrongBinUsageBaseTask:
             microservices=[self.faulty_service],
         )
         print(f"Service: {self.faulty_service} | Namespace: {self.namespace}\n")
-        return [self.faulty_service]
+        return [f"service/{self.faulty_service}"]
 
     def recover_fault(self):
         print("== Fault Recovery ==")

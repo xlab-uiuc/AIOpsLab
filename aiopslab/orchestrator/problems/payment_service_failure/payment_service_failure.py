@@ -26,7 +26,7 @@ class PaymentServiceFailureBaseTask:
         print("== Fault Injection ==")
         self.injector.inject_fault("paymentServiceFailure")
         print(f"Fault: paymentServiceFailure | Namespace: {self.namespace}\n")
-        return ['*']
+        return [f"namespace/{self.namespace}"]
 
     def recover_fault(self):
         print("== Fault Recovery ==")

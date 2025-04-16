@@ -40,7 +40,7 @@ class PodKillBaseTask:
             fault_type="pod_kill", microservices=[self.faulty_service], duration="100s"
         )
         print(f"Service: {self.faulty_service} | Namespace: {self.namespace}\n")
-        return ['*']
+        return [f"service/{self.faulty_service}"]
 
     def recover_fault(self):
         print("== Fault Recovery ==")

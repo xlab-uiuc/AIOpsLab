@@ -26,7 +26,7 @@ class KafkaQueueProblemsBaseTask:
         print("== Fault Injection ==")
         self.injector.inject_fault("kafkaQueueProblems")
         print(f"Fault: kafkaQueueProblems | Namespace: {self.namespace}\n")
-        return ['*']
+        return [f"namespace/{self.namespace}"]
 
     def recover_fault(self):
         print("== Fault Recovery ==")

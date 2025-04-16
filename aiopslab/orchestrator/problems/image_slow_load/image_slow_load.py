@@ -26,7 +26,7 @@ class ImageSlowLoadBaseTask:
         print("== Fault Injection ==")
         self.injector.inject_fault("imageSlowLoad")
         print(f"Fault: imageSlowLoad | Namespace: {self.namespace}\n")
-        return ['*']
+        return [f"namespace/{self.namespace}"]
 
     def recover_fault(self):
         print("== Fault Recovery ==")

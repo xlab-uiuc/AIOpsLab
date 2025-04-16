@@ -26,7 +26,7 @@ class CartServiceFailureBaseTask:
         print("== Fault Injection ==")
         self.injector.inject_fault("cartServiceFailure")
         print(f"Fault: cartServiceFailure | Namespace: {self.namespace}\n")
-        return ['*']
+        return [f"namespace/{self.namespace}"]
 
     def recover_fault(self):
         print("== Fault Recovery ==")
