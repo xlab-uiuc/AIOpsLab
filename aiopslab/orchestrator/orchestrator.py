@@ -66,7 +66,7 @@ class Orchestrator:
 
         # inject fault
         mutables = prob.inject_fault()
-        self.session.add_mutable(mutables)
+        self.session.add_mutables(mutables)
 
         # Check if start_workload is async or sync
         if inspect.iscoroutinefunction(prob.start_workload):

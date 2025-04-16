@@ -134,7 +134,13 @@ async def main():
     agent.display_welcome_message()
     await agent.set_problem()
 
-    await orchestrator.start_problem(max_steps=30)
+    response = await orchestrator.start_problem(max_steps=30)
+    # print('History:', response["history"])
+    for history in response["history"]:
+        print(f"{history['role']}: {history['content']}")
+    print("-" * 50)
+    print("Final State:", response["final_state"])
+    print('Results:', response["results"])
 
 
 if __name__ == "__main__":

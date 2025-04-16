@@ -24,7 +24,7 @@ class Task:
     def get_instructions(self) -> str:
         raise NotImplementedError("Subclasses must implement this method.")
 
-    def get_available_actions(self):
+    def get_available_actions(self) -> dict:
         raise NotImplementedError("Subclasses must implement this method.")
 
     def perform_action(self, action_name: str, *args, **kwargs) -> str:
