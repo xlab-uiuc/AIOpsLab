@@ -211,9 +211,9 @@ class TraceAPI:
             )
             for trace in traces:
                 for span in trace["spans"]:
-                    span[
+                    span["serviceName"] = trace["processes"][span["processID"]][
                         "serviceName"
-                    ] = service  # Directly associate service name with each span
+                    ]
                 all_traces.append(trace)  # Collect the trace with service name included
         self.cleanup()
         print("Cleanup completed.")
@@ -251,7 +251,7 @@ class TraceAPI:
                 operation_name_list.append(span["operationName"])
                 start_time_list.append(span["startTime"])
                 duration_list.append(span["duration"])
-                
+
                 has_error = False
                 response = "Unknown"
                 for tag in span.get("tags", []):
@@ -261,7 +261,6 @@ class TraceAPI:
                         response = tag["value"]
                 error_list.append(has_error)
                 response_list.append(response)
-                    
 
         df = pd.DataFrame(
             {
