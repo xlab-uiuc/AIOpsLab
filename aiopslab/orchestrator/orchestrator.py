@@ -46,19 +46,15 @@ class Orchestrator:
 
         print("Setting up OpenEBS...")
 
-        command = "kubectl get pods -n openebs"
-        result = self.kubectl.exec_command(command)
-        if "Running" in result:
-            print("OpenEBS is already running. Skipping installation.")
-        else:
-            self.kubectl.exec_command(
-                "kubectl apply -f https://openebs.github.io/charts/openebs-operator.yaml"
-            )
-            self.kubectl.exec_command(
-                "kubectl patch storageclass openebs-hostpath -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'"
-            )
-            self.kubectl.wait_for_ready("openebs")
-            print("OpenEBS setup completed.")
+        # Install OpenEBS
+        self.kubectl.exec_command(
+            "kubectl apply -f https://openebs.github.io/charts/openebs-operator.yaml"
+        )
+        self.kubectl.exec_command(
+            "kubectl patch storageclass openebs-hostpath -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'"
+        )
+        self.kubectl.wait_for_ready("openebs")
+        print("OpenEBS setup completed.")
 
         # Setup and deploy Prometheus
         self.prometheus = Prometheus()
@@ -182,6 +178,13 @@ class Orchestrator:
         # But this will take more time.
         # if not self.session.problem.sys_status_after_recovery():
         self.session.problem.app.cleanup()
+        self.prometheus.teardown()
+        print("Uninstalling OpenEBS...")
+        self.kubectl.exec_command("kubectl delete sc openebs-hostpath openebs-device --ignore-not-found")
+        self.kubectl.exec_command(
+            "kubectl delete -f https://openebs.github.io/charts/openebs-operator.yaml"
+        )
+        self.kubectl.wait_for_namespace_deletion("openebs")
 
         self.execution_end_time = time.time()
         total_execution_time = self.execution_end_time - self.execution_start_time
