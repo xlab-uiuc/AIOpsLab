@@ -22,8 +22,8 @@ class Shell:
     ) -> bool:
         """Validate the command by running a dry-run with --dry-run=server."""
         dry_run = f"{command} --dry-run=server -o name"
-        # print(f"[INFO] Validating command: {dry_run}")
         output, error = Shell._exec(dry_run, input_data=input_data, cwd=cwd)
+
         # If the command is not valid, let it pass through
         if error:
             return True
@@ -44,7 +44,7 @@ class Shell:
         if mutables and not Shell._validate_command(
             command, mutables, input_data=input_data, cwd=cwd
         ):
-            return "Permission Denied: You are not allowed to run this command."
+            return "", "Permission Denied: You are not allowed to run this command."
 
         if k8s_host == "kind":
             return Shell.docker_exec("kind-control-plane", command)
@@ -69,7 +69,9 @@ class Shell:
             command, input_data=input_data, cwd=cwd, mutables=mutables
         )
         if error:
+            print(f"[ERROR] Command {command} execution failed: {error}")
             return error
+        print(f"[INFO] Command {command} executed successfully: {output}")
         return output
 
     @staticmethod
@@ -89,7 +91,7 @@ class Shell:
 
             if out.stderr or out.returncode != 0:
                 error_message = out.stderr.decode("utf-8")
-                print(f"[ERROR] Command execution failed: {error_message}")
+                # print(f"[ERROR] Command execution failed: {error_message}")
                 return "", error_message
             else:
                 output_message = out.stdout.decode("utf-8")

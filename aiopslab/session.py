@@ -117,7 +117,7 @@ class Session:
             "problem_id": self.pid,
             "start_time": self.start_time,
             "end_time": self.end_time,
-            "mutables": self.mutables,
+            "mutables": ",".join(self.mutables or []),
             "trace": [item.model_dump() for item in self.history],
             "results": self.results,
         }

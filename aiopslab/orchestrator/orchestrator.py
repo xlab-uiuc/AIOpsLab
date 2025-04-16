@@ -67,6 +67,28 @@ class Orchestrator:
         # inject fault
         mutables = prob.inject_fault()
         self.session.add_mutables(mutables)
+        for mutable in mutables:
+            additional = set()
+            if mutable.startswith("pod"):
+                continue
+            elif mutable.startswith("service"):
+                pods = self.kubectl.exec_command(
+                    f"kubectl get pods -n {prob.namespace} --selector service={mutable} -o name"
+                )
+                for pod in pods.split("\n"):
+                    additional.add(pod)
+            else:
+                pods = self.kubectl.exec_command(
+                    f"kubectl get pods -n {prob.namespace} -o name"
+                )
+                for pod in pods.split("\n"):
+                    additional.add(pod)
+                services = self.kubectl.exec_command(
+                    f"kubectl get services -n {prob.namespace} -o name"
+                )
+                for service in services.split("\n"):
+                    additional.add(service)
+            self.session.add_mutables(additional)
 
         # Check if start_workload is async or sync
         if inspect.iscoroutinefunction(prob.start_workload):
@@ -199,6 +221,13 @@ class Orchestrator:
             total_execution_time - results[key]
         )  # Time spent doing everything besides running the agent
         print(f"Framework overhead: {framework_overhead}")
+        print('-'*50)
+        for history in self.session.history:
+            print(f"{history.role}: {history.content}")
+        print('-'*50)
+        print("Final State:", env_response)
+        print("Results:", results)
+
 
         return {
             "history": self.session.history,
