@@ -22,16 +22,18 @@ class Shell:
     ) -> bool:
         """Validate the command by running a dry-run with --dry-run=server."""
         dry_run = f"{command} --dry-run=server -o name"
-        print(f"[INFO] Validating command: {dry_run}")
-        output = Shell.exec(dry_run, input_data=input_data, cwd=cwd)
-        # If no --dry-run=server flag is found, the command doesn't need one
-        if "unknown flag: --dry-run" in output:
+        # print(f"[INFO] Validating command: {dry_run}")
+        output, error = Shell._exec(dry_run, input_data=input_data, cwd=cwd)
+        # If the command is not valid, let it pass through
+        if error:
             return True
         return output in mutables
 
     @staticmethod
-    def exec(command: str, input_data=None, cwd=None, mutables=None):
-        """Execute a shell command on localhost, via SSH, or inside kind's control-plane container."""
+    def _exec(
+        command: str, input_data=None, cwd=None, mutables=None
+    ) -> tuple[str, str]:
+        """Execute a command and return its output and error messages."""
         k8s_host = config.get("k8s_host", "localhost")  # Default to localhost
         if mutables and not command.startswith("kubectl"):
             print(
@@ -61,6 +63,16 @@ class Shell:
             return Shell.ssh_exec(k8s_host, k8s_user, ssh_key_path, command)
 
     @staticmethod
+    def exec(command: str, input_data=None, cwd=None, mutables=None):
+        """Execute a shell command on localhost, via SSH, or inside kind's control-plane container."""
+        output, error = Shell._exec(
+            command, input_data=input_data, cwd=cwd, mutables=mutables
+        )
+        if error:
+            return error
+        return output
+
+    @staticmethod
     def local_exec(command: str, input_data=None, cwd=None):
         if input_data is not None:
             input_data = input_data.encode("utf-8")
@@ -78,11 +90,11 @@ class Shell:
             if out.stderr or out.returncode != 0:
                 error_message = out.stderr.decode("utf-8")
                 print(f"[ERROR] Command execution failed: {error_message}")
-                return error_message
+                return "", error_message
             else:
                 output_message = out.stdout.decode("utf-8")
-                print(output_message)
-                return output_message
+                # print(output_message)
+                return output_message, ""
 
         except Exception as e:
             raise RuntimeError(f"Failed to execute command: {command}\nError: {str(e)}")
@@ -101,11 +113,11 @@ class Shell:
 
             if exit_status != 0:
                 error_message = stderr.read().decode("utf-8")
-                return error_message
+                return "", error_message
             else:
                 output_message = stdout.read().decode("utf-8")
-                print(output_message)
-                return output_message
+                # print(output_message)
+                return output_message, ""
 
         except Exception as e:
             raise RuntimeError(
@@ -133,11 +145,11 @@ class Shell:
             if out.stderr or out.returncode != 0:
                 error_message = out.stderr.decode("utf-8")
                 print(f"[ERROR] Docker command execution failed: {error_message}")
-                return error_message
+                return "", error_message
             else:
                 output_message = out.stdout.decode("utf-8")
-                print(output_message)
-                return output_message
+                # print(output_message)
+                return output_message, ""
 
         except Exception as e:
             raise RuntimeError(

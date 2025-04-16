@@ -34,11 +34,11 @@ class KubeCtl:
         """Retrieve the cluster IP address of a specified service within a namespace."""
         service_info = self.core_v1_api.read_namespaced_service(service_name, namespace)
         return service_info.spec.cluster_ip  # type: ignore
-    
+
     def get_container_runtime(self):
         """
-            Retrieve the container runtime used by the cluster.
-            If the cluster uses multiple container runtimes, the first one found will be returned.
+        Retrieve the container runtime used by the cluster.
+        If the cluster uses multiple container runtimes, the first one found will be returned.
         """
         for node in self.core_v1_api.list_node().items:
             for status in node.status.conditions:
@@ -71,7 +71,9 @@ class KubeCtl:
         """Wait for all pods in a namespace to be in a Ready state before proceeding."""
 
         console = Console()
-        console.log(f"[bold green]Waiting for all pods in namespace '{namespace}' to be ready...")
+        console.log(
+            f"[bold green]Waiting for all pods in namespace '{namespace}' to be ready..."
+        )
 
         with console.status("[bold green]Waiting for pods to be ready...") as status:
             wait = 0
@@ -79,18 +81,23 @@ class KubeCtl:
             while wait < max_wait:
                 try:
                     pod_list = self.list_pods(namespace)
-                    
+
                     if not pod_list.items:
-                        console.log(f"[yellow]No pods found in namespace '{namespace}', waiting...")
+                        console.log(
+                            f"[yellow]No pods found in namespace '{namespace}', waiting..."
+                        )
                     else:
                         ready_pods = [
-                            pod for pod in pod_list.items
-                            if pod.status.container_statuses and
-                            all(cs.ready for cs in pod.status.container_statuses)
+                            pod
+                            for pod in pod_list.items
+                            if pod.status.container_statuses
+                            and all(cs.ready for cs in pod.status.container_statuses)
                         ]
 
                         if len(ready_pods) == len(pod_list.items):
-                            console.log(f"[bold green]All pods in namespace '{namespace}' are ready.")
+                            console.log(
+                                f"[bold green]All pods in namespace '{namespace}' are ready."
+                            )
                             return
 
                 except Exception as e:
@@ -99,8 +106,10 @@ class KubeCtl:
                 time.sleep(sleep)
                 wait += sleep
 
-            raise Exception(f"[red]Timeout: Not all pods in namespace '{namespace}' reached the Ready state within {max_wait} seconds.")
-    
+            raise Exception(
+                f"[red]Timeout: Not all pods in namespace '{namespace}' reached the Ready state within {max_wait} seconds."
+            )
+
     def wait_for_namespace_deletion(self, namespace, sleep=2, max_wait=300):
         """Wait for a namespace to be fully deleted before proceeding."""
 
@@ -114,13 +123,17 @@ class KubeCtl:
                 try:
                     self.core_v1_api.read_namespace(name=namespace)
                 except Exception as e:
-                    console.log(f"[bold green]Namespace '{namespace}' has been deleted.")
+                    console.log(
+                        f"[bold green]Namespace '{namespace}' has been deleted."
+                    )
                     return
 
                 time.sleep(sleep)
                 wait += sleep
 
-            raise Exception(f"[red]Timeout: Namespace '{namespace}' was not deleted within {max_wait} seconds.")
+            raise Exception(
+                f"[red]Timeout: Namespace '{namespace}' was not deleted within {max_wait} seconds."
+            )
 
     def update_deployment(self, name: str, namespace: str, deployment):
         """Update the deployment configuration."""
