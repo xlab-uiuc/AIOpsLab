@@ -250,11 +250,11 @@ class VirtualizationFaultInjector(FaultInjector):
             print(f"Recovered from wrong binary usage fault for service: {service}")
 
     ############# HELPER FUNCTIONS ################
-    # def _wait_for_pods_ready(self, microservices: list[str], timeout: int = 30):
-    #     for service in microservices:
-    #         command = f"kubectl wait --for=condition=ready pod -l app={service} -n {self.namespace} --timeout={timeout}s"
-    #         result = self.kubectl.exec_command(command)
-    #         print(f"Wait result for {service}: {result}")
+    def _wait_for_pods_ready(self, microservices: list[str], timeout: int = 30):
+        for service in microservices:
+            command = f"kubectl wait --for=condition=ready pod -l app={service} -n {self.namespace} --timeout={timeout}s"
+            result = self.kubectl.exec_command(command)
+            print(f"Wait result for {service}: {result}")
 
     def _modify_target_port_config(self, from_port: int, to_port: int, configs: dict):
         for port in configs["spec"]["ports"]:
@@ -263,35 +263,35 @@ class VirtualizationFaultInjector(FaultInjector):
 
         return configs
 
-    # def _get_values_yaml(self, service_name: str):
-    #     kubectl = KubeCtl()
-    #     values_yaml = kubectl.exec_command(
-    #         f"kubectl get configmap {service_name} -n {self.testbed} -o yaml"
-    #     )
-    #     return yaml.safe_load(values_yaml)
+    def _get_values_yaml(self, service_name: str):
+        kubectl = KubeCtl()
+        values_yaml = kubectl.exec_command(
+            f"kubectl get configmap {service_name} -n {self.testbed} -o yaml"
+        )
+        return yaml.safe_load(values_yaml)
 
-    # def _enable_tls(self, values_yaml: dict):
-    #     values_yaml["net"] = {
-    #         "tls": {
-    #             "mode": "requireTLS",
-    #             "certificateKeyFile": "/etc/tls/tls.pem",
-    #             "CAFile": "/etc/tls/ca.crt",
-    #         }
-    #     }
-    #     return yaml.dump(values_yaml)
+    def _enable_tls(self, values_yaml: dict):
+        values_yaml["net"] = {
+            "tls": {
+                "mode": "requireTLS",
+                "certificateKeyFile": "/etc/tls/tls.pem",
+                "CAFile": "/etc/tls/ca.crt",
+            }
+        }
+        return yaml.dump(values_yaml)
 
-    # def _apply_modified_yaml(self, service_name: str, modified_yaml: str):
-    #     modified_yaml_path = f"/tmp/{service_name}-values.yaml"
-    #     with open(modified_yaml_path, "w") as f:
-    #         f.write(modified_yaml)
+    def _apply_modified_yaml(self, service_name: str, modified_yaml: str):
+        modified_yaml_path = f"/tmp/{service_name}-values.yaml"
+        with open(modified_yaml_path, "w") as f:
+            f.write(modified_yaml)
 
-    #     kubectl = KubeCtl()
-    #     kubectl.exec_command(
-    #         f"kubectl create configmap {service_name} -n {self.testbed} --from-file=values.yaml={modified_yaml_path} --dry-run=client -o yaml | kubectl apply -f -"
-    #     )
-    #     kubectl.exec_command(
-    #         f"kubectl rollout restart deployment {service_name} -n {self.testbed}"
-    #     )
+        kubectl = KubeCtl()
+        kubectl.exec_command(
+            f"kubectl create configmap {service_name} -n {self.testbed} --from-file=values.yaml={modified_yaml_path} --dry-run=client -o yaml | kubectl apply -f -"
+        )
+        kubectl.exec_command(
+            f"kubectl rollout restart deployment {service_name} -n {self.testbed}"
+        )
 
     def _get_deployment_yaml(self, service_name: str):
         deployment_yaml = self.kubectl.exec_command(
@@ -299,12 +299,12 @@ class VirtualizationFaultInjector(FaultInjector):
         )
         return yaml.safe_load(deployment_yaml)
 
-    # def _change_node_selector(self, deployment_yaml: dict, node_name: str):
-    #     if "spec" in deployment_yaml and "template" in deployment_yaml["spec"]:
-    #         deployment_yaml["spec"]["template"]["spec"]["nodeSelector"] = {
-    #             "kubernetes.io/hostname": node_name
-    #         }
-    #     return yaml.dump(deployment_yaml)
+    def _change_node_selector(self, deployment_yaml: dict, node_name: str):
+        if "spec" in deployment_yaml and "template" in deployment_yaml["spec"]:
+            deployment_yaml["spec"]["template"]["spec"]["nodeSelector"] = {
+                "kubernetes.io/hostname": node_name
+            }
+        return yaml.dump(deployment_yaml)
 
     def _write_yaml_to_file(self, service_name: str, yaml_content: dict):
         """Helper function to write YAML content to a temporary file."""
