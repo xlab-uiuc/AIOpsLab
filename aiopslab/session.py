@@ -22,15 +22,15 @@ class Session:
         self.session_id = uuid.uuid4()
         self.pid: str | None = None
         self.problem = None
-        self.mutables: list[str] = []
+        self.mutables: set[str] = set()
         self.solution = None
         self.results = {}
         self.history: list[SessionItem] = []
         self.start_time = None
         self.end_time = None
         self.agent_name: str | None = None
-    
-    def set_problem(self, problem, pid: str | None=None):
+
+    def set_problem(self, problem, pid: str | None = None):
         """Set the problem instance for the session.
 
         Args:
@@ -38,7 +38,7 @@ class Session:
             pid (str): The problem ID.
         """
         self.problem = problem
-        self.namespace = problem.namespace 
+        self.namespace = problem.namespace
         self.pid = pid
 
     def set_solution(self, solution):
@@ -64,15 +64,14 @@ class Session:
             agent_name (str): The name of the agent.
         """
         self.agent_name = agent_name
-    
+
     def add_mutables(self, elements: list[str]):
-        """Add a mutable element under the given namespace
+        """Add mutable elements under the given namespace
 
         Args:
             element (str): The mutable element
         """
-        self.mutables = elements
-
+        self.mutables = self.mutables.union(set(elements))
 
     def add(self, item: SessionItem | dict | list):
         """Add an item into the session history.
@@ -118,6 +117,7 @@ class Session:
             "problem_id": self.pid,
             "start_time": self.start_time,
             "end_time": self.end_time,
+            "mutables": self.mutables,
             "trace": [item.model_dump() for item in self.history],
             "results": self.results,
         }

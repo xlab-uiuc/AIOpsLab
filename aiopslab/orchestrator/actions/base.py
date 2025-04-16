@@ -53,7 +53,7 @@ class TaskActions:
 
     @staticmethod
     @action
-    def exec_shell(command: str) -> str:
+    def exec_shell(command: str, mutables=None) -> str:
         """
         Execute any shell command in a predefined debugging environment.
         Note: this is NOT A STATEFUL OR INTERACTIVE shell session. So you cannot
@@ -68,7 +68,7 @@ class TaskActions:
         if "kubectl edit" in command or "edit svc" in command:
             return "Error: Cannot use `kubectl edit`. Use `kubectl patch` instead."
 
-        return Shell().exec(command)
+        return Shell.exec(command, mutables=mutables)
 
     @staticmethod
     @read
@@ -99,7 +99,7 @@ class TaskActions:
         )
 
         return save_dir_str
-    
+
     @staticmethod
     @read
     def read_metrics(file_path: str) -> str:

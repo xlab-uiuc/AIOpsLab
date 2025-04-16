@@ -17,9 +17,32 @@ class Shell:
     """
 
     @staticmethod
-    def exec(command: str, input_data=None, cwd=None):
+    def _validate_command(
+        command: str, mutables: set[str], input_data=None, cwd=None
+    ) -> bool:
+        """Validate the command by running a dry-run with --dry-run=server."""
+        dry_run = f"{command} --dry-run=server -o name"
+        print(f"[INFO] Validating command: {dry_run}")
+        output = Shell.exec(dry_run, input_data=input_data, cwd=cwd)
+        # If no --dry-run=server flag is found, the command doesn't need one
+        if "unknown flag: --dry-run" in output:
+            return True
+        return output in mutables
+
+    @staticmethod
+    def exec(command: str, input_data=None, cwd=None, mutables=None):
         """Execute a shell command on localhost, via SSH, or inside kind's control-plane container."""
         k8s_host = config.get("k8s_host", "localhost")  # Default to localhost
+        if mutables and not command.startswith("kubectl"):
+            print(
+                "[WARNING] Command validation is only supported for kubectl commands."
+            )
+            mutables = None
+
+        if mutables and not Shell._validate_command(
+            command, mutables, input_data=input_data, cwd=cwd
+        ):
+            return "Permission Denied: You are not allowed to run this command."
 
         if k8s_host == "kind":
             return Shell.docker_exec("kind-control-plane", command)
@@ -85,7 +108,9 @@ class Shell:
                 return output_message
 
         except Exception as e:
-            raise RuntimeError(f"Failed to execute command via SSH: {command}\nError: {str(e)}")
+            raise RuntimeError(
+                f"Failed to execute command via SSH: {command}\nError: {str(e)}"
+            )
 
         finally:
             ssh_client.close()
@@ -94,7 +119,7 @@ class Shell:
     def docker_exec(container_name: str, command: str):
         """Execute a command inside a running Docker container."""
         escaped_command = command.replace('"', '\\"')
-        
+
         docker_command = f'docker exec {container_name} sh -c "{escaped_command}"'
 
         try:
@@ -102,7 +127,7 @@ class Shell:
                 docker_command,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                shell=True
+                shell=True,
             )
 
             if out.stderr or out.returncode != 0:
@@ -115,4 +140,6 @@ class Shell:
                 return output_message
 
         except Exception as e:
-            raise RuntimeError(f"Failed to execute command in Docker container: {container_name}\nError: {str(e)}")
+            raise RuntimeError(
+                f"Failed to execute command in Docker container: {container_name}\nError: {str(e)}"
+            )

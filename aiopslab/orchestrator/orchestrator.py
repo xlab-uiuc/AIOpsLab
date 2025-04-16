@@ -51,7 +51,7 @@ class Orchestrator:
             "kubectl apply -f https://openebs.github.io/charts/openebs-operator.yaml"
         )
         self.kubectl.exec_command(
-            "kubectl patch storageclass openebs-hostpath -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'"
+            'kubectl patch storageclass openebs-hostpath -p \'{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}\''
         )
         self.kubectl.wait_for_ready("openebs")
         print("OpenEBS setup completed.")
@@ -117,6 +117,9 @@ class Orchestrator:
             self.session.set_solution(args[0] if len(args) == 1 else args)
 
         try:
+            if api == "exec_shell" and len(args) > 0 and args[0].startswith("kubectl"):
+                kwargs["mutables"] = self.session.mutables
+
             env_response = self.session.problem.perform_action(api, *args, **kwargs)
 
             if hasattr(env_response, "error"):
@@ -180,7 +183,9 @@ class Orchestrator:
         self.session.problem.app.cleanup()
         self.prometheus.teardown()
         print("Uninstalling OpenEBS...")
-        self.kubectl.exec_command("kubectl delete sc openebs-hostpath openebs-device --ignore-not-found")
+        self.kubectl.exec_command(
+            "kubectl delete sc openebs-hostpath openebs-device --ignore-not-found"
+        )
         self.kubectl.exec_command(
             "kubectl delete -f https://openebs.github.io/charts/openebs-operator.yaml"
         )
