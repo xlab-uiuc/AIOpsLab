@@ -38,7 +38,7 @@ class MongoDBAuthMissingBaseTask:
             url=f"{frontend_url}/wrk2-api/post/compose",
         )
 
-    def inject_fault(self) -> list[str]:
+    def inject_fault(self):
         print("== Fault Injection ==")
         injector = VirtualizationFaultInjector(namespace=self.namespace)
         injector._inject(
