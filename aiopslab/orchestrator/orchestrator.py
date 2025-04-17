@@ -9,10 +9,12 @@ from aiopslab.session import Session
 from aiopslab.orchestrator.problems.registry import ProblemRegistry
 from aiopslab.orchestrator.parser import ResponseParser
 from aiopslab.utils.status import *
+from aiopslab.utils.critical_section import CriticalSection
 from aiopslab.service.telemetry.prometheus import Prometheus
 import time
 import inspect
 import asyncio
+import atexit
 
 
 class Orchestrator:
@@ -64,8 +66,12 @@ class Orchestrator:
         prob.app.delete()
         prob.app.deploy()
 
-        # inject fault
-        prob.inject_fault()
+        # make sure is_fault_injected is correct to apply appropriate
+        # function with atexit to recover fault
+        with CriticalSection():
+            # inject fault
+            prob.inject_fault()
+            atexit.register(exit_cleanup_fault, prob=prob)
 
         # Check if start_workload is async or sync
         if inspect.iscoroutinefunction(prob.start_workload):
@@ -117,7 +123,7 @@ class Orchestrator:
 
         try:
             env_response = self.session.problem.perform_action(api, *args, **kwargs)
-        
+
             if hasattr(env_response, "error"):
                 env_response = str(env_response)
                 print("An error occurred:", env_response)
@@ -145,19 +151,29 @@ class Orchestrator:
         action, env_response, results = "", "", {}
         self.session.start()
 
-        for step in range(max_steps):
-            action = await self.ask_agent(action_instr)
-            self.sprint.agent(action)
+        # catch any exception and recover fault before the users catch it
+        try:
+            for step in range(max_steps):
+                action = await self.ask_agent(action_instr)
+                self.sprint.agent(action)
 
-            env_response = await self.ask_env(action)
-            self.sprint.service(env_response)
+                env_response = await self.ask_env(action)
+                self.sprint.service(env_response)
 
-            if env_response == SubmissionStatus.VALID_SUBMISSION:
-                break
-            elif env_response == SubmissionStatus.INVALID_SUBMISSION:
-                raise ValueError("Invalid submission!")  # TODO (@manish): ask to retry?
+                if env_response == SubmissionStatus.VALID_SUBMISSION:
+                    break
+                elif env_response == SubmissionStatus.INVALID_SUBMISSION:
+                    raise ValueError("Invalid submission!")  # TODO (@manish): ask to retry?
 
-            action_instr = env_response + "\n" + "Please take the next action"
+                action_instr = env_response + "\n" + "Please take the next action"
+        except Exception as e:
+            # Make sure the fault cleanup function is unregistered
+            # after recovering fault ahead because of exceptions
+            with CriticalSection():
+                print("Some exception happened. Recovering the injected fault...")
+                self.session.problem.recover_fault()
+                atexit.unregister(exit_cleanup_fault)
+            raise e
 
         self.session.end()
 
@@ -170,8 +186,11 @@ class Orchestrator:
 
         self.session.set_results(results)
         self.session.to_json()
-        self.session.problem.recover_fault()
 
+        with CriticalSection():
+            self.session.problem.recover_fault()
+            atexit.unregister(exit_cleanup_fault)
+            
         # Beyond recovering from fault,
         # I feel sometimes it is safer to delete the whole namespace.
         # But this will take more time.
@@ -200,3 +219,8 @@ class Orchestrator:
             "results": results,
             "framework_overhead": framework_overhead,
         }
+
+
+def exit_cleanup_fault(prob):
+    print("Recovering fault before exit...")
+    prob.recover_fault()
