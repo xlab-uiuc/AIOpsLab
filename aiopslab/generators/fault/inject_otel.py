@@ -8,7 +8,7 @@ class OtelFaultInjector(FaultInjector):
     def __init__(self, namespace: str):
         self.namespace = namespace
         self.kubectl = KubeCtl()
-        self.configmap_name = f"{namespace}-flagd-config"
+        self.configmap_name = "flagd-config"
 
     def inject_fault(self, feature_flag: str):
         command = (
