@@ -28,8 +28,9 @@ class Application:
         self.namespace = metadata["Namespace"]
         if "Helm Config" in metadata:
             self.helm_configs = metadata["Helm Config"]
-            if "chart_path" in self.helm_configs:
-                chart_path = self.helm_configs["chart_path"]
+            chart_path = self.helm_configs.get("chart_path")
+            
+            if chart_path and not self.helm_configs.get("remote_chart", False):
                 self.helm_configs["chart_path"] = str(TARGET_MICROSERVICES / chart_path)
 
         if "K8S Deploy Path" in metadata:

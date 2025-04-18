@@ -24,12 +24,12 @@ class AdServiceFailureBaseTask:
 
     def inject_fault(self):
         print("== Fault Injection ==")
-        self.injector.inject_fault("adServiceFailure")
+        self.injector.inject_fault("adFailure")
         print(f"Fault: adServiceFailure | Namespace: {self.namespace}\n")
 
     def recover_fault(self):
         print("== Fault Recovery ==")
-        self.injector.recover_fault("adServiceFailure")
+        self.injector.recover_fault("adFailure")
 
 
 ################## Detection Problem ##################

@@ -24,14 +24,14 @@ class RecommendationServiceCacheFailureBaseTask:
 
     def inject_fault(self):
         print("== Fault Injection ==")
-        self.injector.inject_fault("recommendationServiceCacheFailure")
+        self.injector.inject_fault("recommendationCacheFailure")
         print(
             f"Fault: recommendationServiceCacheFailure | Namespace: {self.namespace}\n"
         )
 
     def recover_fault(self):
         print("== Fault Recovery ==")
-        self.injector.recover_fault("recommendationServiceCacheFailure")
+        self.injector.recover_fault("recommendationCacheFailure")
 
 
 ################## Detection Problem ##################

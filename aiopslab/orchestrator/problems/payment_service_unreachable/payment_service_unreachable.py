@@ -24,12 +24,12 @@ class PaymentServiceUnreachableBaseTask:
 
     def inject_fault(self):
         print("== Fault Injection ==")
-        self.injector.inject_fault("paymentServiceUnreachable")
+        self.injector.inject_fault("paymentUnreachable")
         print(f"Fault: paymentServiceUnreachable | Namespace: {self.namespace}\n")
 
     def recover_fault(self):
         print("== Fault Recovery ==")
-        self.injector.recover_fault("paymentServiceUnreachable")
+        self.injector.recover_fault("paymentUnreachable")
 
 
 ################## Detection Problem ##################

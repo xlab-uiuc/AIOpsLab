@@ -24,12 +24,12 @@ class AdServiceManualGcBaseTask:
 
     def inject_fault(self):
         print("== Fault Injection ==")
-        self.injector.inject_fault("adServiceManualGc")
+        self.injector.inject_fault("adManualGc")
         print(f"Fault: adServiceManualGc | Namespace: {self.namespace}\n")
 
     def recover_fault(self):
         print("== Fault Recovery ==")
-        self.injector.recover_fault("adServiceManualGc")
+        self.injector.recover_fault("adManualGc")
 
 
 ################## Detection Problem ##################
