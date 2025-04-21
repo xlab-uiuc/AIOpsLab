@@ -24,12 +24,12 @@ class CartServiceFailureBaseTask:
 
     def inject_fault(self):
         print("== Fault Injection ==")
-        self.injector.inject_fault("cartServiceFailure")
+        self.injector.inject_fault("cartFailure")
         print(f"Fault: cartServiceFailure | Namespace: {self.namespace}\n")
 
     def recover_fault(self):
         print("== Fault Recovery ==")
-        self.injector.recover_fault("cartServiceFailure")
+        self.injector.recover_fault("cartFailure")
 
 
 ################## Detection Problem ##################

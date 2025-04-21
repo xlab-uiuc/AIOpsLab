@@ -24,12 +24,12 @@ class AdServiceHighCpuBaseTask:
 
     def inject_fault(self):
         print("== Fault Injection ==")
-        self.injector.inject_fault("adServiceHighCpu")
+        self.injector.inject_fault("adHighCpu")
         print(f"Fault: AdServiceHighCpu | Namespace: {self.namespace}\n")
 
     def recover_fault(self):
         print("== Fault Recovery ==")
-        self.injector.recover_fault("adServiceHighCpu")
+        self.injector.recover_fault("adHighCpu")
 
 
 ################## Detection Problem ##################
