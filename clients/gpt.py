@@ -13,7 +13,10 @@ import wandb
 from aiopslab.orchestrator import Orchestrator
 from clients.utils.llm import GPT4Turbo
 from clients.utils.templates import DOCS_SHELL_ONLY
+from dotenv import load_dotenv
 
+# Load environment variables from the .env file
+load_dotenv()
 
 class Agent:
     def __init__(self):
