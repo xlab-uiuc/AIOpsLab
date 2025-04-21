@@ -7,6 +7,10 @@ import os
 from openai import OpenAI
 from pathlib import Path
 import json
+from dotenv import load_dotenv
+
+# Load environment variables from the .env file
+load_dotenv()
 
 CACHE_DIR = Path("./cache_dir")
 CACHE_PATH = CACHE_DIR / "cache.json"

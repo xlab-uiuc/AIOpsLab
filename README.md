@@ -103,9 +103,16 @@ python3 cli.py
 Run GPT-4 baseline agent:
 
 ```bash
-export OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>
+# Create a .env file in the project root (if not exists)
+echo "OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>" > .env
+# Add more API keys as needed:
+# echo "QWEN_API_KEY=<YOUR_QWEN_API_KEY>" >> .env
+# echo "DEEPSEEK_API_KEY=<YOUR_DEEPSEEK_API_KEY>" >> .env
+
 python3 clients/gpt.py # you can also change the problem to solve in the main() function
 ```
+
+The clients will automatically load API keys from your .env file.
 
 You can check the running status of the cluster using [k9s](https://k9scli.io/) or other cluster monitoring tools conveniently.
 
