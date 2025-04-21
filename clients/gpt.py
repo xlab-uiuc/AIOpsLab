@@ -6,9 +6,10 @@ Achiam, Josh, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya, Florencia
 Code: https://openai.com/index/gpt-4-research/
 Paper: https://arxiv.org/abs/2303.08774
 """
-
+import argparse
 import asyncio
 
+import wandb
 from aiopslab.orchestrator import Orchestrator
 from clients.utils.llm import GPT4Turbo
 from clients.utils.templates import DOCS_SHELL_ONLY
@@ -58,12 +59,29 @@ class Agent:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="OpenAI gpt client for AIOpsLab")
+    parser.add_argument(
+        "--use_wandb",
+        action="store_true",
+        default=False,
+        help="Enable Weights & Biases logging"
+    )
+    args = parser.parse_args()
+
+    if args.use_wandb:
+        # Initialize wandb run
+        wandb.init(project="AIOpsLab", entity="AIOpsLab")
+
     agent = Agent()
 
-    orchestrator = Orchestrator()
+    orchestrator = Orchestrator(use_wandb=args.use_wandb)
     orchestrator.register_agent(agent, name="gpt-w-shell")
 
     pid = "misconfig_app_hotel_res-mitigation-1"
     problem_desc, instructs, apis = orchestrator.init_problem(pid)
     agent.init_context(problem_desc, instructs, apis)
     asyncio.run(orchestrator.start_problem(max_steps=10))
+
+    if args.use_wandb:
+        # Finish the wandb run
+        wandb.finish()
