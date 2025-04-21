@@ -63,7 +63,7 @@ if __name__ == "__main__":
     use_wandb = os.getenv("USE_WANDB", "false").lower() == "true"
     
     if use_wandb:
-        # Initialize wandb runn
+        # Initialize wandb running
         wandb.init(project="AIOpsLab", entity="AIOpsLab")
 
     agent = Agent()
