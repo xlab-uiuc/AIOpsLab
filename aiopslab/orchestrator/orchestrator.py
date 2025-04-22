@@ -15,6 +15,7 @@ import time
 import inspect
 import asyncio
 import atexit
+import os
 
 
 class Orchestrator:
@@ -27,6 +28,7 @@ class Orchestrator:
         self.execution_start_time = None
         self.execution_end_time = None
         self.kubectl = KubeCtl()
+        self.use_wandb = os.getenv("USE_WANDB", "false").lower() == "true"
 
     def init_problem(self, problem_id: str):
         """Initialize a problem instance for the agent to solve.
@@ -186,6 +188,8 @@ class Orchestrator:
 
         self.session.set_results(results)
         self.session.to_json()
+        if self.use_wandb:
+            self.session.to_wandb()
 
         with CriticalSection():
             self.session.problem.recover_fault()
