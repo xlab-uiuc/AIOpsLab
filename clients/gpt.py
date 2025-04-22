@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
     agent = Agent()
 
-    orchestrator = Orchestrator(use_wandb=use_wandb)
+    orchestrator = Orchestrator()
     orchestrator.register_agent(agent, name="gpt-w-shell")
 
     pid = "misconfig_app_hotel_res-mitigation-1"

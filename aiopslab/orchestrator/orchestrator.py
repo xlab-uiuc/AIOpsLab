@@ -15,10 +15,11 @@ import time
 import inspect
 import asyncio
 import atexit
+import os
 
 
 class Orchestrator:
-    def __init__(self, use_wandb=False):
+    def __init__(self):
         self.agent = None
         self.session = None
         self.parser = ResponseParser()
@@ -27,7 +28,7 @@ class Orchestrator:
         self.execution_start_time = None
         self.execution_end_time = None
         self.kubectl = KubeCtl()
-        self.use_wandb = use_wandb
+        self.use_wandb = os.getenv("USE_WANDB", "false").lower() == "true"
 
     def init_problem(self, problem_id: str):
         """Initialize a problem instance for the agent to solve.
