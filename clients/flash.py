@@ -4,7 +4,7 @@ import asyncio
 import logging
 from typing import List, Dict, Tuple, Any
 from pydantic import BaseModel
-from clients.utils.llm import GPT4Turbo
+from clients.utils.llm import GPTClient
 from aiopslab.orchestrator import Orchestrator
 
 logging.basicConfig(level=logging.INFO)
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class FlashAgent:
     def __init__(self):
         self.history = []
-        self.llm = GPT4Turbo()
+        self.llm = GPTClient()
         self.hindsight_builder = HindsightBuilder()
 
     def init_context(self, problem_desc: str, instructions: str, apis: dict):
@@ -76,7 +76,7 @@ class FlashAgent:
 class HindsightBuilder:
     """Agent hindsight generator."""
 
-    llm = GPT4Turbo()
+    llm = GPTClient()
 
     def generate_prompt(self, input: str, history: dict) -> str:
         """

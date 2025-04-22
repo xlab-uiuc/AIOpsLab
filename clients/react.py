@@ -10,7 +10,7 @@ Paper: https://arxiv.org/abs/2210.03629
 import asyncio
 
 from aiopslab.orchestrator import Orchestrator
-from clients.utils.llm import GPT4Turbo
+from clients.utils.llm import GPTClient
 from clients.utils.templates import DOCS
 
 RESP_INSTR = """DO NOT REPEAT ACTIONS! Respond with:
@@ -22,7 +22,7 @@ Action: <your action towards mitigating>
 class Agent:
     def __init__(self):
         self.history = []
-        self.llm = GPT4Turbo()
+        self.llm = GPTClient()
 
     def init_context(self, problem_desc: str, instructions: str, apis: str):
         """Initialize the context for the agent."""
