@@ -9,10 +9,13 @@ from aiopslab.session import Session
 from aiopslab.orchestrator.problems.registry import ProblemRegistry
 from aiopslab.orchestrator.parser import ResponseParser
 from aiopslab.utils.status import *
+from aiopslab.utils.critical_section import CriticalSection
 from aiopslab.service.telemetry.prometheus import Prometheus
 import time
 import inspect
 import asyncio
+import atexit
+import os
 
 
 class Orchestrator:
@@ -25,6 +28,7 @@ class Orchestrator:
         self.execution_start_time = None
         self.execution_end_time = None
         self.kubectl = KubeCtl()
+        self.use_wandb = os.getenv("USE_WANDB", "false").lower() == "true"
 
     def init_problem(self, problem_id: str):
         """Initialize a problem instance for the agent to solve.
@@ -64,31 +68,35 @@ class Orchestrator:
         prob.app.delete()
         prob.app.deploy()
 
-        # inject fault
-        mutables = prob.inject_fault()
-        self.session.add_mutables(mutables)
-        for mutable in mutables:
-            additional = set()
-            if mutable.startswith("pod"):
-                continue
-            elif mutable.startswith("service"):
-                pods = self.kubectl.exec_command(
-                    f"kubectl get pods -n {prob.namespace} --selector service={mutable} -o name"
-                )
-                for pod in pods.split("\n"):
-                    additional.add(pod)
-            else:
-                pods = self.kubectl.exec_command(
-                    f"kubectl get pods -n {prob.namespace} -o name"
-                )
-                for pod in pods.split("\n"):
-                    additional.add(pod)
-                services = self.kubectl.exec_command(
-                    f"kubectl get services -n {prob.namespace} -o name"
-                )
-                for service in services.split("\n"):
-                    additional.add(service)
-            self.session.add_mutables(additional)
+        # make sure is_fault_injected is correct to apply appropriate
+        # function with atexit to recover fault
+        with CriticalSection():
+            # inject fault
+            prob.inject_fault()
+            atexit.register(exit_cleanup_fault, prob=prob)
+            self.session.add_mutables(mutables)
+            for mutable in mutables:
+                additional = set()
+                if mutable.startswith("pod"):
+                    continue
+                elif mutable.startswith("service"):
+                    pods = self.kubectl.exec_command(
+                        f"kubectl get pods -n {prob.namespace} --selector service={mutable} -o name"
+                    )
+                    for pod in pods.split("\n"):
+                        additional.add(pod)
+                else:
+                    pods = self.kubectl.exec_command(
+                        f"kubectl get pods -n {prob.namespace} -o name"
+                    )
+                    for pod in pods.split("\n"):
+                        additional.add(pod)
+                    services = self.kubectl.exec_command(
+                        f"kubectl get services -n {prob.namespace} -o name"
+                    )
+                    for service in services.split("\n"):
+                        additional.add(service)
+                self.session.add_mutables(additional)
 
         # Check if start_workload is async or sync
         if inspect.iscoroutinefunction(prob.start_workload):
@@ -171,19 +179,29 @@ class Orchestrator:
         action, env_response, results = "", "", {}
         self.session.start()
 
-        for step in range(max_steps):
-            action = await self.ask_agent(action_instr)
-            self.sprint.agent(action)
+        # catch any exception and recover fault before the users catch it
+        try:
+            for step in range(max_steps):
+                action = await self.ask_agent(action_instr)
+                self.sprint.agent(action)
 
-            env_response = await self.ask_env(action)
-            self.sprint.service(env_response)
+                env_response = await self.ask_env(action)
+                self.sprint.service(env_response)
 
-            if env_response == SubmissionStatus.VALID_SUBMISSION:
-                break
-            elif env_response == SubmissionStatus.INVALID_SUBMISSION:
-                raise ValueError("Invalid submission!")  # TODO (@manish): ask to retry?
+                if env_response == SubmissionStatus.VALID_SUBMISSION:
+                    break
+                elif env_response == SubmissionStatus.INVALID_SUBMISSION:
+                    raise ValueError("Invalid submission!")  # TODO (@manish): ask to retry?
 
-            action_instr = env_response + "\n" + "Please take the next action"
+                action_instr = env_response + "\n" + "Please take the next action"
+        except Exception as e:
+            # Make sure the fault cleanup function is unregistered
+            # after recovering fault ahead because of exceptions
+            with CriticalSection():
+                print("Some exception happened. Recovering the injected fault...")
+                self.session.problem.recover_fault()
+                atexit.unregister(exit_cleanup_fault)
+            raise e
 
         self.session.end()
 
@@ -196,8 +214,13 @@ class Orchestrator:
 
         self.session.set_results(results)
         self.session.to_json()
-        self.session.problem.recover_fault()
+        if self.use_wandb:
+            self.session.to_wandb()
 
+        with CriticalSection():
+            self.session.problem.recover_fault()
+            atexit.unregister(exit_cleanup_fault)
+            
         # Beyond recovering from fault,
         # I feel sometimes it is safer to delete the whole namespace.
         # But this will take more time.
@@ -235,3 +258,8 @@ class Orchestrator:
             "results": results,
             "framework_overhead": framework_overhead,
         }
+
+
+def exit_cleanup_fault(prob):
+    print("Recovering fault before exit...")
+    prob.recover_fault()

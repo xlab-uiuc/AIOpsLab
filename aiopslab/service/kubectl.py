@@ -81,12 +81,8 @@ class KubeCtl:
             while wait < max_wait:
                 try:
                     pod_list = self.list_pods(namespace)
-
-                    if not pod_list.items:
-                        console.log(
-                            f"[yellow]No pods found in namespace '{namespace}', waiting..."
-                        )
-                    else:
+                    
+                    if pod_list.items:
                         ready_pods = [
                             pod
                             for pod in pod_list.items

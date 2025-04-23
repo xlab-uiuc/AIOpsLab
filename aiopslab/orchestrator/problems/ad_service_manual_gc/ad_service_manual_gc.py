@@ -16,7 +16,7 @@ class AdServiceManualGcBaseTask:
         self.kubectl = KubeCtl()
         self.namespace = self.app.namespace
         self.injector = OtelFaultInjector(namespace=self.namespace)
-        self.faulty_service = "adservice"
+        self.faulty_service = "ad"
 
     def start_workload(self):
         print("== Start Workload ==")
@@ -24,13 +24,13 @@ class AdServiceManualGcBaseTask:
 
     def inject_fault(self):
         print("== Fault Injection ==")
-        self.injector.inject_fault("adServiceManualGc")
+        self.injector.inject_fault("adManualGc")
         print(f"Fault: adServiceManualGc | Namespace: {self.namespace}\n")
         return [f"namespace/{self.namespace}"]
 
     def recover_fault(self):
         print("== Fault Recovery ==")
-        self.injector.recover_fault("adServiceManualGc")
+        self.injector.recover_fault("adManualGc")
 
 
 ################## Detection Problem ##################
@@ -62,7 +62,6 @@ class AdServiceManualGcLocalization(AdServiceManualGcBaseTask, LocalizationTask)
     def __init__(self):
         AdServiceManualGcBaseTask.__init__(self)
         LocalizationTask.__init__(self, self.app)
-        self.task_desc += "Start by investigating the ad service."
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
         print("== Evaluation ==")

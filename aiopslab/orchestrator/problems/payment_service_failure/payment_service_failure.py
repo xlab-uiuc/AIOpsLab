@@ -16,7 +16,7 @@ class PaymentServiceFailureBaseTask:
         self.kubectl = KubeCtl()
         self.namespace = self.app.namespace
         self.injector = OtelFaultInjector(namespace=self.namespace)
-        self.faulty_service = "paymentservice"
+        self.faulty_service = "payment"
 
     def start_workload(self):
         print("== Start Workload ==")
@@ -24,13 +24,13 @@ class PaymentServiceFailureBaseTask:
 
     def inject_fault(self):
         print("== Fault Injection ==")
-        self.injector.inject_fault("paymentServiceFailure")
+        self.injector.inject_fault("paymentFailure")
         print(f"Fault: paymentServiceFailure | Namespace: {self.namespace}\n")
         return [f"namespace/{self.namespace}"]
 
     def recover_fault(self):
         print("== Fault Recovery ==")
-        self.injector.recover_fault("paymentServiceFailure")
+        self.injector.recover_fault("paymentFailure")
 
 
 ################## Detection Problem ##################
@@ -64,7 +64,6 @@ class PaymentServiceFailureLocalization(
     def __init__(self):
         PaymentServiceFailureBaseTask.__init__(self)
         LocalizationTask.__init__(self, self.app)
-        self.task_desc += "Start by investigating the payment service."
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
         print("== Evaluation ==")

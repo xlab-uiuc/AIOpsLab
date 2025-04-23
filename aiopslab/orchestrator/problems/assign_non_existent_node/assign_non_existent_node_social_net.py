@@ -94,7 +94,6 @@ class AssignNonExistentNodeSocialNetLocalization(
     def __init__(self):
         AssignNonExistentNodeSocialNetBaseTask.__init__(self)
         LocalizationTask.__init__(self, self.app)
-        self.task_desc += "Start by investigating the `compost-post-service` pod"
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
         print("== Evaluation ==")
@@ -138,7 +137,6 @@ class AssignNonExistentNodeSocialNetAnalysis(
     def __init__(self):
         AssignNonExistentNodeSocialNetBaseTask.__init__(self)
         AnalysisTask.__init__(self, self.app)
-        self.task_desc += "Start by investigating the `compost-post-service` pod"
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
         print("== Evaluation ==")
@@ -180,7 +178,6 @@ class AssignNonExistentNodeSocialNetMitigation(
     def __init__(self):
         AssignNonExistentNodeSocialNetBaseTask.__init__(self)
         MitigationTask.__init__(self, self.app)
-        self.task_desc += "Start by investigating the `compost-post-service` pod"
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float) -> dict:
         print("== Evaluation ==")

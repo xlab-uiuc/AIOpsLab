@@ -16,7 +16,7 @@ class CartServiceFailureBaseTask:
         self.kubectl = KubeCtl()
         self.namespace = self.app.namespace
         self.injector = OtelFaultInjector(namespace=self.namespace)
-        self.faulty_service = "cartservice"
+        self.faulty_service = "cart"
 
     def start_workload(self):
         print("== Start Workload ==")
@@ -24,13 +24,13 @@ class CartServiceFailureBaseTask:
 
     def inject_fault(self):
         print("== Fault Injection ==")
-        self.injector.inject_fault("cartServiceFailure")
+        self.injector.inject_fault("cartFailure")
         print(f"Fault: cartServiceFailure | Namespace: {self.namespace}\n")
         return [f"namespace/{self.namespace}"]
 
     def recover_fault(self):
         print("== Fault Recovery ==")
-        self.injector.recover_fault("cartServiceFailure")
+        self.injector.recover_fault("cartFailure")
 
 
 ################## Detection Problem ##################
@@ -62,7 +62,6 @@ class CartServiceFailureLocalization(CartServiceFailureBaseTask, LocalizationTas
     def __init__(self):
         CartServiceFailureBaseTask.__init__(self)
         LocalizationTask.__init__(self, self.app)
-        self.task_desc += "Start by investigating the cart service."
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
         print("== Evaluation ==")

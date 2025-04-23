@@ -89,7 +89,6 @@ class K8STargetPortMisconfigLocalization(
     def __init__(self, faulty_service: str = "user-service"):
         K8STargetPortMisconfigBaseTask.__init__(self, faulty_service=faulty_service)
         LocalizationTask.__init__(self, self.app)
-        self.task_desc += "Start by investigating the `compose-post-service` pod"
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
         print("== Evaluation ==")
@@ -134,7 +133,6 @@ class K8STargetPortMisconfigAnalysis(K8STargetPortMisconfigBaseTask, AnalysisTas
     def __init__(self, faulty_service: str = "user-service"):
         K8STargetPortMisconfigBaseTask.__init__(self, faulty_service=faulty_service)
         AnalysisTask.__init__(self, self.app)
-        self.task_desc += "Start by investigating the `compose-post-service` pod"
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float):
         print("== Evaluation ==")
@@ -168,7 +166,6 @@ class K8STargetPortMisconfigMitigation(K8STargetPortMisconfigBaseTask, Mitigatio
     def __init__(self, faulty_service: str = "user-service"):
         K8STargetPortMisconfigBaseTask.__init__(self, faulty_service=faulty_service)
         MitigationTask.__init__(self, self.app)
-        self.task_desc += "Start by investigating the `compose-post-service` pod"
 
     def eval(self, soln: Any, trace: list[SessionItem], duration: float) -> dict:
         print("== Evaluation ==")
