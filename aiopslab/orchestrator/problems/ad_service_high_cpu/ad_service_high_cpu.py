@@ -16,7 +16,7 @@ class AdServiceHighCpuBaseTask:
         self.kubectl = KubeCtl()
         self.namespace = self.app.namespace
         self.injector = OtelFaultInjector(namespace=self.namespace)
-        self.faulty_service = "adservice"
+        self.faulty_service = "ad"
 
     def start_workload(self):
         print("== Start Workload ==")
