@@ -16,7 +16,7 @@ class PaymentServiceUnreachableBaseTask:
         self.kubectl = KubeCtl()
         self.namespace = self.app.namespace
         self.injector = OtelFaultInjector(namespace=self.namespace)
-        self.faulty_service = "paymentservice"
+        self.faulty_service = "checkout"
 
     def start_workload(self):
         print("== Start Workload ==")

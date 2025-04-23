@@ -16,7 +16,7 @@ class ProductCatalogServiceFailureBaseTask:
         self.kubectl = KubeCtl()
         self.namespace = self.app.namespace
         self.injector = OtelFaultInjector(namespace=self.namespace)
-        self.faulty_service = "productcatalogservice"
+        self.faulty_service = "product-catalog"
 
     def start_workload(self):
         print("== Start Workload ==")
