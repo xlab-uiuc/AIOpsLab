@@ -39,6 +39,10 @@ class TaskActions:
                 user_service_pod = kubectl.get_pod_name(
                     namespace, f"io.kompose.service={service}"
                 )
+            elif namespace == "astronomy-shop":
+                user_service_pod = kubectl.get_pod_name(
+                    namespace, f"app.kubernetes.io/name={service}"
+                )
             elif namespace == "default" and "wrk2-job" in service:
                 user_service_pod = kubectl.get_pod_name(namespace, f"job-name=wrk2-job")
             else:
