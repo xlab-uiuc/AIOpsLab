@@ -72,7 +72,7 @@ class Orchestrator:
         # function with atexit to recover fault
         with CriticalSection():
             # inject fault
-            prob.inject_fault()
+            mutables = prob.inject_fault()
             atexit.register(exit_cleanup_fault, prob=prob)
             self.session.add_mutables(mutables)
             for mutable in mutables:
