@@ -201,16 +201,16 @@ class ProblemRegistry:
             "wrong_bin_usage-analysis-1": WrongBinUsageAnalysis,
             "wrong_bin_usage-mitigation-1": WrongBinUsageMitigation,
             # K8S operator misoperation
-            "operator_overload_replicas-detection-1": K8SOperatorOverloadReplicasDetection,
-            "operator_overload_replicas-localization-1": K8SOperatorOverloadReplicasLocalization,
-            "operator_non_existent_storage-detection-1": K8SOperatorNonExistentStorageDetection,
-            "operator_non_existent_storage-localization-1": K8SOperatorNonExistentStorageLocalization,
-            "operator_invalid_affinity_toleration-detection-1": K8SOperatorInvalidAffinityTolerationDetection,
-            "operator_invalid_affinity_toleration-localization-1": K8SOperatorInvalidAffinityTolerationLocalization,
-            "operator_security_context_fault-detection-1": K8SOperatorSecurityContextFaultDetection,
-            "operator_security_context_fault-localization-1": K8SOperatorSecurityContextFaultLocalization,
-            "operator_wrong_update_strategy-detection-1": K8SOperatorWrongUpdateStrategyDetection,
-            "operator_wrong_update_strategy-localization-1": K8SOperatorWrongUpdateStrategyLocalization,
+            # "operator_overload_replicas-detection-1": K8SOperatorOverloadReplicasDetection,
+            # "operator_overload_replicas-localization-1": K8SOperatorOverloadReplicasLocalization,
+            # "operator_non_existent_storage-detection-1": K8SOperatorNonExistentStorageDetection,
+            # "operator_non_existent_storage-localization-1": K8SOperatorNonExistentStorageLocalization,
+            # "operator_invalid_affinity_toleration-detection-1": K8SOperatorInvalidAffinityTolerationDetection,
+            # "operator_invalid_affinity_toleration-localization-1": K8SOperatorInvalidAffinityTolerationLocalization,
+            # "operator_security_context_fault-detection-1": K8SOperatorSecurityContextFaultDetection,
+            # "operator_security_context_fault-localization-1": K8SOperatorSecurityContextFaultLocalization,
+            # "operator_wrong_update_strategy-detection-1": K8SOperatorWrongUpdateStrategyDetection,
+            # "operator_wrong_update_strategy-localization-1": K8SOperatorWrongUpdateStrategyLocalization,
         }
 
     def get_problem_instance(self, problem_id: str):
