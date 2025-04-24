@@ -159,6 +159,7 @@ class ProblemRegistry:
                 app_name="hotel"
             ),
             "noop_detection_social_network-1": lambda: NoOpDetection(app_name="social"),
+            "noop_detection_astronomy_shop-1": lambda: NoOpDetection(app_name="astronomy_shop"),
             # NOTE: This should be getting fixed by the great powers of @jinghao-jia
             # Kernel fault -> https://github.com/xlab-uiuc/agent-ops/pull/10#issuecomment-2468992285
             # There's a bug in chaos mesh regarding this fault, wait for resolution and retest kernel fault
