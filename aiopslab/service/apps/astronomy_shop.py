@@ -18,7 +18,7 @@ class AstronomyShop(Application):
     def load_app_json(self):
         super().load_app_json()
         metadata = self.get_app_json()
-        self.frontend_service = "astronomy-shop-frontendproxy"
+        self.frontend_service = "frontend-proxy"
         self.frontend_port = 8080
 
     def deploy(self):
