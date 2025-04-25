@@ -22,13 +22,18 @@ class TraceAPI:
         self.namespace = namespace
         self.stop_event = threading.Event()
 
-        # NOTE: it may not be jaeger-out for other apps
-        node_port = self.get_nodeport("jaeger", namespace)
-        if node_port:
-            self.base_url = f"http://localhost:{node_port}"
-        else:
-            self.base_url = "http://localhost:16686"
+        if self.namespace == "astronomy-shop":
+            # No NodePort in astronomy shop
+            self.base_url = "http://localhost:16686/jaeger/ui"
             self.start_port_forward()
+        else:
+            # Other namespaces may expose a NodePort
+            node_port = self.get_nodeport("jaeger", namespace)
+            if node_port:
+                self.base_url = f"http://localhost:{node_port}"
+            else:
+                self.base_url = "http://localhost:16686"
+                self.start_port_forward()
 
     def get_nodeport(self, service_name, namespace):
         """Fetch the NodePort for the given service."""
@@ -74,19 +79,38 @@ class TraceAPI:
     def is_port_in_use(self, port):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             return s.connect_ex(("127.0.0.1", port)) == 0
+        
+    def get_jaeger_pod_name(self):
+        try:
+            result = subprocess.check_output(
+                ["kubectl", "get", "pods", "-n", self.namespace,
+                 "-l", "app.kubernetes.io/name=jaeger",
+                 "-o", "jsonpath={.items[0].metadata.name}"],
+                text=True
+            )
+            return result.strip()
+        except subprocess.CalledProcessError as e:
+            print("Error getting Jaeger pod name:", e)
+            raise
 
     def start_port_forward(self):
-        """Starts kubectl port-forward command to access Jaeger service."""
+        """Starts kubectl port-forward command to access Jaeger service or pod."""
         for attempt in range(3):
             if self.is_port_in_use(16686):
                 print(
-                    f"Port 16686 is already in use. Attempt {attempt + 1} of {3}. Retrying in {3} seconds..."
+                    f"Port 16686 is already in use. Attempt {attempt + 1} of 3. Retrying in 3 seconds..."
                 )
                 time.sleep(3)
                 continue
 
-            # command = "kubectl port-forward svc/jaeger 16686:16686 -n hotel-reservation"
-            command = f"kubectl port-forward svc/jaeger 16686:16686 -n {self.namespace}"
+            # Use pod port-forwarding for astronomy-shop only
+            if self.namespace == "astronomy-shop":
+                pod_name = self.get_jaeger_pod_name()
+                command = f"kubectl port-forward pod/{pod_name} 16686:16686 -n {self.namespace}"
+            else:
+                command = f"kubectl port-forward svc/jaeger 16686:16686 -n {self.namespace}"
+
+            print("Starting port-forward with command:", command)
             self.port_forward_process = subprocess.Popen(
                 command,
                 shell=True,
@@ -103,17 +127,17 @@ class TraceAPI:
             )
             thread_out.start()
             thread_err.start()
-            time.sleep(3)  # Wait a bit for the port-forward to establish
 
-            if (
-                self.port_forward_process.poll() is None
-            ):  # Check if the process is still running
+            time.sleep(3)  # Let port-forward initialize
+
+            if self.port_forward_process.poll() is None:
                 print("Port forwarding established successfully.")
                 break
             else:
                 print("Port forwarding failed. Retrying...")
         else:
-            print("Failed to establish port forwarding after multiple attempts.")
+            print("Failed to establish port forwarding after 3 attempts.")
+
         # TODO: modify this command for other microservices
         # command = "kubectl port-forward svc/jaeger 16686:16686 -n hotel-reservation"
         # self.port_forward_process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -151,13 +175,14 @@ class TraceAPI:
     def get_services(self) -> list:
         """Fetch a list of services from the tracing API."""
         url = f"{self.base_url}/api/services"
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            # print(f"data: {response}")
-            return data.get("data", [])
-        else:
-            print(f"Failed to get services: {response.status_code}")
+        headers = {"Accept": "application/json"} if self.namespace == "astronomy-shop" else {}
+
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            return response.json().get("data", [])
+        except Exception as e:
+            print(f"Failed to get services: {e}")
             return []
 
     def get_traces(
@@ -171,15 +196,14 @@ class TraceAPI:
         Fetch traces for a specific service between start_time and end_time.
         If limit is not specified, all available traces are fetched.
         """
-        # Calculate the lookback in milliseconds.
         lookback = int((datetime.now() - start_time).total_seconds())
-
         url = f"{self.base_url}/api/traces?service={service_name}&lookback={lookback}s"
         if limit is not None:
             url += f"&limit={limit}"
 
+        headers = {"Accept": "application/json"} if self.namespace == "astronomy-shop" else {}
         try:
-            response = requests.get(url)
+            response = requests.get(url, headers=headers)
             response.raise_for_status()
             return response.json().get("data", [])
         except requests.RequestException as e:
