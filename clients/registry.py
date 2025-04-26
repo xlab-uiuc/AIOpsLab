@@ -5,7 +5,7 @@ from clients.qwen import QwenAgent
 from clients.deepseek import DeepSeekAgent
 from clients.vllm import vLLMAgent
 
-class Registry:
+class AgentRegistry:
     """Registry for agent implementations."""
     
     def __init__(self):
@@ -24,7 +24,6 @@ class Registry:
     def get_agent(self, agent: str):
         """Get an agent implementation."""
         return self.AGENT_REGISTRY.get(agent)
-
-
-# Create a global registry instance
-registry = Registry()
+    
+    def get_agent_ids(self):
+        return list(self.AGENT_REGISTRY.keys())

@@ -7,7 +7,7 @@ import argparse
 import wandb
 from aiopslab.orchestrator import Orchestrator
 from aiopslab.orchestrator.problems.registry import ProblemRegistry
-from clients.registry import registry
+from clients.registry import AgentRegistry
 
 def parse_args():
     """Parse command line arguments."""
@@ -29,7 +29,8 @@ async def run_agent(agent_name, problem_id, max_steps, use_wandb=False):
         wandb.init(project="AIOpsLab", entity="AIOpsLab")
 
     # Get the agent class from registry and instantiate
-    agent_cls = registry.get_agent(agent_name)
+    agent_registry = AgentRegistry()
+    agent_cls = agent_registry.get_agent(agent_name)
     if agent_cls is None:
         raise ValueError(f"Unknown agent: {agent_name}")
     
