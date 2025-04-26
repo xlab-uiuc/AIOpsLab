@@ -92,7 +92,7 @@ def simulate(req: SimulationRequest):
     
     # 1. Check if the problem ID is valid
     problem_registry = ProblemRegistry()
-    problem = problem_registry.get_problem()
+    problem = problem_registry.get_problem(req.problem_id)
     if problem is None:
         logger.error(f"Problem {req.problem_id} not found")
         raise HTTPException(
@@ -103,7 +103,7 @@ def simulate(req: SimulationRequest):
 
     # 2. Get agent from registry
     agent_registry = AgentRegistry()
-    agent_cls = agent_registry.get(req.agent_name)
+    agent_cls = agent_registry.get_agent(req.agent_name)
     if agent_cls is None:
         logger.error(f"Agent {req.agent_name} not registered")
         raise HTTPException(
