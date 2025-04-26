@@ -9,7 +9,7 @@ from clients.utils.llm import vLLMClient
 from clients.utils.templates import DOCS_SHELL_ONLY
 
 
-class Agent:
+class vLLMAgent:
     def __init__(self):
         self.history = []
         self.llm = vLLMClient()
@@ -63,10 +63,10 @@ if __name__ == "__main__":
         wandb.init(project="AIOpsLab", entity="AIOpsLab")
 
     registry = ProblemRegistry()
-    pids = list(registry.PROBLEM_REGISTRY.keys())
+    pids = registry.get_problem_ids()
 
     for pid in pids:
-        agent = Agent() # Initialize the agent
+        agent = vLLMAgent() # Initialize the agent
 
         orchestrator = Orchestrator()
         orchestrator.register_agent(agent, name="Qwen2.5-Coder-3B-Instruct")

@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 # Load environment variables from the .env file
 load_dotenv()
 
-class Agent:
+class GPTAgent:
     def __init__(self):
         self.history = []
         self.llm = GPTClient()
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         # Initialize wandb running
         wandb.init(project="AIOpsLab", entity="AIOpsLab")
 
-    agent = Agent()
+    agent = GPTAgent()
 
     orchestrator = Orchestrator()
     orchestrator.register_agent(agent, name="gpt-w-shell")

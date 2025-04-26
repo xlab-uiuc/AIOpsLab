@@ -1,0 +1,30 @@
+"""Agent registry for AIOpsLab."""
+
+from clients.gpt import GPTAgent
+from clients.qwen import QwenAgent
+from clients.deepseek import DeepSeekAgent
+from clients.vllm import vLLMAgent
+
+class Registry:
+    """Registry for agent implementations."""
+    
+    def __init__(self):
+        self.AGENT_REGISTRY = {
+            "gpt": GPTAgent,
+            "qwen": QwenAgent,
+            "deepseek": DeepSeekAgent,
+            "vllm": vLLMAgent,
+        }
+    
+    def register(self, name, agent_cls):
+        """Register an agent implementation."""
+        self.agents[name] = agent_cls
+        return agent_cls
+
+    def get_agent(self, agent: str):
+        """Get an agent implementation."""
+        return self.AGENT_REGISTRY.get(agent)
+
+
+# Create a global registry instance
+registry = Registry()
