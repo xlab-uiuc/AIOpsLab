@@ -37,13 +37,24 @@ class SimulationRequest(BaseModel):
     problem_id: str
     agent_name: str = "Qwen/Qwen2.5-Coder-0.5B-Instruct"
     max_steps: Optional[int] = None
+    # vLLM specific parameters
+    model: Optional[str] = "Qwen/Qwen2.5-Coder-3B-Instruct"
+    repetition_penalty: Optional[float] = 1.0
+    temperature: Optional[float] = 1.0
+    top_p: Optional[float] = 1.0
+    top_k: Optional[int] = -1
+    min_p: Optional[float] = 0.0
+    max_tokens: Optional[int] = 512  # Increased default for better responses
+    guided_decoding_regex: Optional[str] = None
     
     class Config:
         schema_extra = {
             "example": {
                 "problem_id": "misconfig_app_hotel_res-mitigation-1",
-                "agent_name": "Qwen/Qwen2.5-Coder-0.5B-Instruct",
-                "max_steps": 10
+                "agent_name": "vllm",
+                "max_steps": 10,
+                "temperature": 0.7,
+                "top_p": 0.9
             }
         }
 
@@ -90,7 +101,7 @@ def health_check():
 def simulate(req: SimulationRequest):
     logger.info(f"Starting simulation with problem={req.problem_id}, agent={req.agent_name}, max_steps={req.max_steps}")
     
-    # 1. Check if the problem ID is valid
+    # Check if the problem ID is valid
     problem_registry = ProblemRegistry()
     problem = problem_registry.get_problem(req.problem_id)
     if problem is None:
@@ -101,7 +112,7 @@ def simulate(req: SimulationRequest):
         )
     pid = req.problem_id
 
-    # 2. Get agent from registry
+    # Get agent from registry
     agent_registry = AgentRegistry()
     agent_cls = agent_registry.get_agent(req.agent_name)
     if agent_cls is None:
@@ -109,19 +120,34 @@ def simulate(req: SimulationRequest):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
             detail=f"Agent {req.agent_name} not registered. Available agents: {agent_registry.get_agent_ids()}"
-        )  
-    # Initialize agent
-    agent = agent_cls()
+        )
+    
+    # Initialize agent with vLLM-specific parameters if applicable
+    if req.agent_name == "vllm":
+        # Extract vLLM parameters from request
+        vllm_params = {
+            "model": req.model,
+            "repetition_penalty": req.repetition_penalty,
+            "temperature": req.temperature,
+            "top_p": req.top_p,
+            "top_k": req.top_k,
+            "min_p": req.min_p,
+            "max_tokens": req.max_tokens,
+            "guided_decoding_regex": req.guided_decoding_regex
+        }
+        agent = agent_cls(**vllm_params)
+    else:
+        agent = agent_cls()
     logger.info(f"Created agent: {req.agent_name}")
 
-    #3. Check if max_steps is provided, else set default
+    # Check if max_steps is provided, else set default
     max_steps = req.max_steps if req.max_steps is not None else 10
     
-    # 4. Set up orchestrator
+    # Set up orchestrator
     orchestrator = Orchestrator()
     orchestrator.register_agent(agent, name=f"{req.agent_name}-agent")
 
-    # 5. Run the simulation
+    # Run the simulation
     logger.info(f"Starting simulation for problem {pid} with agent {req.agent_name}")
     try:
         problem_desc, instructs, apis = orchestrator.init_problem(pid)

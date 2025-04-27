@@ -20,9 +20,27 @@ def parse_args():
                         help="The problem ID to solve")
     parser.add_argument("--max-steps", type=int, default=10,
                         help="Maximum number of interaction steps")
+    
+    # Add vLLM-specific arguments
+    parser.add_argument("--model", type=str, default="Qwen/Qwen2.5-Coder-3B-Instruct",
+                        help="Model name for vLLM")
+    parser.add_argument("--repetition-penalty", type=float, default=1.0,
+                        help="Repetition penalty for vLLM")
+    parser.add_argument("--temperature", type=float, default=1.0,
+                        help="Temperature for sampling (vLLM only)")
+    parser.add_argument("--top-p", type=float, default=1.0,
+                        help="Top-p for nucleus sampling (vLLM only)")
+    parser.add_argument("--top-k", type=int, default=-1,
+                        help="Top-k for sampling (vLLM only)")
+    parser.add_argument("--min-p", type=float, default=0.0,
+                        help="Minimum probability for sampling (vLLM only)")
+    parser.add_argument("--max-tokens", type=int, default=512,
+                        help="Maximum tokens to generate (vLLM only)")
+    parser.add_argument("--guided-decoding-regex", type=str, default=None,
+                        help="Regex for guided decoding (vLLM only)")
     return parser.parse_args()
 
-async def run_agent(agent_name, problem_id, max_steps, use_wandb=False):
+async def run_agent(agent_name, problem_id, max_steps, model, temperature, top_p, max_tokens, repetition_penalty, min_p, top_k, guided_decoding_regex, use_wandb=False):
     """Run an agent on a problem."""
     if use_wandb:
         # Initialize wandb running
@@ -34,7 +52,22 @@ async def run_agent(agent_name, problem_id, max_steps, use_wandb=False):
     if agent_cls is None:
         raise ValueError(f"Unknown agent: {agent_name}")
     
-    agent = agent_cls()
+    # If the agent is vLLM, pass the specific parameters
+    if agent_name == "vllm":
+        agent_cls = agent_cls(
+            model=model,
+            repetition_penalty=repetition_penalty,
+            temperature=temperature,
+            top_p=top_p,
+            top_k=top_k,
+            min_p=min_p,
+            max_tokens=max_tokens,
+            guided_decoding_regex=guided_decoding_regex
+        )
+    else:
+         # For other agents, just instantiate without parameters
+        agent = agent_cls()
+
 
     orchestrator = Orchestrator()
     orchestrator.register_agent(agent, name=f"{agent_name}-agent")
@@ -68,5 +101,13 @@ if __name__ == "__main__":
         agent_name=args.agent,
         problem_id=args.problem_id,
         max_steps=args.max_steps,
+        model=args.model,
+        temperature=args.temperature,
+        top_p=args.top_p,
+        max_tokens=args.max_tokens,
+        repetition_penalty=args.repetition_penalty,
+        min_p=args.min_p,
+        top_k=args.top_k,
+        guided_decoding_regex=args.guided_decoding_regex,
         use_wandb=use_wandb
     ))

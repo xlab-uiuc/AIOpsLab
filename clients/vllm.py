@@ -10,9 +10,26 @@ from clients.utils.templates import DOCS_SHELL_ONLY
 
 
 class vLLMAgent:
-    def __init__(self):
+    def __init__(self,
+                model="Qwen/Qwen2.5-Coder-3B-Instruct",
+                repetition_penalty=1.0,
+                temperature=1.0,
+                top_p=1.0,
+                top_k=-1,
+                min_p=0.0,
+                max_tokens=512,
+                guided_decoding_regex=None):
         self.history = []
-        self.llm = vLLMClient()
+        self.llm = vLLMClient(
+            model=model,
+            repetition_penalty=repetition_penalty,
+            temperature=temperature,
+            top_p=top_p,
+            top_k=top_k,
+            min_p=min_p,
+            max_tokens=max_tokens,
+            guided_decoding_regex=guided_decoding_regex
+        )
 
     def init_context(self, problem_desc: str, instructions: str, apis: str):
         """Initialize the context for the agent."""
@@ -46,7 +63,7 @@ class vLLMAgent:
             str: The response from the agent.
         """
         self.history.append({"role": "user", "content": input})
-        response = self.llm.run(self.history)
+        response = self.llm.run(self.history, **self.vllm_params)
         self.history.append({"role": "assistant", "content": response[0]})
         return response[0]
 

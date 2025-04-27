@@ -184,8 +184,24 @@ class QwenClient:
 class vLLMClient:
     """Abstraction for local LLM models."""
 
-    def __init__(self):
+    def __init__(self,
+                 model="Qwen/Qwen2.5-Coder-3B-Instruct",
+                 repetition_penalty=1.0,
+                 temperature=0.5,
+                 top_p=0.95,
+                 top_k=-1,
+                 min_p=0.0,
+                 max_tokens=1024,
+                 guided_decoding_regex=None):
         self.cache = Cache()
+        self.model = model
+        self.repetition_penalty = repetition_penalty
+        self.temperature = temperature
+        self.top_p = top_p
+        self.top_k = top_k
+        self.min_p = min_p
+        self.max_tokens = max_tokens
+        self.guided_decoding_regex = guided_decoding_regex
 
     def inference(self, payload: list[dict[str, str]]) -> list[str]:
         if self.cache is not None:
@@ -197,10 +213,12 @@ class vLLMClient:
         try:
             response = client.chat.completions.create(
                 messages=payload,  # type: ignore
-                model="Qwen/Qwen2.5-Coder-3B-Instruct",
-                max_tokens=1024,
-                temperature=0.5,
-                top_p=0.95,
+                model=self.model,
+                max_tokens=self.max_tokens,
+                temperature=self.temperature,
+                top_p=self.top_p,
+                top_k=self.top_k,
+                guided_decoding_regex=self.guided_decoding_regex,
                 frequency_penalty=0.0,
                 presence_penalty=0.0,
                 n=1,
