@@ -193,7 +193,7 @@ class vLLMClient:
             if cache_result is not None:
                 return cache_result
 
-        client = OpenAI(api_key="EMPTY", base_url="http://localhost:8000/v1")
+        client = OpenAI(api_key="EMPTY", base_url=os.getenv("VLLM_BASE_URL", "http://localhost:8000/v1"))
         try:
             response = client.chat.completions.create(
                 messages=payload,  # type: ignore
