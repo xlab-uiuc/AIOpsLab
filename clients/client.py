@@ -40,7 +40,7 @@ def parse_args():
                         help="Regex for guided decoding (vLLM only)")
     return parser.parse_args()
 
-async def run_agent(agent_name, problem_id, max_steps, model, temperature, top_p, max_tokens, repetition_penalty, min_p, top_k, guided_decoding_regex, use_wandb=False):
+async def run_agent(agent_name, problem_id, max_steps, model, temperature, top_p, max_tokens, repetition_penalty, guided_decoding_regex, use_wandb=False):
     """Run an agent on a problem."""
     if use_wandb:
         # Initialize wandb running
@@ -59,8 +59,6 @@ async def run_agent(agent_name, problem_id, max_steps, model, temperature, top_p
             repetition_penalty=repetition_penalty,
             temperature=temperature,
             top_p=top_p,
-            top_k=top_k,
-            min_p=min_p,
             max_tokens=max_tokens,
             guided_decoding_regex=guided_decoding_regex
         )
@@ -106,8 +104,6 @@ if __name__ == "__main__":
         top_p=args.top_p,
         max_tokens=args.max_tokens,
         repetition_penalty=args.repetition_penalty,
-        min_p=args.min_p,
-        top_k=args.top_k,
         guided_decoding_regex=args.guided_decoding_regex,
         use_wandb=use_wandb
     ))

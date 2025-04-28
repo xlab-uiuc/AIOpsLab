@@ -15,18 +15,15 @@ class vLLMAgent:
                 repetition_penalty=1.0,
                 temperature=1.0,
                 top_p=1.0,
-                top_k=-1,
-                min_p=0.0,
                 max_tokens=512,
                 guided_decoding_regex=None):
         self.history = []
+
         self.llm = vLLMClient(
             model=model,
             repetition_penalty=repetition_penalty,
             temperature=temperature,
             top_p=top_p,
-            top_k=top_k,
-            min_p=min_p,
             max_tokens=max_tokens,
             guided_decoding_regex=guided_decoding_regex
         )
@@ -63,7 +60,7 @@ class vLLMAgent:
             str: The response from the agent.
         """
         self.history.append({"role": "user", "content": input})
-        response = self.llm.run(self.history, **self.vllm_params)
+        response = self.llm.run(self.history)
         self.history.append({"role": "assistant", "content": response[0]})
         return response[0]
 

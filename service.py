@@ -42,8 +42,6 @@ class SimulationRequest(BaseModel):
     repetition_penalty: Optional[float] = 1.0
     temperature: Optional[float] = 1.0
     top_p: Optional[float] = 1.0
-    top_k: Optional[int] = -1
-    min_p: Optional[float] = 0.0
     max_tokens: Optional[int] = 512  # Increased default for better responses
     guided_decoding_regex: Optional[str] = None
     
@@ -130,8 +128,6 @@ def simulate(req: SimulationRequest):
             "repetition_penalty": req.repetition_penalty,
             "temperature": req.temperature,
             "top_p": req.top_p,
-            "top_k": req.top_k,
-            "min_p": req.min_p,
             "max_tokens": req.max_tokens,
             "guided_decoding_regex": req.guided_decoding_regex
         }
