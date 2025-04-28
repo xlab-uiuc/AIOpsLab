@@ -15,8 +15,7 @@ class vLLMAgent:
                 repetition_penalty=1.0,
                 temperature=1.0,
                 top_p=1.0,
-                max_tokens=512,
-                guided_decoding_regex=None):
+                max_tokens=1024):
         self.history = []
 
         self.llm = vLLMClient(
@@ -25,7 +24,6 @@ class vLLMAgent:
             temperature=temperature,
             top_p=top_p,
             max_tokens=max_tokens,
-            guided_decoding_regex=guided_decoding_regex
         )
 
     def init_context(self, problem_desc: str, instructions: str, apis: str):

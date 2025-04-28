@@ -30,17 +30,11 @@ def parse_args():
                         help="Temperature for sampling (vLLM only)")
     parser.add_argument("--top-p", type=float, default=1.0,
                         help="Top-p for nucleus sampling (vLLM only)")
-    parser.add_argument("--top-k", type=int, default=-1,
-                        help="Top-k for sampling (vLLM only)")
-    parser.add_argument("--min-p", type=float, default=0.0,
-                        help="Minimum probability for sampling (vLLM only)")
-    parser.add_argument("--max-tokens", type=int, default=512,
+    parser.add_argument("--max-tokens", type=int, default=1024,
                         help="Maximum tokens to generate (vLLM only)")
-    parser.add_argument("--guided-decoding-regex", type=str, default=None,
-                        help="Regex for guided decoding (vLLM only)")
     return parser.parse_args()
 
-async def run_agent(agent_name, problem_id, max_steps, model, temperature, top_p, max_tokens, repetition_penalty, guided_decoding_regex, use_wandb=False):
+async def run_agent(agent_name, problem_id, max_steps, model, temperature, top_p, max_tokens, repetition_penalty, use_wandb=False):
     """Run an agent on a problem."""
     if use_wandb:
         # Initialize wandb running
@@ -60,7 +54,6 @@ async def run_agent(agent_name, problem_id, max_steps, model, temperature, top_p
             temperature=temperature,
             top_p=top_p,
             max_tokens=max_tokens,
-            guided_decoding_regex=guided_decoding_regex
         )
     else:
          # For other agents, just instantiate without parameters
@@ -104,6 +97,5 @@ if __name__ == "__main__":
         top_p=args.top_p,
         max_tokens=args.max_tokens,
         repetition_penalty=args.repetition_penalty,
-        guided_decoding_regex=args.guided_decoding_regex,
         use_wandb=use_wandb
     ))

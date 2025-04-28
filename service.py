@@ -43,7 +43,6 @@ class SimulationRequest(BaseModel):
     temperature: Optional[float] = 1.0
     top_p: Optional[float] = 1.0
     max_tokens: Optional[int] = 512  # Increased default for better responses
-    guided_decoding_regex: Optional[str] = None
     
     class Config:
         schema_extra = {
@@ -129,7 +128,6 @@ def simulate(req: SimulationRequest):
             "temperature": req.temperature,
             "top_p": req.top_p,
             "max_tokens": req.max_tokens,
-            "guided_decoding_regex": req.guided_decoding_regex
         }
         agent = agent_cls(**vllm_params)
     else:

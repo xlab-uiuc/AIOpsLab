@@ -189,15 +189,13 @@ class vLLMClient:
                  repetition_penalty=1.0,
                  temperature=0.5,
                  top_p=0.95,
-                 max_tokens=1024,
-                 guided_decoding_regex=None):
+                 max_tokens=1024):
         self.cache = Cache()
         self.model = model
         self.repetition_penalty = repetition_penalty
         self.temperature = temperature
         self.top_p = top_p
         self.max_tokens = max_tokens
-        self.guided_decoding_regex = guided_decoding_regex
 
     def inference(self, payload: list[dict[str, str]]) -> list[str]:
         if self.cache is not None:
@@ -213,7 +211,6 @@ class vLLMClient:
                 max_tokens=self.max_tokens,
                 temperature=self.temperature,
                 top_p=self.top_p,
-                guided_decoding_regex=self.guided_decoding_regex,
                 frequency_penalty=0.0,
                 presence_penalty=0.0,
                 n=1,
