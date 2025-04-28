@@ -75,28 +75,34 @@ class Orchestrator:
             mutables = prob.inject_fault()
             atexit.register(exit_cleanup_fault, prob=prob)
             self.session.add_mutables(mutables)
+            additional = set()
             for mutable in mutables:
-                additional = set()
                 if mutable.startswith("pod"):
                     continue
                 elif mutable.startswith("service"):
+                    service_name = mutable.split("/")[-1]
+                    service = self.kubectl.exec_command(
+                        f"kubectl get service {service_name} -n {prob.namespace} -o wide"
+                    ).strip()
+                    content = service.split("\n")[-1]
+                    selector= content.split(' ')[-1]
                     pods = self.kubectl.exec_command(
-                        f"kubectl get pods -n {prob.namespace} --selector service={mutable} -o name"
-                    )
+                        f"kubectl get pods -n {prob.namespace} --selector {selector} -o name"
+                    ).strip()
                     for pod in pods.split("\n"):
                         additional.add(pod)
-                else:
+                elif mutable.startswith("namespace"):
                     pods = self.kubectl.exec_command(
                         f"kubectl get pods -n {prob.namespace} -o name"
-                    )
+                    ).strip()
                     for pod in pods.split("\n"):
                         additional.add(pod)
                     services = self.kubectl.exec_command(
                         f"kubectl get services -n {prob.namespace} -o name"
-                    )
+                    ).strip()
                     for service in services.split("\n"):
                         additional.add(service)
-                self.session.add_mutables(additional)
+            self.session.add_mutables(additional)
 
         # Check if start_workload is async or sync
         if inspect.iscoroutinefunction(prob.start_workload):

@@ -23,11 +23,10 @@ class Shell:
         """Validate the command by running a dry-run with --dry-run=server."""
         dry_run = f"{command} --dry-run=server -o name"
         output, error = Shell._exec(dry_run, input_data=input_data, cwd=cwd)
-
         # If the command is not valid, let it pass through
         if error:
             return True
-        return output in mutables
+        return output.strip() in mutables
 
     @staticmethod
     def _exec(
