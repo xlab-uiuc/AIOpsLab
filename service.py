@@ -170,4 +170,4 @@ if __name__ == "__main__":
     workers = int(os.environ.get("SERVICE_WORKERS", 1))
     
     logger.info(f"Starting AIOpsLab service on port {port} with {workers} workers")
-    uvicorn.run("service:app", host="0.0.0.0", port=port, workers=workers)
+    uvicorn.run("service:app", host="localhost", port=port, workers=workers)
