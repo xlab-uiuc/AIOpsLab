@@ -10,6 +10,7 @@ Paper: https://arxiv.org/abs/2210.03629
 import asyncio
 
 from aiopslab.orchestrator import Orchestrator
+from aiopslab.orchestrator.problems.registry import ProblemRegistry
 from clients.utils.llm import GPTClient
 from clients.utils.templates import DOCS
 
@@ -71,12 +72,16 @@ class Agent:
 
 
 if __name__ == "__main__":
-    agent = Agent()
+    problems = ProblemRegistry().PROBLEM_REGISTRY
 
-    orchestrator = Orchestrator()
-    orchestrator.register_agent(agent, name="react")
+    for pid in problems:
+        agent = Agent()
+        orchestrator = Orchestrator()
+        orchestrator.register_agent(agent, name="react")
 
-    pid = "misconfig_app_hotel_res-mitigation-1"
-    problem_desc, instructs, apis = orchestrator.init_problem(pid)
-    agent.init_context(problem_desc, instructs, apis)
-    asyncio.run(orchestrator.start_problem(max_steps=30))
+        try:
+            problem_desc, instructs, apis = orchestrator.init_problem(pid)
+            agent.init_context(problem_desc, instructs, apis)
+            asyncio.run(orchestrator.start_problem(max_steps=30))
+        except Exception as e:
+            print(f"Error while running problem {pid}: {e}")
