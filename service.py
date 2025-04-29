@@ -59,8 +59,6 @@ class SimulationResponse(BaseModel):
     agent: str
     session_id: str
     problem_id: str
-    start_time: str
-    end_time: str
     trace: List[Dict[str, Any]]
     results: Dict[str, Any]
 
@@ -147,8 +145,12 @@ def simulate(req: SimulationRequest):
         problem_desc, instructs, apis = orchestrator.init_problem(pid)
         agent.init_context(problem_desc, instructs, apis)
         asyncio.run(orchestrator.start_problem(max_steps=max_steps))
+
+        raw = orchestrator.session.to_dict()
+        raw.pop("start_time", None)
+        raw.pop("end_time", None)
         
-        return SimulationResponse(**orchestrator.session.to_dict())
+        return SimulationResponse(**raw)
     except Exception as e:
         logger.error(f"Error during simulation: {e}")
         traceback.print_exc()
