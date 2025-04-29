@@ -145,8 +145,9 @@ def simulate(req: SimulationRequest):
         problem_desc, instructs, apis = orchestrator.init_problem(pid)
         agent.init_context(problem_desc, instructs, apis)
         asyncio.run(orchestrator.start_problem(max_steps=max_steps))
-
         raw = orchestrator.session.to_dict()
+        raw["trace"].insert(0, {"role": "system", "content": agent.system_message})
+        raw["trace"].insert(1, {"role": "user", "content": agent.task_message})
         raw.pop("start_time", None)
         raw.pop("end_time", None)
         
