@@ -123,12 +123,12 @@ if __name__ == "__main__":
 
         try:
             problem_desc, instructs, apis = orchestrator.init_problem(pid)
-            agent.init_context(problem_desc, instructs, apis)
+            flash_agent.init_context(problem_desc, instructs, apis)
 
             full_output = asyncio.run(orchestrator.start_problem(max_steps=30))
             results = full_output.get("results", {})
             
-            filename = os.path.join("results", f"{pid}.json")
+            filename = os.path.join("results", f"flash_{pid}.json")
             with open(filename, "w") as f:
                 json.dump(results, f, indent=2)
 

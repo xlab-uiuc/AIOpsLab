@@ -86,8 +86,8 @@ if __name__ == "__main__":
             agent.init_context(problem_desc, instructs, apis)
 
             full_output = asyncio.run(orchestrator.start_problem(max_steps=30))
-            results = full_output.get("results", {})
-            
+            results = full_output.get("react_results", {})
+
             filename = os.path.join("results", f"{pid}.json")
             with open(filename, "w") as f:
                 json.dump(results, f, indent=2)
