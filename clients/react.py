@@ -8,7 +8,8 @@ Paper: https://arxiv.org/abs/2210.03629
 """
 
 import asyncio
-
+import json
+import os
 from aiopslab.orchestrator import Orchestrator
 from aiopslab.orchestrator.problems.registry import ProblemRegistry
 from clients.utils.llm import GPTClient
@@ -73,6 +74,7 @@ class Agent:
 
 if __name__ == "__main__":
     problems = ProblemRegistry().PROBLEM_REGISTRY
+    os.makedirs("results", exist_ok=True)
 
     for pid in problems:
         agent = Agent()
@@ -82,6 +84,13 @@ if __name__ == "__main__":
         try:
             problem_desc, instructs, apis = orchestrator.init_problem(pid)
             agent.init_context(problem_desc, instructs, apis)
-            asyncio.run(orchestrator.start_problem(max_steps=30))
+
+            full_output = asyncio.run(orchestrator.start_problem(max_steps=30))
+            results = full_output.get("results", {})
+            
+            filename = os.path.join("results", f"{pid}.json")
+            with open(filename, "w") as f:
+                json.dump(results, f, indent=2)
+
         except Exception as e:
             print(f"Error while running problem {pid}: {e}")
