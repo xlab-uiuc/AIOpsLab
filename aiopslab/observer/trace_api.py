@@ -21,6 +21,7 @@ class TraceAPI:
         self.port_forward_process = None
         self.namespace = namespace
         self.stop_event = threading.Event()
+        self.output_threads = []
 
         if self.namespace == "astronomy-shop":
             # No NodePort in astronomy shop
@@ -150,26 +151,31 @@ class TraceAPI:
         # time.sleep(3)  # Wait a bit for the port-forward to establish
 
     def stop_port_forward(self):
-        """Stops the kubectl port-forward command."""
         if self.port_forward_process:
-            self.port_forward_process.terminate()  # Send SIGTERM
-            self.port_forward_process.wait()  # Wait for the process to terminate
-            self.stop_event.set()
-            print("Set the stop event.")
-            self.port_forward_process.stdout.close()
-            self.port_forward_process.stderr.close()
-            print("Port forwarding stopped.")
+            self.stop_event.set()  # Signal threads to exit
+            try:
+                self.port_forward_process.terminate()
+                self.port_forward_process.wait(timeout=5)
+            except Exception as e:
+                print("Error terminating port-forward process:", e)
+
+            try:
+                if self.port_forward_process.stdout:
+                    self.port_forward_process.stdout.close()
+                if self.port_forward_process.stderr:
+                    self.port_forward_process.stderr.close()
+            except Exception as e:
+                print("Error closing process streams:", e)
+            self.port_forward_process = None
+
 
     def cleanup(self):
-        """Clean up resources."""
         self.stop_port_forward()
-        for thread in threading.enumerate():
-            if thread != threading.current_thread():
-                thread.join(timeout=5)
-                if thread.is_alive():
-                    print(
-                        f"Thread {thread.name} could not be joined and may need to be stopped forcefully."
-                    )
+        for thread in self.output_threads:
+            thread.join(timeout=5)
+            if thread.is_alive():
+                print(f"Thread {thread.name} could not be joined and may need to be stopped forcefully.")
+        self.output_threads.clear()
         print("Cleanup completed.")
 
     def get_services(self) -> list:
