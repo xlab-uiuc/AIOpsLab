@@ -172,19 +172,13 @@ class MisconfigAppHotelResMitigation(MisconfigAppHotelResBaseTask, MitigationTas
         for pod in pod_list.items:
             # Check container statuses
             for container_status in pod.status.container_statuses:
-                if (
-                    container_status.state.waiting
-                    and container_status.state.waiting.reason == "CrashLoopBackOff"
-                ):
-                    print(f"Container {container_status.name} is in CrashLoopBackOff")
-                    all_normal = False
-                elif (
-                    container_status.state.terminated
-                    and container_status.state.terminated.reason != "Completed"
-                ):
-                    print(
-                        f"Container {container_status.name} is terminated with reason: {container_status.state.terminated.reason}"
-                    )
+                if container_status.state.waiting:
+                    reason = container_status.state.waiting.reason
+                    if reason in ["CrashLoopBackOff", "Error", "ImagePullBackOff", "ErrImagePull"]:
+                        print(f"Container {container_status.name} is in error state: {reason}")
+                        all_normal = False
+                elif container_status.state.terminated and container_status.state.terminated.reason != "Completed":
+                    print(f"Container {container_status.name} is terminated with reason: {container_status.state.terminated.reason}")
                     all_normal = False
                 elif not container_status.ready:
                     print(f"Container {container_status.name} is not ready")
