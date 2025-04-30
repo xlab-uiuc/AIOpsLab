@@ -154,7 +154,6 @@ class WrongBinUsageAnalysis(WrongBinUsageBaseTask, AnalysisTask):
 
 
 ################## Mitigation Problem ##################
-# TODO: May need to check the application log cause the error will not be illustrated in the pod level.
 class WrongBinUsageMitigation(WrongBinUsageBaseTask, MitigationTask):
     def __init__(self, faulty_service: str = "profile"):
         WrongBinUsageBaseTask.__init__(self, faulty_service=faulty_service)
@@ -164,33 +163,26 @@ class WrongBinUsageMitigation(WrongBinUsageBaseTask, MitigationTask):
         print("== Evaluation ==")
         super().eval(soln, trace, duration)
 
-        # Check if all services (not only faulty service) is back to normal (Running)
-        pod_list = self.kubectl.list_pods(self.namespace)
-        all_normal = True
+        expected_command = "profile" # Command dictates which binary will be ran, we want to run /go/bin/profile and not /go/bin/geo
 
-        for pod in pod_list.items:
-            # Check container statuses
-            for container_status in pod.status.container_statuses:
-                if (
-                    container_status.state.waiting
-                    and container_status.state.waiting.reason == "CrashLoopBackOff"
-                ):
-                    print(f"Container {container_status.name} is in CrashLoopBackOff")
-                    all_normal = False
-                elif (
-                    container_status.state.terminated
-                    and container_status.state.terminated.reason != "Completed"
-                ):
+        try:
+            deployment = self.kubectl.get_deployment(self.faulty_service, self.namespace)
+            containers = deployment.spec.template.spec.containers
+
+            for container in containers:
+                command = container.command or []
+                if expected_command not in command:
                     print(
-                        f"Container {container_status.name} is terminated with reason: {container_status.state.terminated.reason}"
+                        f"[FAIL] Deployment for container '{container.name}' is using wrong binary: {command}"
                     )
-                    all_normal = False
-                elif not container_status.ready:
-                    print(f"Container {container_status.name} is not ready")
-                    all_normal = False
+                    self.results["success"] = False
+                    return self.results
 
-            if not all_normal:
-                break
+            print("[PASS] Deployment is using the correct binary.")
+            self.results["success"] = True
+            return self.results
 
-        self.results["success"] = all_normal
-        return self.results
+        except Exception as e:
+            print(f"[ERROR] Exception during evaluation: {e}")
+            self.results["success"] = False
+            return self.results
