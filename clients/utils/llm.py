@@ -5,7 +5,7 @@
 
 
 import os
-from openai import OpenAI
+from openai import OpenAI, AzureOpenAI
 from pathlib import Path
 import json
 from dotenv import load_dotenv
@@ -47,7 +47,46 @@ class Cache:
     def save_cache(self):
         with open(CACHE_PATH, "w") as f:
             json.dump(self.cache_dict, f, indent=4)
+class AzureGPTClient:
+    """Abstraction for OpenAI's GPT series model."""
 
+    def __init__(self):
+        self.cache = Cache()
+
+    def inference(self, payload: list[dict[str, str]]) -> list[str]:
+        if self.cache is not None:
+            cache_result = self.cache.get_from_cache(payload)
+            if cache_result is not None:
+                return cache_result
+
+        client = AzureOpenAI(api_key=os.getenv("OPENAI_API_KEY"),
+                        azure_endpoint="https://eteopenai.azure-api.net",
+                        api_version="2024-12-01-preview")
+        try:
+            response = client.chat.completions.create(
+                messages=payload,  # type: ignore
+                model="gpt-4o-2024-08-06",
+                max_tokens=1024,
+                temperature=0.5,
+                top_p=0.95,
+                frequency_penalty=0.0,
+                presence_penalty=0.0,
+                n=1,
+                timeout=60,
+                stop=[],
+            )
+        except Exception as e:
+            print(f"Exception: {repr(e)}")
+            raise e
+
+        return [c.message.content for c in response.choices]  # type: ignore
+
+    def run(self, payload: list[dict[str, str]]) -> list[str]:
+        response = self.inference(payload)
+        if self.cache is not None:
+            self.cache.add_to_cache(payload, response)
+            self.cache.save_cache()
+        return response
 
 class GPTClient:
     """Abstraction for OpenAI's GPT series model."""
@@ -65,7 +104,7 @@ class GPTClient:
         try:
             response = client.chat.completions.create(
                 messages=payload,  # type: ignore
-                model="gpt-4-turbo-2024-04-09",
+                model="gpt-4o",
                 max_tokens=1024,
                 temperature=0.5,
                 top_p=0.95,

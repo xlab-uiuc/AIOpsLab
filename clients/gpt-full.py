@@ -14,10 +14,31 @@ from aiopslab.orchestrator import Orchestrator
 from clients.utils.llm import AzureGPTClient
 from dotenv import load_dotenv
 
-from parse_result import DOCS_SHELL_ONLY
-
 # Load environment variables from the .env file
 load_dotenv()
+
+TASK_MESSAGE = """{prob_desc}
+You are provided with the following APIs to interact with the service:
+
+{telemetry_apis}
+
+You are also provided an API to a secure terminal to the service where you can run commands:
+
+{shell_api}
+
+Finally, you will submit your solution for this task using the following API:
+
+{submit_api}
+
+At each turn think step-by-step and respond with your action.
+
+IMPORTANT:
+1. The submit() call must strictly follow its defined parameter signature for this task.
+2. Provide the call in a markdown code block.
+
+At each turn respond with:
+Action: <your action>
+"""
 
 class Agent:
     def __init__(self):
@@ -32,15 +53,22 @@ class Agent:
 
         self.shell_api = self._filter_dict(apis, lambda k, _: "exec_shell" in k)
         self.submit_api = self._filter_dict(apis, lambda k, _: "submit" in k)
+        self.telemetry_apis = self._filter_dict(
+            apis, lambda k, _: "exec_shell" not in k and "submit" not in k
+        )
         stringify_apis = lambda apis: "\n\n".join(
             [f"{k}\n{v}" for k, v in apis.items()]
         )
 
-        self.system_message = DOCS_SHELL_ONLY.format(
+        self.system_message = TASK_MESSAGE.format(
             prob_desc=problem_desc,
+            telemetry_apis=stringify_apis(self.telemetry_apis),
             shell_api=stringify_apis(self.shell_api),
             submit_api=stringify_apis(self.submit_api),
         )
+
+        print(f"===== System Message ====\n{self.system_message}")
+
 
         self.task_message = instructions
 
@@ -70,6 +98,7 @@ class Agent:
 
 
 if __name__ == "__main__":
+    print("Running on Azure OpenAI GPT-4o, with full tool set.")
     # Load use_wandb from environment variable with a default of False
     use_wandb = os.getenv("USE_WANDB", "false").lower() == "true"
     
