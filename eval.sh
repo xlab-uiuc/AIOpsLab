@@ -31,6 +31,8 @@ astronomy_shop_recommendation_service_cache_failure-detection-1
 redeploy_without_PV-detection-1
 wrong_bin_usage-detection-1
 noop_detection_astronomy_shop-1
+astronomy_shop_loadgenerator_flood_homepage-detection-1
+astronomy_shop_loadgenerator_flood_homepage-localization-1
 k8s_target_port-misconfig-localization-1
 k8s_target_port-misconfig-localization-2
 k8s_target_port-misconfig-localization-3
