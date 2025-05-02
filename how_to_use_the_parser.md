@@ -29,3 +29,5 @@ So you don't need to remove the earlier trajectory of failed tasks.
 It will generate four `<task_type>_table.csv`.
 
 **Please make sure all the evaluation tasks end normally before run this script.**
+
+Then paste it into the table. Choose 'Split text to columns' (Each time you paste, G-doc will show a button. Click it and you will see this in the selections)

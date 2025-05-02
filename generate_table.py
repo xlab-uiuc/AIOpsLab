@@ -113,12 +113,12 @@ if __name__ == "__main__":
     with open("localization_table.csv", "w") as f:
         for task in localization_table:
             entry = [x for x in content if task in x["problem"]][0]
-            print(f"{B(entry["success"])}, {entry["Localization Accuracy"]}, {entry["TTL"]}", file=f)
+            print(f"{entry["TTL"]}, {entry["steps"]}, 30, {entry["agent_in_token"]}, {entry["agent_out_token"]}, {B(entry["success"])}, {entry["Localization Accuracy"]}, {entry["TTL"]}", file=f)
 
     with open("analysis_table.csv", "w") as f:
         for task in analysis_table:
             entry = [x for x in content if task in x["problem"]][0]
-            print(f"{B(entry["success"])}, {B(entry["system_level_correct"])}, {B(entry["fault_type_correct"])}", file=f)
+            print(f"{entry["TTA"]}, {entry["steps"]}, 30, {entry["agent_in_token"]}, {entry["agent_out_token"]}, {B(entry["success"])}, {B(entry["system_level_correct"])}, {B(entry["fault_type_correct"])}", file=f)
 
     with open("mitigation_table.csv", "w") as f:
         # time	steps 	max_steps	total_tokens	prompt_tokens	success	workload time
