@@ -35,6 +35,7 @@ detection_table = [
 "redeploy_without_PV-detection-1",
 "wrong_bin_usage-detection-1",
 "noop_detection_astronomy_shop-1",
+"astronomy_shop_loadgenerator_flood_homepage-detection-1",
 ]
 
 localization_table = [
@@ -65,6 +66,7 @@ localization_table = [
 "astronomy_shop_product_catalog_service_failure-localization-1",
 "astronomy_shop_recommendation_service_cache_failure-localization-1",
 "wrong_bin_usage-localization-1",
+"astronomy_shop_loadgenerator_flood_homepage-localization-1",
 ]
 
 analysis_table = [

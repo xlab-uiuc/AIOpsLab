@@ -329,6 +329,8 @@ registry = [
 "wrong_bin_usage-localization-1",
 "wrong_bin_usage-analysis-1",
 "wrong_bin_usage-mitigation-1",
+"astronomy_shop_loadgenerator_flood_homepage-detection-1",
+"astronomy_shop_loadgenerator_flood_homepage-localization-1",
 ]
 
 if __name__ == "__main__":
