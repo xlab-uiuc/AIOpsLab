@@ -7,6 +7,7 @@ import tiktoken
 from aiopslab.orchestrator.problems.registry import ProblemRegistry
 import os
 
+AGENT_MODEL="gpt-4o"
 SHOW_PROMPT = True
 DOCS_SHELL_ONLY = """{prob_desc}
 You are provided with a direct API to a secure terminal to the service where you can run commands:
@@ -82,19 +83,35 @@ class MimicClient:
     def __init__(self):
         self.cache = Cache()
     
-    def count_message_tokens(self, messages, model="gpt-4o"):
-        encoding = tiktoken.encoding_for_model(model)
+    def count_message_tokens(self, messages, model):
+        if "gpt" in model:
+            encoding = tiktoken.encoding_for_model(model)
 
-        tokens_per_message = 3
-        tokens_per_name = 1
-        total_tokens = 0
-        for msg in messages:
-            total_tokens += tokens_per_message
-            for key, value in msg.items():
-                total_tokens += len(encoding.encode(value))
-                if key == "name":
-                    total_tokens += tokens_per_name
-        total_tokens += 3
+            tokens_per_message = 3
+            tokens_per_name = 1
+            total_tokens = 0
+            for msg in messages:
+                total_tokens += tokens_per_message
+                for key, value in msg.items():
+                    total_tokens += len(encoding.encode(value))
+                    if key == "name":
+                        total_tokens += tokens_per_name
+            
+            if len(messages) == 1 and messages[0]["role"] == "assistant":
+                total_tokens -= 3
+        else:
+            from transformers import AutoTokenizer
+            tokenizer = AutoTokenizer.from_pretrained("./llama")
+
+            prompt = tokenizer.apply_chat_template(messages, tokenize=True)
+            
+            total_tokens = len(prompt)
+
+            # Empirically determined
+            if len(messages) == 1 and messages[0]["role"] == "assistant":
+                total_tokens -= 5
+            else:
+                total_tokens += 24
         return total_tokens
 
     def inference(self, payload: list[dict[str, str]]) -> list[str]:
@@ -103,7 +120,7 @@ class MimicClient:
             if cache_result is not None:
                 return cache_result
         
-        return self.count_message_tokens(messages=payload)
+        return self.count_message_tokens(messages=payload, model=AGENT_MODEL)
 
     def run(self, payload: list[dict[str, str]]) -> list[str]:
         response = self.inference(payload)
@@ -213,8 +230,8 @@ def conclude(filename):
     action_list = result_parsed["trace"]
     last_action = "Please take the next action"
     for idx in range(0, len(action_list), 2):
-        agent.get_action(last_action, truncate(action_list[idx]["content"]))
-        last_action = action_list[idx + 1]["content"] + "\n" + "Please take the next action"
+        agent.get_action(last_action, action_list[idx]["content"])
+        last_action = truncate(action_list[idx + 1]["content"] + "\n" + "Please take the next action")
         
     results = result_parsed["results"]
     results.update(
@@ -317,7 +334,6 @@ registry = [
 if __name__ == "__main__":
     disable_creation()
     result_list = []
-    # result_files = os.listdir("eval_w_shell")
     result_files = os.listdir("eval")
     for problem in registry:
         try:
@@ -330,7 +346,6 @@ if __name__ == "__main__":
             if len(selected) > 0:
                 print("Selections:", selected)
             print(f"Processing file: {newest_file}", flush=True)
-            # result = conclude(os.path.join("eval_w_shell", newest_file, "run.log"))
             result = conclude(os.path.join("eval", newest_file, "run.log"))
             result.update({"problem": problem})
             result_list.append(result)
@@ -339,6 +354,5 @@ if __name__ == "__main__":
             tb = "".join(traceback.format_exception(type(e), e, e.__traceback__))
             print(f"Error processing {problem}: {tb}")
     print("Parsed all the problems", flush=True)
-    # with open("results_w_shell.json", "w") as f:
     with open("results.json", "w") as f:
         json.dump(result_list, f, indent=4)

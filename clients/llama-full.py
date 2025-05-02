@@ -11,7 +11,7 @@ import asyncio
 
 import wandb
 from aiopslab.orchestrator import Orchestrator
-from clients.utils.llm import AzureGPTClient
+from clients.utils.llm import LlamaClient
 from dotenv import load_dotenv
 
 # Load environment variables from the .env file
@@ -43,7 +43,7 @@ Action: <your action>
 class Agent:
     def __init__(self):
         self.history = []
-        self.llm = AzureGPTClient()
+        self.llm = LlamaClient()
     
     def test(self):
         return self.llm.run([{"role": "system", "content": "hello"}])
@@ -89,7 +89,7 @@ class Agent:
         """
         self.history.append({"role": "user", "content": input})
         response = self.llm.run(self.history)
-        print(f"===== Agent (GPT-4o) ====\n{response}")
+        print(f"===== Agent (Llama3 70B) ====\n{response}")
         self.history.append({"role": "assistant", "content": response[0]})
         return response[0]
 
@@ -98,7 +98,7 @@ class Agent:
 
 
 if __name__ == "__main__":
-    print("Running on Azure OpenAI GPT-4o, with full tool set.")
+    print("Running on Llama3 70B, with full tool set.")
     # Load use_wandb from environment variable with a default of False
     use_wandb = os.getenv("USE_WANDB", "false").lower() == "true"
     
@@ -119,5 +119,5 @@ if __name__ == "__main__":
     if use_wandb:
         # Finish the wandb run
         wandb.finish()
-    
+
     agent.llm.print_usage()

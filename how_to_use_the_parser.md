@@ -5,13 +5,15 @@ Ensure `SHOW_PROMPT = True`. It will read the `task_message` prompt from the tra
 
 **Otherwise**
 
-Set `SHOW_PROMPT = False`, and fill `DOCS_SHELL_ONLY` with the prompt the agent uses. (If more arguments are needed, please modify line 139 at the same time)
+Set `SHOW_PROMPT = False`, and fill `DOCS_SHELL_ONLY` with the prompt the agent uses. (If more arguments are needed, please modify line 152 at the same time)
 
 Itself will generate the `task_message` prompt.
 
 ----
 
-**If you are using a different model than GPT-4o**:
+For different models, please modify `AGENT_MODEL="gpt-4o"` at line 10
+
+**If you are using a different model than GPT-4o or llama3**:
 
 Please modify line 85 `count_message_tokens()`
 
@@ -40,4 +42,4 @@ It will generate four `<task_type>_table.csv`.
 
 **Please make sure all the evaluation tasks end normally before run this script.**
 
-Then paste it into the table. Choose 'Split text to columns' (Each time you paste, G-doc will show a button. Click it and you will see this in the selections)
+Then paste it into the table. Choose 'Split text to columns' (Each time you paste, G-sheet will show a button. Click it and you will see this in the selections)

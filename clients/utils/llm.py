@@ -5,6 +5,7 @@
 
 
 import os
+from clients.utils.litellm_backend import LiteLLMBackend
 from openai import OpenAI, AzureOpenAI
 from pathlib import Path
 import json
@@ -53,6 +54,15 @@ class AzureGPTClient:
     def __init__(self):
         self.cache = Cache()
 
+        self.prompt_tokens = 0
+        self.total_tokens = 0
+        self.completion_tokens = 0
+    
+    def print_usage(self):
+        print(f"Prompt tokens: {self.prompt_tokens}")
+        print(f"Completion tokens: {self.completion_tokens}")
+        print(f"Total tokens: {self.total_tokens}")
+
     def inference(self, payload: list[dict[str, str]]) -> list[str]:
         if self.cache is not None:
             cache_result = self.cache.get_from_cache(payload)
@@ -60,12 +70,12 @@ class AzureGPTClient:
                 return cache_result
 
         client = AzureOpenAI(api_key=os.getenv("OPENAI_API_KEY"),
-                        azure_endpoint="https://eteopenai.azure-api.net",
-                        api_version="2024-12-01-preview")
+                        azure_endpoint=os.getenv("URL_AGENTS"),
+                        api_version=os.getenv("API_VERSION_AGENTS"))
         try:
             response = client.chat.completions.create(
                 messages=payload,  # type: ignore
-                model="gpt-4o-2024-08-06",
+                model=os.getenv("MODEL_AGENTS"),
                 max_tokens=1024,
                 temperature=0.5,
                 top_p=0.95,
@@ -75,11 +85,70 @@ class AzureGPTClient:
                 timeout=60,
                 stop=[],
             )
+
+            self.prompt_tokens += response.usage.prompt_tokens
+            self.completion_tokens += response.usage.completion_tokens
+            self.total_tokens += response.usage.total_tokens
         except Exception as e:
             print(f"Exception: {repr(e)}")
             raise e
 
         return [c.message.content for c in response.choices]  # type: ignore
+
+    def run(self, payload: list[dict[str, str]]) -> list[str]:
+        response = self.inference(payload)
+        if self.cache is not None:
+            self.cache.add_to_cache(payload, response)
+            self.cache.save_cache()
+        return response
+
+class LlamaClient:
+    """Abstraction for OpenAI's GPT series model."""
+
+    def __init__(self):
+        self.cache = Cache()
+        self.backend = LiteLLMBackend(
+            provider=os.getenv("PROVIDER_AGENTS"),
+            model_name=os.getenv("MODEL_AGENTS"),
+            url=os.getenv("URL_AGENTS"),
+            api_key=os.getenv("API_KEY_AGENTS"),
+            api_version=os.getenv("API_VERSION_AGENTS"),
+            seed=int(os.getenv("SEED_AGENTS")),
+            top_p=float(os.getenv("TOP_P_AGENTS")),
+            temperature=float(os.getenv("TEMPERATURE_AGENTS")),
+            reasoning_effort=os.getenv("REASONING_EFFORT_AGENTS"),
+            max_tokens=int(os.getenv("MAX_TOKENS_AGENTS")),
+            thinking_tools="",
+            thinking_budget_tools=int(os.getenv("THINKING_BUDGET_AGENTS")),
+        )
+
+        self.prompt_tokens = 0
+        self.total_tokens = 0
+        self.completion_tokens = 0
+
+    def inference(self, payload: list[dict[str, str]]) -> list[str]:
+        if self.cache is not None:
+            cache_result = self.cache.get_from_cache(payload)
+            if cache_result is not None:
+                return cache_result
+
+        try:
+            response = self.backend.inference(payload)
+
+            self.prompt_tokens += response.usage.prompt_tokens
+            self.completion_tokens += response.usage.completion_tokens
+            self.total_tokens += response.usage.total_tokens
+
+        except Exception as e:
+            print(f"Exception: {repr(e)}")
+            raise e
+
+        return [c.message.content for c in response.choices]  # type: ignore
+    
+    def print_usage(self):
+        print(f"Prompt tokens: {self.prompt_tokens}")
+        print(f"Completion tokens: {self.completion_tokens}")
+        print(f"Total tokens: {self.total_tokens}")
 
     def run(self, payload: list[dict[str, str]]) -> list[str]:
         response = self.inference(payload)
