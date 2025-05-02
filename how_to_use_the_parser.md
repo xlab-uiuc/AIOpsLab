@@ -11,6 +11,16 @@ Itself will generate the `task_message` prompt.
 
 ----
 
+**If you are using a different model than GPT-4o**:
+
+Please modify line 85 `count_message_tokens()`
+
+- **IMPORTANT**: You need to modify the model for tiktoken (`tiktoken.encoding_for_model(model)`)
+- You need to modify `tokens_per_message` and `tokens_per_name` because different model uses different way to translate the list. If you have a better way to compute (like calling some API), please raise a PR. (Actually this part only affects little)
+
+
+----
+
 **Please ensure all the evaluation tasks end normally**
 
 ```
