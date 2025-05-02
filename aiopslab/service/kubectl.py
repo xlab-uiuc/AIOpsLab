@@ -280,6 +280,17 @@ class KubeCtl:
         # else:
         #     return out.stdout.decode("utf-8")
 
+    def get_node_architectures(self):
+        """Return a set of CPU architectures from all nodes in the cluster."""
+        architectures = set()
+        try:
+            nodes = self.core_v1_api.list_node()
+            for node in nodes.items:
+                arch = node.status.node_info.architecture
+                architectures.add(arch)
+        except ApiException as e:
+            print(f"Exception when retrieving node architectures: {e}\n")
+        return architectures
 
 # Example usage:
 if __name__ == "__main__":
