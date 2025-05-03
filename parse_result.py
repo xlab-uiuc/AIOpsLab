@@ -82,6 +82,7 @@ class MimicClient:
 
     def __init__(self):
         self.cache = Cache()
+        self.tokenizer = None
     
     def count_message_tokens(self, messages, model):
         if "gpt" in model:
@@ -100,10 +101,11 @@ class MimicClient:
             if len(messages) == 1 and messages[0]["role"] == "assistant":
                 total_tokens -= 3
         else:
-            from transformers import AutoTokenizer
-            tokenizer = AutoTokenizer.from_pretrained("./llama")
+            if self.tokenizer is None:
+                from transformers import AutoTokenizer
+                self.tokenizer = AutoTokenizer.from_pretrained("./llama")
 
-            prompt = tokenizer.apply_chat_template(messages, tokenize=True)
+            prompt = self.tokenizer.apply_chat_template(messages, tokenize=True)
             
             total_tokens = len(prompt)
 
