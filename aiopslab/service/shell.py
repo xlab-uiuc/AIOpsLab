@@ -43,7 +43,7 @@ class Shell:
         if mutables and not Shell._validate_command(
             command, mutables, input_data=input_data, cwd=cwd
         ):
-            return "", "Permission Denied: You are not allowed to run this command."
+            return "", "Permission Denied: You are not allowed to run this command because this is an immutable object."
 
         if k8s_host == "kind":
             return Shell.docker_exec("kind-control-plane", command)

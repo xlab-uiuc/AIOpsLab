@@ -155,6 +155,12 @@ class Orchestrator:
         try:
             if api == "exec_shell" and len(args) > 0 and args[0].startswith("kubectl"):
                 kwargs["mutables"] = self.session.mutables
+                command = args[0]
+                forbidden_patterns = ["kubectl delete", "kubectl rollout"]
+                if any(p in command for p in forbidden_patterns):
+                    env_response = f"Error: Forbidden command detected → '{command}'. Destructive operations are not allowed."
+                    self.session.add({"role": "env", "content": env_response})
+                    return env_response
 
             env_response = self.session.problem.perform_action(api, *args, **kwargs)
 
