@@ -42,7 +42,7 @@ class SimulationRequest(BaseModel):
     repetition_penalty: Optional[float] = 1.0
     temperature: Optional[float] = 1.0
     top_p: Optional[float] = 1.0
-    max_tokens: Optional[int] = 512  # Increased default for better responses
+    max_tokens: Optional[int] = 1024  # Aligned with vLLMAgent default
     
     class Config:
         schema_extra = {
@@ -167,8 +167,10 @@ def simulate(req: SimulationRequest):
 # Entry point for running the service
 if __name__ == "__main__":
     import uvicorn
+    # Load environment variables for host, port, and workers
+    host = os.environ.get("SERVICE_HOST", "localhost")
     port = int(os.environ.get("SERVICE_PORT", 8888))
     workers = int(os.environ.get("SERVICE_WORKERS", 1))
     
-    logger.info(f"Starting AIOpsLab service on port {port} with {workers} workers")
-    uvicorn.run("service:app", host="localhost", port=port, workers=workers)
+    logger.info(f"Starting AIOpsLab service on host {host} port {port} with {workers} workers")
+    uvicorn.run("service:app", host=host, port=port, workers=workers)

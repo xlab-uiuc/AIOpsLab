@@ -187,7 +187,7 @@ class vLLMClient:
     def __init__(self,
                  model="Qwen/Qwen2.5-Coder-3B-Instruct",
                  repetition_penalty=1.0,
-                 temperature=0.5,
+                 temperature=1.0,
                  top_p=0.95,
                  max_tokens=1024):
         self.cache = Cache()

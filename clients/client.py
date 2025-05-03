@@ -48,7 +48,7 @@ async def run_agent(agent_name, problem_id, max_steps, model, temperature, top_p
     
     # If the agent is vLLM, pass the specific parameters
     if agent_name == "vllm":
-        agent_cls = agent_cls(
+        agent = agent_cls(
             model=model,
             repetition_penalty=repetition_penalty,
             temperature=temperature,
