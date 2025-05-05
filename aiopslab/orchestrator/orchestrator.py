@@ -91,6 +91,11 @@ class Orchestrator:
                     ).strip()
                     for pod in pods.split("\n"):
                         additional.add(pod)
+                    deployments = self.kubectl.exec_command(
+                        f"kubectl get deployments -n {prob.namespace} --selector {selector} -o name"
+                    )
+                    for deployment in deployments.split("\n"):
+                        additional.add(deployment)
                 elif mutable.startswith("namespace"):
                     pods = self.kubectl.exec_command(
                         f"kubectl get pods -n {prob.namespace} -o name"
@@ -102,6 +107,11 @@ class Orchestrator:
                     ).strip()
                     for service in services.split("\n"):
                         additional.add(service)
+                    deployments = self.kubectl.exec_command(
+                        f"kubectl get deployments -n {prob.namespace} -o name"
+                    ).strip()
+                    for deployment in deployments.split("\n"):
+                        additional.add(deployment)
             self.session.add_mutables(additional)
 
         # Check if start_workload is async or sync
@@ -256,12 +266,6 @@ class Orchestrator:
             total_execution_time - results[key]
         )  # Time spent doing everything besides running the agent
         print(f"Framework overhead: {framework_overhead}")
-        print('-'*50)
-        for history in self.session.history:
-            print(f"{history.role}: {history.content}")
-        print('-'*50)
-        print("Final State:", env_response)
-        print("Results:", results)
 
 
         return {

@@ -68,9 +68,7 @@ class Shell:
             command, input_data=input_data, cwd=cwd, mutables=mutables
         )
         if error:
-            print(f"[ERROR] Command {command} execution failed: {error}")
             return error
-        print(f"[INFO] Command {command} executed successfully: {output}")
         return output
 
     @staticmethod
