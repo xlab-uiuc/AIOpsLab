@@ -74,7 +74,7 @@ if __name__ == "__main__":
     orchestrator = Orchestrator()
     orchestrator.register_agent(agent, name="gpt-w-shell")
 
-    pid = "misconfig_app_hotel_res-mitigation-1"
+    pid = "scale_pod_zero_social_net-mitigation-1"
     problem_desc, instructs, apis = orchestrator.init_problem(pid)
     agent.init_context(problem_desc, instructs, apis)
     asyncio.run(orchestrator.start_problem(max_steps=10))
