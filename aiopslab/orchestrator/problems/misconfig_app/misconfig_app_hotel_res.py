@@ -168,8 +168,8 @@ class MisconfigAppHotelResMitigation(MisconfigAppHotelResBaseTask, MitigationTas
 
         # Check if all services (not only faulty service) is back to normal (Running)
         all_normal = True
-        # Check twice to reduce false positives due to pod restart
-        for _ in range(2):
+        # Polling for 1 minute to check if all services are back to normal
+        for _ in range(12): # 5 seconds interval, 12 times, total 1 minute
             pod_list = self.kubectl.list_pods(self.namespace)
             for pod in pod_list.items:
                 # Check container statuses
