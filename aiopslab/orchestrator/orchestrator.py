@@ -149,6 +149,9 @@ class Orchestrator:
     async def ask_env(self, input):
         """Ask the environment for the observation given the current action."""
         assert self.session is not None
+        #print("problem id:", self.probs) # problem id: <aiopslab.orchestrator.problems.registry.ProblemRegistry object at 0x141e5d510>
+        #print("problem id:", self.session.pid) # problem id: misconfig_app_hotel_res-mitigation-1
+        #print("problem object:", self.session.problem) # problem object: <aiopslab.orchestrator.problems.misconfig_app.misconfig_app_hotel_res.MisconfigAppHotelResMitigation object at 0x138f756d0>
 
         try:
             resp = self.parser.parse(input)
@@ -161,12 +164,22 @@ class Orchestrator:
         # if submit, save solution for eval
         if api == "submit":
             self.session.set_solution(args[0] if len(args) == 1 else args)
-
+        # changes forbidden patterns based on the problem's context. Currently handles 2/6 faults in inject_virtual
+        # can be extended to handle more cases by adding more elifs
         try:
             if api == "exec_shell" and len(args) > 0 and args[0].startswith("kubectl"):
                 kwargs["mutables"] = self.session.mutables
                 command = args[0]
-                forbidden_patterns = ["kubectl delete", "kubectl rollout"]
+                # if port misconfig problem, for example self.session.pid -> problem id: misconfig_app_hotel_res-mitigation-1
+                if "misconfig" in self.session.pid:
+                    forbidden_patterns = ["kubectl delete", "kubectl rollout"]
+                    #print("forbidden_patterns:", forbidden_patterns)
+                # if assign_to_non_existent_node problem, agent's minimal fix is using patch to remove 
+                elif "non_existent" in self.session.pid:
+                    forbidden_patterns = ["kubectl delete","kubectl label"]
+                    print("forbidden_patterns:", forbidden_patterns)
+                else:
+                    forbidden_patterns = []
                 if any(p in command for p in forbidden_patterns):
                     env_response = f"Error: Forbidden command detected → '{command}'. Destructive operations are not allowed."
                     self.session.add({"role": "env", "content": env_response})

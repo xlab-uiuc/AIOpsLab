@@ -196,17 +196,20 @@ class AssignNonExistentNodeSocialNetMitigation(
             all_normal = False
         else:
             for pod in pod_list.items:
+                node_selectors = pod.spec.node_selector or {}
+                # check explicity for the extra-node
+                if node_selectors.get("kubernetes.io/hostname") == "extra-node":
+                    print(f"Pod {pod.metadata.name} is still assigned to non-existent node 'extra-node'.")
+                    all_normal = False
                 if pod.status.container_statuses:
                     for container_status in pod.status.container_statuses:
-                        if (
-                            container_status.state.waiting
-                            and container_status.state.waiting.reason
-                            == "CrashLoopBackOff"
-                        ):
-                            print(
-                                f"Container {container_status.name} is in CrashLoopBackOff"
-                            )
-                            all_normal = False
+                        if container_status.state.waiting:
+                            reason =container_status.state.waiting.reason
+                            if reason in ["CrashLoopBackOff", "Error", "ImagePullBackOff", "ErrImagePull"]:
+                                print(
+                                    f"Container {container_status.name} is in error state: {reason}"
+                                )
+                                all_normal = False
                         elif (
                             container_status.state.terminated
                             and container_status.state.terminated.reason != "Completed"
