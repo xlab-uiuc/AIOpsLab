@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 import traceback
+from clients.utils.llm import GPTClient
 import tiktoken
 
 from aiopslab.orchestrator.problems.registry import ProblemRegistry
@@ -168,6 +169,7 @@ class Agent:
         self.token_in += self.count_tokens(self.history)
         self.token_out += self.count_tokens([{"role": "assistant", "content": response}])
         self.history.append({"role": "assistant", "content": response})
+    
 
     def count_tokens(self, history):
         """Count the number of tokens in the conversation history."""
@@ -234,7 +236,7 @@ def conclude(filename):
     last_action = "Please take the next action"
     for idx in range(0, len(action_list), 2):
         agent.get_action(last_action, action_list[idx]["content"])
-        last_action = truncate(action_list[idx + 1]["content"] + "\n" + "Please take the next action")
+        last_action = action_list[idx + 1]["content"] + "\n" + "Please take the next action"
         
     results = result_parsed["results"]
     results.update(

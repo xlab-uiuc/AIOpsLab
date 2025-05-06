@@ -109,21 +109,37 @@ if __name__ == "__main__":
     # generate for detection table
     with open("detection_table.csv", "w") as f:
         for task in detection_table:
-            entry = [x for x in content if task in x["problem"]][0]
+            entry = [x for x in content if task in x["problem"]]
+            if entry == []:
+                print("EMPTY", file=f)
+                continue
+            else: entry = entry[0]
             # time, steps, max_steps, in_tokens, out_tokens
-            print(f"{entry["TTD"]}, {entry["steps"]}, 30, {entry["agent_in_token"]}, {entry["agent_out_token"]}, {B(entry["Detection Accuracy"] == "Correct")}", file=f)
+            print(f'{entry["TTD"]}, {entry["steps"]}, 30, {entry["agent_in_token"]}, {entry["agent_out_token"]}, {B(entry["Detection Accuracy"] == "Correct")}', file=f)
     with open("localization_table.csv", "w") as f:
         for task in localization_table:
-            entry = [x for x in content if task in x["problem"]][0]
-            print(f"{entry["TTL"]}, {entry["steps"]}, 30, {entry["agent_in_token"]}, {entry["agent_out_token"]}, {B(entry["success"])}, {entry["Localization Accuracy"]}, {entry["TTL"]}", file=f)
+            entry = [x for x in content if task in x["problem"]]
+            if entry == []:
+                print("EMPTY", file=f)
+                continue
+            else: entry = entry[0]
+            print(f'{entry["TTL"]}, {entry["steps"]}, 30, {entry["agent_in_token"]}, {entry["agent_out_token"]}, {B(entry["success"])}, {entry["Localization Accuracy"]}, {entry["TTL"]}', file=f)
 
     with open("analysis_table.csv", "w") as f:
         for task in analysis_table:
-            entry = [x for x in content if task in x["problem"]][0]
-            print(f"{entry["TTA"]}, {entry["steps"]}, 30, {entry["agent_in_token"]}, {entry["agent_out_token"]}, {B(entry["success"])}, {B(entry["system_level_correct"])}, {B(entry["fault_type_correct"])}", file=f)
+            entry = [x for x in content if task in x["problem"]]
+            if entry == []:
+                print("EMPTY", file=f)
+                continue
+            else: entry = entry[0]
+            print(f'{entry["TTA"]}, {entry["steps"]}, 30, {entry["agent_in_token"]}, {entry["agent_out_token"]}, {B(entry["success"])}, {B(entry["system_level_correct"])}, {B(entry["fault_type_correct"])}', file=f)
 
     with open("mitigation_table.csv", "w") as f:
         # time	steps 	max_steps	total_tokens	prompt_tokens	success	workload time
         for task in mitigation_table:
-            entry = [x for x in content if task in x["problem"]][0]
-            print(f"{entry["TTM"]}, {entry["steps"]}, 30, {entry["agent_in_token"] + entry["agent_out_token"]}, {entry["agent_in_token"]}, {entry["success"]}", file=f)
+            entry = [x for x in content if task in x["problem"]]
+            if entry == []:
+                print("EMPTY", file=f)
+                continue
+            else: entry = entry[0]
+            print(f'{entry["TTM"]}, {entry["steps"]}, 30, {entry["agent_in_token"]}, {entry["agent_out_token"]}, {entry["success"]}', file=f)

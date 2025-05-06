@@ -11,18 +11,39 @@ import asyncio
 
 import wandb
 from aiopslab.orchestrator import Orchestrator
-from clients.utils.llm import AzureGPTClient
+from clients.utils.llm import LlamaClient
 from dotenv import load_dotenv
-
-from clients.utils.templates import DOCS_SHELL_ONLY
 
 # Load environment variables from the .env file
 load_dotenv()
 
+TASK_MESSAGE = """{prob_desc}
+You are provided with the following APIs to interact with the service:
+
+{telemetry_apis}
+
+You are also provided an API to a secure terminal to the service where you can run commands:
+
+{shell_api}
+
+Finally, you will submit your solution for this task using the following API:
+
+{submit_api}
+
+At each turn think step-by-step and respond with your action.
+
+IMPORTANT:
+1. The submit() call must strictly follow its defined parameter signature for this task.
+2. Provide the call in a markdown code block.
+
+At each turn respond with:
+Action: <your action>
+"""
+
 class Agent:
     def __init__(self):
         self.history = []
-        self.llm = AzureGPTClient()
+        self.llm = LlamaClient()
     
     def test(self):
         return self.llm.run([{"role": "system", "content": "hello"}])
@@ -32,15 +53,22 @@ class Agent:
 
         self.shell_api = self._filter_dict(apis, lambda k, _: "exec_shell" in k)
         self.submit_api = self._filter_dict(apis, lambda k, _: "submit" in k)
+        self.telemetry_apis = self._filter_dict(
+            apis, lambda k, _: "exec_shell" not in k and "submit" not in k
+        )
         stringify_apis = lambda apis: "\n\n".join(
             [f"{k}\n{v}" for k, v in apis.items()]
         )
 
-        self.system_message = DOCS_SHELL_ONLY.format(
+        self.system_message = TASK_MESSAGE.format(
             prob_desc=problem_desc,
+            telemetry_apis=stringify_apis(self.telemetry_apis),
             shell_api=stringify_apis(self.shell_api),
             submit_api=stringify_apis(self.submit_api),
         )
+
+        print(f"===== System Message ====\n{self.system_message}")
+
 
         self.task_message = instructions
 
@@ -61,7 +89,7 @@ class Agent:
         """
         self.history.append({"role": "user", "content": input})
         response = self.llm.run(self.history)
-        print(f"===== Agent (GPT-4o) ====\n{response}")
+        print(f"===== Agent (granite-3-2-8b-instruct) ====\n{response}")
         self.history.append({"role": "assistant", "content": response[0]})
         return response[0]
 
@@ -70,6 +98,7 @@ class Agent:
 
 
 if __name__ == "__main__":
+    print("Running on granite-3-2-8b-instruct, with full tool set.")
     # Load use_wandb from environment variable with a default of False
     use_wandb = os.getenv("USE_WANDB", "false").lower() == "true"
     
@@ -90,3 +119,5 @@ if __name__ == "__main__":
     if use_wandb:
         # Finish the wandb run
         wandb.finish()
+
+    agent.llm.print_usage()

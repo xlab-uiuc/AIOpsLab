@@ -131,6 +131,46 @@ class MimicClient:
             self.cache.save_cache()
         return response
 
+
+RESP_INSTR = """DO NOT REPEAT ACTIONS! Respond with:
+Thought: <your thought on the previous output>
+Action: <your action towards mitigating>
+"""
+
+def count_message_tokens(message, enc):
+    # Each message format adds ~4 tokens of overhead
+    tokens = 4  # <|start|>role/name + content + <|end|>
+    tokens += len(enc.encode(message.get("content", "")))
+    return tokens
+
+def trim_history_to_token_limit(history, max_tokens=120000, model="gpt-4"):
+    enc = tiktoken.encoding_for_model(model)
+
+    trimmed = []
+    total_tokens = 0
+
+    # Always include the last message
+    last_msg = history[-1]
+    last_msg_tokens = count_message_tokens(last_msg, enc)
+
+    if last_msg_tokens > max_tokens:
+        # If even the last message is too big, truncate its content
+        truncated_content = enc.decode(enc.encode(last_msg["content"])[:max_tokens - 4])
+        return [{"role": last_msg["role"], "content": truncated_content}]
+    
+    trimmed.insert(0, last_msg)
+    total_tokens += last_msg_tokens
+
+    # Add earlier messages in reverse until limit is reached
+    for message in reversed(history[:-1]):
+        message_tokens = count_message_tokens(message, enc)
+        if total_tokens + message_tokens > max_tokens:
+            break
+        trimmed.insert(0, message)
+        total_tokens += message_tokens
+
+    return trimmed
+
 class Agent:
     def __init__(self):
         self.history = []
@@ -164,10 +204,14 @@ class Agent:
         self.history.append({"role": "user", "content": self.task_message})
 
     def get_action(self, prompt, response):
-        self.history.append({"role": "user", "content": prompt})
-        self.token_in += self.count_tokens(self.history)
+        self.history.append({"role": "user", "content": self._add_instr(prompt)})
+        trimmed_history = trim_history_to_token_limit(self.history)
+        self.token_in += self.count_tokens(trimmed_history)
         self.token_out += self.count_tokens([{"role": "assistant", "content": response}])
         self.history.append({"role": "assistant", "content": response})
+    
+    def _add_instr(self, input):
+        return input + "\n\n" + RESP_INSTR
 
     def count_tokens(self, history):
         """Count the number of tokens in the conversation history."""
@@ -234,7 +278,7 @@ def conclude(filename):
     last_action = "Please take the next action"
     for idx in range(0, len(action_list), 2):
         agent.get_action(last_action, action_list[idx]["content"])
-        last_action = truncate(action_list[idx + 1]["content"] + "\n" + "Please take the next action")
+        last_action = action_list[idx + 1]["content"] + "\n" + "Please take the next action"
         
     results = result_parsed["results"]
     results.update(
