@@ -90,7 +90,7 @@ cp config.yml.example config.yml
 ```
 Update your `config.yml` so that `k8s_host` is the host name of the control plane node of your cluster. Update `k8s_user` to be your username on the control plane node. If you are using a kind cluster, your `k8s_host` should be `kind`. If you're running AIOpsLab on cluster, your `k8s_host` should be `localhost`.
 
-### Running agents
+### Running agents locally
 Human as the agent:
 
 ```bash
@@ -134,6 +134,52 @@ AIOpsLab can be used in the following ways:
 - [Add new applications to AIOpsLab](#how-to-add-new-applications-to-aiopslab)
 - [Add new problems to AIOpsLab](#how-to-add-new-problems-to-aiopslab)
 
+### Running agents remotely
+You can run AIOpsLab on a remote machine with larger computational resources. This section guides you through setting up and using AIOpsLab remotely.
+
+1. **On the remote machine, start the AIOpsLab service**:
+
+    ```bash
+    SERVICE_HOST=<YOUR_HOST> SERVICE_PORT=<YOUR_PORT> SERVICE_WORKERS=<YOUR_WORKERS> python service.py
+    ```
+2. **Test the connection from your local machine**:
+    In your local machine, you can test the connection to the remote AIOpsLab service using `curl`:
+
+    ```bash
+    # Check if the service is running
+    curl http://<YOUR_HOST>:<YOUR_PORT>/health
+    
+    # List available problems
+    curl http://<YOUR_HOST>:<YOUR_PORT>/problems
+    
+    # List available agents
+    curl http://<YOUR_HOST>:<YOUR_PORT>/agents
+    ```
+
+3. **Run vLLM on the remote machine (if using vLLM agent):**
+    If you're using the vLLM agent, make sure to launch the vLLM server on the remote machine:
+
+    ```bash
+    # On the remote machine
+    chmod +x ./clients/launch_vllm.sh
+    ./clients/launch_vllm.sh
+    ```
+    You can customize the model by editing `launch_vllm.sh` before running it.
+
+4. **Run the agent**:
+    In your local machine, you can run the agent using the following command:
+
+    ```bash
+    curl -X POST http://<YOUR_HOST>:<YOUR_PORT>/simulate \
+      -H "Content-Type: application/json" \
+      -d '{
+        "problem_id": "misconfig_app_hotel_res-mitigation-1",
+        "agent_name": "vllm",
+        "max_steps": 10,
+        "temperature": 0.7,
+        "top_p": 0.9
+      }'
+    ```
 
 ### How to onboard your agent to AIOpsLab?
 

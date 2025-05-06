@@ -27,6 +27,7 @@ wandb = "^0.19.7"
 python-dotenv = "^1.0.1"
 vllm = "^0.7.3"
 transformers = "^4.49.0"
+fastapi = "^0.115.12"
 
 
 [build-system]
