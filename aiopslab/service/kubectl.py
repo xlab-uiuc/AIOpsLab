@@ -72,6 +72,9 @@ class KubeCtl:
 
         console = Console()
         console.log(f"[bold green]Waiting for all pods in namespace '{namespace}' to be ready...")
+        
+        time.sleep(60)
+        return
 
         with console.status("[bold green]Waiting for pods to be ready...") as status:
             wait = 0
