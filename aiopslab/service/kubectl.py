@@ -83,7 +83,8 @@ class KubeCtl:
                     if pod_list.items:
                         ready_pods = [
                             pod for pod in pod_list.items
-                            if pod.status.container_statuses and
+                            if pod.metadata.name != "grafana" and
+                            pod.status.container_statuses and
                             all(cs.ready for cs in pod.status.container_statuses)
                         ]
 
