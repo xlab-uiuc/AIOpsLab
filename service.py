@@ -1,11 +1,14 @@
+import asyncio
+import logging
+import os
+import traceback
+from typing import Any, Dict, List, Optional
+
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import asyncio
-import traceback, logging, os
-from typing import List, Dict, Any, Optional
 
-from aiopslab.orchestrator import Orchestrator  
+from aiopslab.orchestrator import Orchestrator
 from aiopslab.orchestrator.problems.registry import ProblemRegistry
 from clients.registry import AgentRegistry
 
@@ -152,8 +155,10 @@ def simulate(req: SimulationRequest):
         # Remove last message if it's from environment
         if raw["trace"] and raw["trace"][-1].get("role") == "env":
             raw["trace"].pop()
-        raw.pop("start_time", None)
-        raw.pop("end_time", None)
+        raw["start_time"] = str(raw["start_time"])
+        raw["end_time"] = str(raw["end_time"])
+        # raw.pop("start_time", None)
+        # raw.pop("end_time", None)
         
         return SimulationResponse(**raw)
     except Exception as e:
