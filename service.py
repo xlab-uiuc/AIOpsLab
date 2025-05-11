@@ -173,7 +173,7 @@ def simulate(req: SimulationRequest):
 if __name__ == "__main__":
     import uvicorn
     # Load environment variables for host, port, and workers
-    host = os.environ.get("SERVICE_HOST", "localhost")
+    host = os.environ.get("SERVICE_HOST", "0.0.0.0")
     port = int(os.environ.get("SERVICE_PORT", 8888))
     workers = int(os.environ.get("SERVICE_WORKERS", 1))
     
