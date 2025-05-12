@@ -166,7 +166,7 @@ def simulate(req: SimulationRequest):
         traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-            detail=f"Error during simulation: {str(e)}"
+            detail=f"Error during simulation: {e}"
         )
 
 # Entry point for running the service
