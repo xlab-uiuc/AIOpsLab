@@ -80,6 +80,7 @@ class Agent:
             shell_api=stringify_apis(self.shell_api),
             submit_api=stringify_apis(self.submit_api),
         )
+        print(f"===== System Message ====\n{self.system_message}")
 
         self.task_message = instructions
 
@@ -95,9 +96,11 @@ class Agent:
         Returns:
             str: The response from the agent.
         """
+        print(f"===== Orchestrator ====\n{input}")
         self.history.append({"role": "user", "content": self._add_instr(input)})
         trimmed_history = trim_history_to_token_limit(self.history)
         response = self.llm.run(trimmed_history)
+        print(f"===== Agent (React) ====\n{response}")
         self.history.append({"role": "assistant", "content": response[0]})
         return response[0]
 

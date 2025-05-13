@@ -39,6 +39,7 @@ class FlashAgent:
         Submit API:
         {self._stringify_apis(self.submit_api)}
         """
+        print(f"===== System Message ====\n{self.system_message}")
 
         self.task_message = instructions
         self.history.append({"role": "system", "content": self.system_message})
@@ -52,6 +53,9 @@ class FlashAgent:
         return "\n\n".join([f"{k}\n{v}" for k, v in apis.items()])
 
     async def get_action(self, input_text: str) -> str:
+        if len(input_text) > 10000:
+            input_text = "[truncated]" + input_text[-10000:] 
+        print(f"===== Orchestrator ====\n{input_text}")
         """Determine the next action based on the input, hindsight, and reasoning."""
         hindsight = await self.diagnose_with_hindsight(input_text, self.history)
 
@@ -63,6 +67,7 @@ class FlashAgent:
         self.history.append({"role": "user", "content": combined_input})
 
         response = self.llm.run(self.history)
+        print(f"===== Agent (Flash) ====\n{response}")
         self.history.append({"role": "assistant", "content": response[0]})
         return response[0]
 
