@@ -126,5 +126,3 @@ if __name__ == "__main__":
     problem_desc, instructs, apis = orchestrator.init_problem(pid)
     agent.init_context(problem_desc, instructs, apis)
     asyncio.run(orchestrator.start_problem(max_steps=30))
-    
-    agent.llm.print_usage()
