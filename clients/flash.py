@@ -6,16 +6,15 @@ import os
 import logging
 from typing import List, Dict, Tuple, Any
 from pydantic import BaseModel
+from dotenv import load_dotenv
+
+load_dotenv()
 from clients.utils.llm import AzureGPTClient, GPTClient
 from aiopslab.orchestrator import Orchestrator
 from aiopslab.orchestrator.problems.registry import ProblemRegistry
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-from dotenv import load_dotenv
-
-load_dotenv()
 
 class FlashAgent:
     def __init__(self):
@@ -90,7 +89,13 @@ class FlashAgent:
 class HindsightBuilder:
     """Agent hindsight generator."""
 
-    llm = GPTClient()
+    llm = None
+
+    def __init__(self):
+        if os.getenv("PROVIDER_AGENTS", "openai").lower() == "azure":
+            self.llm = AzureGPTClient()
+        else:
+            self.llm = GPTClient()
 
     def generate_prompt(self, input: str, history: dict) -> str:
         """
