@@ -62,6 +62,8 @@ class SimulationResponse(BaseModel):
     agent: str
     session_id: str
     problem_id: str
+    start_time: float
+    end_time: float
     trace: List[Dict[str, Any]]
     results: Dict[str, Any]
 
@@ -155,10 +157,6 @@ def simulate(req: SimulationRequest):
         # Remove last message if it's from environment
         if raw["trace"] and raw["trace"][-1].get("role") == "env":
             raw["trace"].pop()
-        raw["start_time"] = str(raw["start_time"])
-        raw["end_time"] = str(raw["end_time"])
-        # raw.pop("start_time", None)
-        # raw.pop("end_time", None)
         
         return SimulationResponse(**raw)
     except Exception as e:
@@ -174,7 +172,7 @@ if __name__ == "__main__":
     import uvicorn
     # Load environment variables for host, port, and workers
     host = os.environ.get("SERVICE_HOST", "0.0.0.0")
-    port = int(os.environ.get("SERVICE_PORT", 8888))
+    port = int(os.environ.get("SERVICE_PORT", 1818))
     workers = int(os.environ.get("SERVICE_WORKERS", 1))
     
     logger.info(f"Starting AIOpsLab service on host {host} port {port} with {workers} workers")
