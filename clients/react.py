@@ -9,6 +9,7 @@ Paper: https://arxiv.org/abs/2210.03629
 
 import asyncio
 import json
+import os
 import tiktoken
 from aiopslab.orchestrator import Orchestrator
 from aiopslab.orchestrator.problems.registry import ProblemRegistry
@@ -108,23 +109,17 @@ class Agent:
 
 
 if __name__ == "__main__":
-    problems = ProblemRegistry().PROBLEM_REGISTRY
+    print("Running on React, with full tool set.")
 
-    for pid in problems:
-        agent = Agent()
-        orchestrator = Orchestrator()
-        orchestrator.register_agent(agent, name="react")
+    # Load use_wandb from environment variable with a default of False
+    agent = Agent()
 
-        try:
-            problem_desc, instructs, apis = orchestrator.init_problem(pid)
-            agent.init_context(problem_desc, instructs, apis)
+    orchestrator = Orchestrator()
+    orchestrator.register_agent(agent, name="react")
 
-            full_output = asyncio.run(orchestrator.start_problem(max_steps=30))
-            results = full_output.get("results", {})
-
-            filename = f"react_{pid}.json"
-            with open(filename, "w") as f:
-                json.dump(results, f, indent=2)
-
-        except Exception as e:
-            print(f"Error while running problem {pid}: {e}")
+    pid = os.getenv("TASK_NAME", "misconfig_app_hotel_res-mitigation-1")
+    problem_desc, instructs, apis = orchestrator.init_problem(pid)
+    agent.init_context(problem_desc, instructs, apis)
+    asyncio.run(orchestrator.start_problem(max_steps=30))
+    
+    agent.llm.print_usage()
