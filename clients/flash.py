@@ -115,7 +115,7 @@ if __name__ == "__main__":
     agent = FlashAgent()
 
     orchestrator = Orchestrator()
-    orchestrator.register_agent(agent, name="react")
+    orchestrator.register_agent(agent, name="flash")
 
     pid = os.getenv("TASK_NAME", "misconfig_app_hotel_res-mitigation-1")
     problem_desc, instructs, apis = orchestrator.init_problem(pid)
