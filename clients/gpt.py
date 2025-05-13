@@ -11,7 +11,7 @@ import asyncio
 
 import wandb
 from aiopslab.orchestrator import Orchestrator
-from clients.utils.llm import AzureGPTClient
+from clients.utils.llm import AzureGPTClient, GPTClient
 from dotenv import load_dotenv
 
 from clients.utils.templates import DOCS_SHELL_ONLY
@@ -22,7 +22,10 @@ load_dotenv()
 class Agent:
     def __init__(self):
         self.history = []
-        self.llm = AzureGPTClient()
+        if os.getenv("PROVIDER_AGENTS", "openai").lower() == "azure":
+            self.llm = AzureGPTClient()
+        else:
+            self.llm = GPTClient()
     
     def test(self):
         return self.llm.run([{"role": "system", "content": "hello"}])

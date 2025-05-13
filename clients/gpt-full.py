@@ -11,7 +11,7 @@ import asyncio
 
 import wandb
 from aiopslab.orchestrator import Orchestrator
-from clients.utils.llm import AzureGPTClient
+from clients.utils.llm import AzureGPTClient, GPTClient
 from dotenv import load_dotenv
 
 # Load environment variables from the .env file
@@ -43,7 +43,10 @@ Action: <your action>
 class Agent:
     def __init__(self):
         self.history = []
-        self.llm = AzureGPTClient()
+        if os.getenv("PROVIDER_AGENTS", "openai").lower() == "azure":
+            self.llm = AzureGPTClient()
+        else:
+            self.llm = GPTClient()
     
     def test(self):
         return self.llm.run([{"role": "system", "content": "hello"}])
@@ -119,5 +122,3 @@ if __name__ == "__main__":
     if use_wandb:
         # Finish the wandb run
         wandb.finish()
-    
-    agent.llm.print_usage()
