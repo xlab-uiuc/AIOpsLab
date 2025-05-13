@@ -13,6 +13,9 @@ from aiopslab.orchestrator.problems.registry import ProblemRegistry
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class FlashAgent:
     def __init__(self):

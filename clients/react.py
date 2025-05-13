@@ -16,6 +16,10 @@ from aiopslab.orchestrator.problems.registry import ProblemRegistry
 from clients.utils.llm import AzureGPTClient, GPTClient
 from clients.utils.templates import DOCS
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 RESP_INSTR = """DO NOT REPEAT ACTIONS! Respond with:
 Thought: <your thought on the previous output>
 Action: <your action towards mitigating>
