@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-class Agent:
+class DeepSeekAgent:
     def __init__(self):
         self.history = []
         self.llm = DeepSeekClient()
@@ -71,7 +71,7 @@ if __name__ == "__main__":
         # Initialize wandb running
         wandb.init(project="AIOpsLab", entity="AIOpsLab")
 
-    agent = Agent()
+    agent = DeepSeekAgent()
 
     orchestrator = Orchestrator()
     orchestrator.register_agent(agent, name="deepseek-r1")
