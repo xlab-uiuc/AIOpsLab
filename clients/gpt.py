@@ -117,8 +117,6 @@ if __name__ == "__main__":
         orchestrator = Orchestrator()
         orchestrator.register_agent(agent, name="gpt-w-shell")
 
-        # pid = os.getenv("TASK_NAME", "misconfig_app_hotel_res-mitigation-1")
-        pid = 'astronomy_shop_loadgenerator_flood_homepage-localization-1'
         problem_desc, instructs, apis = orchestrator.init_problem(pid)
         agent.init_context(problem_desc, instructs, apis)
         asyncio.run(orchestrator.start_problem(max_steps=30))
