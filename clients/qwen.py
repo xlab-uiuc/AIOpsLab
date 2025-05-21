@@ -10,7 +10,7 @@ from clients.utils.llm import QwenClient
 from clients.utils.templates import DOCS_SHELL_ONLY
 
 
-class Agent:
+class QwenAgent:
     def __init__(self):
         self.history = []
         self.llm = QwenClient()
@@ -63,7 +63,7 @@ if __name__ == "__main__":
         # Initialize wandb running
         wandb.init(project="AIOpsLab", entity="AIOpsLab")
 
-    agent = Agent()
+    agent = QwenAgent()
 
     orchestrator = Orchestrator()
     orchestrator.register_agent(agent, name="qwq-32b")
